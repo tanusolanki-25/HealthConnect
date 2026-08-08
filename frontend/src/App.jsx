@@ -1,0 +1,107 @@
+import { BrowserRouter , Route, Routes} from "react-router-dom"
+import  Home  from "./components/Home"
+import ProtectedRoute from './components/ProtectedRoute'
+import Footer from "./components/Footer"
+import Navbar from "./components/Navbar"
+import About from "./pages/About"
+import Register from "./auth/Register"
+import Login from "./auth/login"
+import PatientForm from "./auth/PatientForm"
+import DoctorForm from "./auth/DoctorForm"
+import HospitalForm from "./auth/HospitlaForm"
+import PatientDashboard from "./dashboard/PatientDashboard"
+import DoctorDashboard from "./dashboard/DoctorDashboard"
+import HospitalDashboard from "./dashboard/HospitalDashboard"
+import MyAppointments from "./Appointments/MyAppointment"
+import MedicalHistory from "./records/MedicalHistory"
+import MyPrescriptions from "./prescriptions/MyPrescriptions"
+import AccessRequests from "./requests/AccessRequests"
+import ViewRecords from "./records/ViewRecords"
+import SentAccessRequests from "./requests/SentAccessRequests"
+import DoctorPrescription from "./prescriptions/DoctorPrescription"
+import DoctorAppointment from "./Appointments/DoctorAppointment"
+
+function App() {
+
+  return (
+  <BrowserRouter >
+    <Navbar />
+    <Routes>
+      <Route path="/" element={<Home />}/>
+      <Route path="/about" element={<About />}/>
+      <Route path="/register" element={<Register/>}/>
+      <Route path="/login" element={<Login />} />
+      <Route path="/patient/profile" element={
+        <ProtectedRoute allowedRole="patient">
+        <PatientForm /> 
+        </ProtectedRoute>}/>
+      <Route path="/doctor/profile" element={
+        <ProtectedRoute allowedRole="doctor">
+        <DoctorForm />
+        </ProtectedRoute>} />
+      <Route path="/hospital/profile" element={
+        <ProtectedRoute allowedRole="hospital">
+        <HospitalForm />
+        </ProtectedRoute>} />
+      <Route path="/patient/dashboard" 
+      element={
+       <ProtectedRoute allowedRole="patient">
+        <PatientDashboard />
+       </ProtectedRoute>} />
+      <Route path="/doctor/dashboard" 
+       element={
+       <ProtectedRoute allowedRole="doctor"> 
+        <DoctorDashboard />
+       </ProtectedRoute>} />
+      <Route path="/doctor/records/:patientId" 
+       element={
+       <ProtectedRoute allowedRole="doctor"> 
+        <ViewRecords />
+       </ProtectedRoute>} />
+        <Route path="/doctor/access-request/sent" 
+       element={
+       <ProtectedRoute allowedRole="doctor"> 
+        <SentAccessRequests />
+       </ProtectedRoute>} />
+       <Route path="/doctor/prescriptions" 
+       element={
+       <ProtectedRoute allowedRole="doctor"> 
+        <DoctorPrescription />
+       </ProtectedRoute>} />
+        <Route path="/doctor/appointments" 
+       element={
+       <ProtectedRoute allowedRole="doctor"> 
+        <DoctorAppointment />
+       </ProtectedRoute>} />
+      <Route path="/hospital/dashboard" 
+       element={
+       <ProtectedRoute allowedRole="hospital"> 
+        <HospitalDashboard />
+       </ProtectedRoute>} />
+       <Route path="/patient/my-appointments" 
+       element={
+       <ProtectedRoute allowedRole="patient"> 
+        <MyAppointments />
+       </ProtectedRoute>} />
+       <Route path="/patient/records" 
+       element={
+       <ProtectedRoute allowedRole="patient"> 
+        <MedicalHistory />
+       </ProtectedRoute>} />
+       <Route path="/patient/prescriptions" 
+       element={
+       <ProtectedRoute allowedRole="patient"> 
+        <MyPrescriptions />
+       </ProtectedRoute>} />
+       <Route path="/patient/access-requests" 
+       element={
+       <ProtectedRoute allowedRole="patient"> 
+        <AccessRequests />
+       </ProtectedRoute>} />
+    </Routes>
+    <Footer />
+  </BrowserRouter>
+  )
+}
+
+export default App

@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String // "patient" | "doctor" | "hospital"
+  createdAt    DateTime @default(now())
+  patient      Patient?
+  doctor       Doctor?
+  refreshToken String   @unique
+}
+
+model Patient {
+  id            String             @id @default(uuid())
+  userId        String             @unique
+  user          User               @relation(fields: [userId], references: [id])
+  name          String
+  dob           DateTime
+  gender        String
+  bloodGroup    String?
+  contact       String?
+  records       MedicalRecord[]
+  prescriptions Prescription[]
+  appointments  Appointment[]
+  permissions   AccessPermission[]
+}
+
+model Doctor {
+  id             String             @id @default(uuid())
+  userId         String             @unique
+  user           User               @relation(fields: [userId], references: [id])
+  name           String
+  specialization String
+  licenseNo      String?
+  hospitalId     String?
+  hospital       Hospital?          @relation(fields: [hospitalId], references: [id])
+  records        MedicalRecord[]
+  prescriptions  Prescription[]
+  appointments   Appointment[]
+  permissions    AccessPermission[]
+}
+
+model Hospital {
+  id             String          @id @default(uuid())
+  name           String
+  address        String
+  registrationNo String?
+  doctors        Doctor[]
+  records        MedicalRecord[]
+  appointments   Appointment[]
+}
+
+model AccessPermission {
+  id         String    @id @default(uuid())
+  patientId  String
+  patient    Patient   @relation(fields: [patientId], references: [id])
+  doctorId   String
+  doctor     Doctor    @relation(fields: [doctorId], references: [id])
+  status     String    @default("pending") // pending | approved | denied
+  expiryDate DateTime?
+  createdAt  DateTime  @default(now())
+}
+
+model MedicalRecord {
+  id         String    @id @default(uuid())
+  patientId  String
+  patient    Patient   @relation(fields: [patientId], references: [id])
+  doctorId   String?
+  doctor     Doctor?   @relation(fields: [doctorId], references: [id])
+  hospitalId String?
+  hospital   Hospital? @relation(fields: [hospitalId], references: [id])
+  recordType String
+  fileUrl    String?
+  uploadDate DateTime  @default(now())
+}
+
+model Prescription {
+  id         String   @id @default(uuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  doctorId   String
+  doctor     Doctor   @relation(fields: [doctorId], references: [id])
+  medicines  String
+  notes      String?
+  issuedDate DateTime @default(now())
+}
+
+model Appointment {
+  id          String    @id @default(uuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor    @relation(fields: [doctorId], references: [id])
+  hospitalId  String?
+  hospital    Hospital? @relation(fields: [hospitalId], references: [id])
+  scheduledAt DateTime
+  status      String    @default("booked") // booked | completed | cancelled
+}
