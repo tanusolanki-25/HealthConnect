@@ -8,7 +8,7 @@ import {
 
 export default function HospitalDashboard() {
   return (
-    <div className="min-h-screen bg-slate-50 p-8 mt-15">
+    <div className="min-h-screen bg-slate-50 p-4">
 
       {/* Header */}
       <div className="bg-white border border-blue-100 rounded-2xl shadow-sm p-6 flex items-center gap-5">

@@ -10,8 +10,8 @@ import {
 
 function About() {
 return (
-  <section className="py-24 bg-gradient-to-b from-white to-slate-50">
-    <div className="max-w-7xl mx-auto px-6">
+  <section className="p-4 bg-gradient-to-b from-white to-slate-50">
+    <div className="max-w-7xl mx-auto">
 
       {/* Heading */}
       <div className="text-center max-w-3xl mx-auto mb-16">

@@ -79,8 +79,8 @@ export default function DoctorDashboard() {
   const pendingSentRequests = data.permissions.filter((p) => p.status === "pending")
   const upcomingAppointments = data.appointments.filter((a) => a.status === "booked")
 return (
-  <div className="min-h-screen mt-15 bg-slate-100 py-8 mt-12">
-    <div className="max-w-7xl mx-auto px-6 space-y-6">
+  <div className="min-h-screen bg-slate-100 py-4">
+    <div className="max-w-7xl mx-auto px-4 space-y-6">
 
       {/* Header */}
       <div className="bg-white border-gray-100 text-blue-700 rounded-2xl p-4 shadow-sm border">

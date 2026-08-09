@@ -4,8 +4,8 @@ import { ShieldCheck, Lock, Play } from "lucide-react";
 
 function HeroSection() {
  return (
-  <section className="min-h-screen mt-10 bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center">
-    <div className="max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-16 items-center">
+  <section className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center">
+    <div className="max-w-7xl mx-auto px-6 py-6 grid lg:grid-cols-2 gap-16 items-center">
 
       {/* Left Content */}
       <div>

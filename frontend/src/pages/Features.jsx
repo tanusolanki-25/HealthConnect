@@ -3,7 +3,7 @@ import doctorimg from "../assets/doctorimg.png"
 
 function Features() {
  return (
-  <section className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 py-24">
+  <section className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 p-14">
 
     {/* Background Blur Effects */}
     <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>

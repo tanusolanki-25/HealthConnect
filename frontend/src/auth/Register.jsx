@@ -27,7 +27,7 @@ function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6 mt-15">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
         <div className="flex items-center gap-2 text-blue-600 font-bold text-xl">
           <img src="/favicon.png" alt="logo" className="w-12 h-12" />
