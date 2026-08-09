@@ -19,7 +19,7 @@ export default function DoctorAppointment() {
   }
 
  return (
-  <div className="min-h-screen mt-15 bg-gray-100 py-10 px-4">
+  <div className="min-h-screen bg-gray-50/50 py-10 px-4">
     <div className="max-w-4xl mx-auto text-center bg-white rounded-2xl mb-3 shadow-lg p-4">
       <h1 className="text-3xl font-bold text-blue-700">
         My Appointments

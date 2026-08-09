@@ -68,7 +68,7 @@ export default function Login() {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
+            <div className="flex mb-4 items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
               <Lock className="text-gray-400" />
               <input
                 {...register("password")}

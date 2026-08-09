@@ -19,7 +19,7 @@ export default function DoctorPrescription() {
   }
 
   return (
-    <div className="min-h-screen mt-15 bg-gray-100 py-10 px-4">
+    <div className="min-h-screen bg-gray-50/50 py-10 px-4">
       <div className="bg-white rounded-2xl shadow-lg p-4 mb-3 text-center max-w-5xl mx-auto ">
         <h1 className="text-3xl font-bold text-blue-700">
           Prescriptions Issued

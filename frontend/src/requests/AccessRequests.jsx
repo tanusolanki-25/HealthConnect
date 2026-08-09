@@ -35,7 +35,7 @@ export default function AccessRequests() {
   );
 
 return (
-  <div className="min-h-screen bg-gray-100 mt-20 p-6">
+  <div className="min-h-screen bg-gray-50/50 p-6">
     <div className="max-w-5xl mx-auto">
       
       {/* Empty State */}

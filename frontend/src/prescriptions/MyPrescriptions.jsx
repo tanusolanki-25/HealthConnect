@@ -20,7 +20,7 @@ export default function MyPrescriptions() {
     </div>
   );
 return (
-  <div className="m-25 px-6">
+  <div className="p-6">
     <div className="bg-white max-w-6xl p-4 mx-auto shadow-sm mb-3 rounded-xl text-center">
       <h2 className="text-3xl font-bold text-blue-700">
         My Prescriptions
