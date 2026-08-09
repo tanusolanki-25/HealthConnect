@@ -22,7 +22,6 @@ export default function UploadRecord({showUploadModal, setShowUploadModal}) {
       });
 
       alert("Uploaded!");
-      setLoading(false)
       setRecordType("");
       setFile(null);
     } catch (err) {

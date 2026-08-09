@@ -5,13 +5,16 @@ import api from '../api/axios'
 
 
 import { useAuth } from '../context/AuthContext'
+import { useState } from 'react'
 
 function HospitlForm() {
   const { register, handleSubmit } = useForm()
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { markProfileCompleted } = useAuth()
 
     const onSubmit = async (data) => {
+      setLoading(true)
       try {
         await api.post("/hospital/profile", data)
         toast.success("Profile saved successfully")
@@ -19,6 +22,9 @@ function HospitlForm() {
         navigate("/hospital/dashboard")
       } catch (err) {
         toast.error(err.response?.data?.message || "Could not save profile")
+      }
+      finally{
+        setLoading(false)
       }
     }
 
@@ -77,8 +83,16 @@ function HospitlForm() {
               />
             </div>
           </div>
-       <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition">
-            Save
+       <button
+            type="submit"
+            disabled={loading}
+            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
+                  loading
+                   ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+                }`}
+          > 
+          {loading ? "loading..." : "Save"} 
           </button>
       </form>
       </div>

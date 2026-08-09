@@ -7,11 +7,13 @@ import api from "../api/axios";
 
 function Register() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
   const { register, handleSubmit, reset } = useForm({
     defaultValues: { role: "patient" },
   });
 
   const onSubmit = async (data) => {
+    setLoading(true)
     try {
       await api.post("/auth/register", data);
       toast.success("Account created — please log in");
@@ -19,11 +21,13 @@ function Register() {
       navigate("/login");
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed");
+    }finally{
+      setLoading(false)
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6 mt-8">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6 mt-15">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
         <div className="flex items-center gap-2 text-blue-600 font-bold text-xl">
           <img src="/favicon.png" alt="logo" className="w-12 h-12" />
@@ -110,9 +114,14 @@ function Register() {
           
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
-          >
-           Register
+            disabled={loading}
+            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
+                  loading
+                   ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+                }`}
+          > 
+          {loading ? "Uploading..." : "Register"} 
           </button>
         </form>
 

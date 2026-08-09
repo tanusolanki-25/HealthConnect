@@ -4,13 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios"
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 
 export default function Login() {
  const { register, handleSubmit, reset } = useForm({ defaultValues: { role: "patient" } })
+ const [loading, setLoading] = useState(false)
  const {login} = useAuth()
  const navigate = useNavigate()
 
  const onSubmit = async (data) => {
+  setLoading(true)
   try {
     const user = await login(data.email, data.password)
     toast.success("Login successfully")
@@ -23,6 +26,9 @@ export default function Login() {
     }
   } catch (error) {
      toast.error(error.response?.data?.message || "Login Failed")
+  }
+  finally{
+    setLoading(false)
   }
 };
 
@@ -75,9 +81,17 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition">
-            Log In
-            <ArrowRight className="w-5 h-5" />
+          <button
+            type="submit"
+            disabled={loading}
+            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
+                  loading
+                   ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+                }`}
+          > 
+          {loading ? "login..." : "Login"} 
+          <ArrowRight className="w-5 h-5" />
           </button>
         </form>
         {/* Signup */}

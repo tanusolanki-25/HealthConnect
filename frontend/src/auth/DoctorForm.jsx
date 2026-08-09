@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
 
 
@@ -9,10 +9,12 @@ import { useAuth } from '../context/AuthContext'
 
 function DoctorForm() {
   const { register, handleSubmit } = useForm()
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { markProfileCompleted } = useAuth()
    
     const onSubmit = async (data) => {
+      setLoading(true)
       try {
         await api.post("/doctor/profile", data)
         toast.success("Profile saved successfully")
@@ -20,6 +22,9 @@ function DoctorForm() {
         navigate("/doctor/dashboard")
       } catch (err) {
         toast.error(err.response?.data?.message || "Could not save profile")
+      }
+      finally{
+        setLoading(false)
       }
     }
 
@@ -79,9 +84,17 @@ function DoctorForm() {
             </div>
           </div>
       
-       <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 font-semibold flex items-center justify-center gap-2 transition">
-          Save
-        </button>
+       <button
+            type="submit"
+            disabled={loading}
+            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
+                  loading
+                   ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+                }`}
+          > 
+          {loading ? "loading..." : "Save"} 
+          </button>
       </form>
       </div>
     </div>

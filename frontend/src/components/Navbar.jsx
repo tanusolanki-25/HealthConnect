@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = {
   patient: [
@@ -26,6 +28,7 @@ const NAV_LINKS = {
 const Navbar = () => {
   const {user, logout} = useAuth()
   const navigate = useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -38,54 +41,138 @@ const Navbar = () => {
   }
 
   return (
-   <nav className="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200 z-50">
-  <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-6">
+  <nav className="bg-white shadow-md">
+  <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-        <div className="flex space-x-3 items-center">
-        <img src="/favicon.png" alt="logo" className="w-12 h-12" />
-        <Link to="/" className="text-xl font-bold text-blue-600">
-          HealthConnect
-        </Link>
-        </div>
-        {/* Links */}
-        <div className="space-x-6 font-medium">
-          <Link to="/" className="hover:text-blue-400">
-            Home
-          </Link>
+    {/* Logo */}
+    <div className="flex items-center space-x-3">
+      <img src="/favicon.png" alt="logo" className="w-12 h-12" />
+      <Link to="/" className="text-xl font-bold text-blue-600">
+        HealthConnect
+      </Link>
+    </div>
 
-          <Link to="/about" className="hover:text-blue-400">
-            About
-          </Link>
-          {!user ? 
-          (<>
-            <Link
+    {/* Desktop Links */}
+    <div className="hidden md:flex items-center space-x-6 font-medium">
+      <Link to="/" className="hover:text-blue-400">
+        Home
+      </Link>
+
+      <Link to="/about" className="hover:text-blue-400">
+        About
+      </Link>
+
+      {!user ? (
+        <>
+          <Link
             to="/login"
-            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400">
-             Login
-            </Link> 
-            <Link
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400"
+          >
+            Login
+          </Link>
+
+          <Link
             to="/register"
-            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400">
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400"
+          >
             Sign Up
-            </Link> 
-          </>)
-        :(<>
-           {NAV_LINKS[user.role]?.map((link) => (
-            <Link key={link.to} to={link.to} className="hover:text-blue-400">
+          </Link>
+        </>
+      ) : (
+        <>
+          {NAV_LINKS[user.role]?.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="hover:text-blue-400"
+            >
               {link.label}
             </Link>
-           ))}
-            <span className=" text-black border-l pl-4 ">{user.role}</span>
+          ))}
+
+          <span className="text-black border-l pl-4">
+            {user.role}
+          </span>
+
           <button
             onClick={handleLogout}
-            className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-400">
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400"
+          >
             Logout
           </button>
-          </>
-        )}
-        </div>
-      </div>
-    </nav>
+        </>
+      )}
+    </div>
+
+    {/* Mobile Menu Button */}
+    <button
+      className="md:hidden"
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      {isOpen ? <X size={28} /> : <Menu size={28} />}
+    </button>
+  </div>
+
+  {/* Mobile Menu */}
+  {isOpen && (
+    <div className="md:hidden px-6 pb-4 flex flex-col space-y-4 font-medium bg-white shadow">
+
+      <Link to="/" onClick={() => setIsOpen(false)}>
+        Home
+      </Link>
+
+      <Link to="/about" onClick={() => setIsOpen(false)}>
+        About
+      </Link>
+
+      {!user ? (
+        <>
+          <Link
+            to="/login"
+            onClick={() => setIsOpen(false)}
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg text-center"
+          >
+            Login
+          </Link>
+
+          <Link
+            to="/register"
+            onClick={() => setIsOpen(false)}
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg text-center"
+          >
+            Sign Up
+          </Link>
+        </>
+      ) : (
+        <>
+          {NAV_LINKS[user.role]?.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setIsOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <span className="border-t pt-3">
+            {user.role}
+          </span>
+
+          <button
+            onClick={() => {
+              handleLogout();
+              setIsOpen(false);
+            }}
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg"
+          >
+            Logout
+          </button>
+        </>
+      )}
+    </div>
+  )}
+</nav>
   );
 };
 
