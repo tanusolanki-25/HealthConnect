@@ -4,9 +4,27 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
+const rawOrigins = (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim().replace(/\/$/, '')).filter(Boolean);
+const defaultOrigins = [
+  'https://health-connect-git-main-tanu-solankis-projects.vercel.app',
+  'https://health-connect-zeta-seven.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+const allowedOrigins = Array.from(new Set([...rawOrigins, ...defaultOrigins]));
+
 app.use(cors({
-  origin:[process.env.CORS_ORIGIN, 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS policy blocked request from ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true,
 }))
 app.options('*', cors());
