@@ -1,36 +1,34 @@
 import { Mail, Lock, Eye, ArrowRight } from "lucide-react";
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios"
+import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 
 export default function Login() {
- const { register, handleSubmit, reset } = useForm({ defaultValues: { role: "patient" } })
- const [loading, setLoading] = useState(false)
- const {login} = useAuth()
- const navigate = useNavigate()
+  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
- const onSubmit = async (data) => {
-  setLoading(true)
-  try {
-    const user = await login(data.email, data.password)
-    toast.success("Login successfully")
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const user = await login(data.email, data.password);
+      toast.success("Login successfully");
 
-    if(!user.profileCompleted){
-      navigate(`/${user.role}/profile`)
+      if (!user.profileCompleted) {
+        navigate(`/${user.role}/profile`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login Failed");
+    } finally {
+      setLoading(false);
     }
-    else{
-      navigate(`/${user.role}/dashboard`)
-    }
-  } catch (error) {
-     toast.error(error.response?.data?.message || "Login Failed")
-  }
-  finally{
-    setLoading(false)
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center relative overflow-hidden">
@@ -51,19 +49,24 @@ export default function Login() {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              Email 
+              Email
             </label>
             <div className="flex items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
               <Mail className="text-gray-400" />
               <input
-                {...register("email")}
                 type="email"
-                placeholder="sarah.smith@hospital.com"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
                 className="ml-3 w-full outline-none"
               />
             </div>
           </div>
-        
+
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
@@ -85,13 +88,13 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
-                  loading
-                   ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
-                }`}
-          > 
-          {loading ? "login..." : "Login"} 
-          <ArrowRight className="w-5 h-5" />
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+            }`}
+          >
+            {loading ? "login..." : "Login"}
+            <ArrowRight className="w-5 h-5" />
           </button>
         </form>
         {/* Signup */}

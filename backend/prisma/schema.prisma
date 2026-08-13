@@ -15,10 +15,12 @@ model User {
   createdAt    DateTime @default(now())
 
   patient      Patient?
+  otp          Otp?
   doctor       Doctor?
   hospital     Hospital?   
 
   refreshToken String? @unique
+  verified     Boolean @default(false)
 }
 
 model Patient {
@@ -111,4 +113,14 @@ model Appointment {
   hospital    Hospital? @relation(fields: [hospitalId], references: [id])
   scheduledAt DateTime
   status      String    @default("booked") // booked | completed | cancelled
+}
+
+model Otp {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  otpHash      String
+  createdAt    DateTime @default(now())
+  userId       String             @unique
+  user         User               @relation(fields: [userId], references: [id])
+  expiresAt   DateTime?  
 }

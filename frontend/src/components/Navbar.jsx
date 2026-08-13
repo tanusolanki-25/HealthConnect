@@ -80,17 +80,18 @@ const Navbar = () => {
         </>
       ) : (
         <>
-          {NAV_LINKS[user.role]?.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="hover:text-blue-400"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {user.profileCompleted &&
+            NAV_LINKS[user.role]?.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="hover:text-blue-400"
+              >
+                {link.label}
+              </Link>
+            ))}
 
-          <span className="text-black border-l pl-4">
+          <span className="text-slate-700 font-semibold border-l pl-4 capitalize">
             {user.role}
           </span>
 
@@ -145,17 +146,18 @@ const Navbar = () => {
         </>
       ) : (
         <>
-          {NAV_LINKS[user.role]?.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => setIsOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {user.profileCompleted &&
+            NAV_LINKS[user.role]?.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
 
-          <span className="border-t pt-3">
+          <span className="border-t pt-3 font-semibold capitalize">
             {user.role}
           </span>
 

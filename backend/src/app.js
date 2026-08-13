@@ -6,7 +6,6 @@ const app = express()
 
 const rawOrigins = (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim().replace(/\/$/, '')).filter(Boolean);
 const defaultOrigins = [
-  'https://health-connect-git-main-tanu-solankis-projects.vercel.app',
   'https://health-connect-zeta-seven.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000'

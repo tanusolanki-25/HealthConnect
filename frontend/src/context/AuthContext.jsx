@@ -13,7 +13,7 @@ async function checkProfileCompleted(role) {
 }
 
 export const AuthProvider = ({children}) =>{
-  const [user, setUser] = useState('')
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
 
@@ -46,12 +46,11 @@ export const AuthProvider = ({children}) =>{
     setUser(null)
   }
 
-
   const markProfileCompleted = () => {
     setUser((prev) => (prev ? { ...prev, profileCompleted: true } : prev))
   }
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading, markProfileCompleted }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading, markProfileCompleted, checkProfileCompleted }}>
       {children}
     </AuthContext.Provider>
   )

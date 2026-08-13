@@ -5,6 +5,8 @@ import { ApiError } from "../utils/ApiError.js"
 import prisma from "../lib/prisma.js"
 import { hashedPassword, verifyPassword } from "../utils/bcrypt.js"
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js"
+import { sendEmail } from "../service/email.service.js"
+import { getOtpHtml, generateOTP } from "../service/generateOtp.js"
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -32,7 +34,6 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password, role } = req.body
-
   if ([email, password, role].some((field) => !field?.trim())) {
     throw new ApiError(400, "All fields are required")
   }
@@ -51,12 +52,29 @@ const registerUser = asyncHandler(async (req, res) => {
     data: { email, passwordHash, role }
   })
 
+  const otp = await generateOTP()
+  const html = await getOtpHtml(otp)
+
+  const otpHash = await hashedPassword(otp)
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+  await prisma.otp.create({
+  data: {
+    email,
+    userId: user.id,
+    otpHash,
+    expiresAt,
+  }
+});
+
+  await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+
   const createdUser = await prisma.user.findUnique({
     where: { id: user.id },
     select: {
       id: true,
       email: true,
-      role: true
+      role: true,
+      verified: true
     }
   })
 
@@ -69,6 +87,129 @@ const registerUser = asyncHandler(async (req, res) => {
   )
 })
 
+const verifyEmail = asyncHandler(async(req, res)=>{
+   const {otp, email} = req.body
+   const otpHash = await hashedPassword(otp)
+
+   const otpDoc = await prisma.otp.findUnique({
+    where:{
+      email,
+    }
+   })
+
+   if (!otpDoc) {
+  throw new ApiError(400, "OTP not found");
+}
+
+   if (otpDoc.expiresAt < new Date()) {
+    await prisma.otp.delete({
+      where: {
+        email,
+      },
+    });
+
+    throw new ApiError(400, "OTP has expired");
+  }
+
+   const isValid = await verifyPassword(otp, otpDoc.otpHash)
+
+   if (!isValid) {
+    throw new ApiError(400, "Invalid OTP");
+   }
+
+   if(otpDoc.expiresAt > new Date()){
+     await prisma.user.update({
+     where:{
+      id: otpDoc.userId
+     },
+     data:{
+      verified: true
+     }
+   })
+  }
+
+   await prisma.otp.delete({
+     where:{
+      userId: otpDoc.userId
+     }
+   })
+
+   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(otpDoc.userId)
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
+
+   const loggedInUser = await prisma.user.findUnique({
+    where: { id: otpDoc.userId },
+    select: {
+      email: true,
+      role: true
+    }
+  })
+
+    return res
+    .status(200)
+    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { user: loggedInUser, refreshToken, accessToken },
+        "User logged in successfully"
+      )
+    )
+})
+
+const resendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (user.verified) {
+    throw new ApiError(400, "Email already verified");
+  }
+
+  const otp = generateOTP();
+  const otpHash = await hashedPassword(otp);
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+  await prisma.otp.upsert({
+    where: { email },
+    update: {
+      otpHash,
+      expiresAt,
+    },
+    create: {
+      email,
+      otpHash,
+      userId: user.id,
+      expiresAt,
+    }
+  });
+
+  const html = await getOtpHtml(otp);
+
+  await sendEmail(
+    email,
+    "New OTP Verification",
+    `Your OTP is ${otp}`,
+    html
+  );
+
+  return res.status(200).json(
+    new ApiResponse(200, null, "OTP sent successfully")
+  );
+});
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
@@ -79,6 +220,10 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { email }
   })
+
+  if(!user.verified){
+    throw new ApiError(401, "User does not verified")
+  } 
 
   if (!user) {
     throw new ApiError(404, "User does not exist")
@@ -102,8 +247,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
 
   return res
@@ -119,6 +264,7 @@ const loginUser = asyncHandler(async (req, res) => {
     )
 })
 
+
 const logoutUser = asyncHandler(async (req, res) => {
   const userId = req.user.id
 
@@ -129,8 +275,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
 
   return res
@@ -169,8 +315,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
 
     const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(user.id)
@@ -227,9 +373,11 @@ const getCurrentUser = async (req, res) => {
 
 export {
   registerUser,
+  verifyEmail,
   loginUser,
   logoutUser,
   getCurrentUser,
   refreshAccessToken,
   changePassword,
+  resendOtp
 }

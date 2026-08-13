@@ -7,22 +7,26 @@ import api from "../api/axios";
 
 function Register() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit, reset } = useForm({
     defaultValues: { role: "patient" },
   });
 
   const onSubmit = async (data) => {
-    setLoading(true)
+    setLoading(true);
     try {
       await api.post("/auth/register", data);
       toast.success("Account created — please log in");
       reset();
-      navigate("/login");
+      navigate("/verify-email",{
+        state:{
+          email: data.email
+        }
+      });
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed");
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,9 +52,14 @@ function Register() {
             <div className="flex items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
               <Mail className="text-gray-400" />
               <input
-                {...register("email")}
                 type="email"
-                placeholder="sarah.smith@hospital.com"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
                 className="ml-3 w-full outline-none"
               />
             </div>
@@ -111,17 +120,17 @@ function Register() {
               </label>
             </div>
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
-            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
-                  loading
-                   ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
-                }`}
-          > 
-          {loading ? "Uploading..." : "Register"} 
+            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 text-white font-medium ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+            }`}
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 

@@ -21,6 +21,7 @@ import SentAccessRequests from "./requests/SentAccessRequests"
 import DoctorPrescription from "./prescriptions/DoctorPrescription"
 import DoctorAppointment from "./Appointments/DoctorAppointment"
 import { Toaster } from "react-hot-toast"
+import VerifyEmail from "./auth/Verify-Email"
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
       <Route path="/" element={<Home />}/>
       <Route path="/about" element={<About />}/>
       <Route path="/register" element={<Register/>}/>
+      <Route path="/verify-email" element={<VerifyEmail />}/>
       <Route path="/login" element={<Login />} />
       <Route path="/patient/profile" element={
         <ProtectedRoute allowedRole="patient">
