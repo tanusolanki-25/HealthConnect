@@ -1,4 +1,4 @@
-import { Mail, Lock, Eye, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
@@ -7,8 +7,9 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 
 export default function Login() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, formState: {errors} } = useForm();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -46,7 +47,7 @@ export default function Login() {
         </p>
 
         {/* Email */}
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Email
@@ -65,22 +66,38 @@ export default function Login() {
                 className="ml-3 w-full outline-none"
               />
             </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm mb-1 mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex mb-4 items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
+            <div className="flex relative mb-2 items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
               <Lock className="text-gray-400" />
               <input
-                {...register("password")}
-                type="password"
+                {...register("password", {required: "Password is required"})}
+                type={showPassword ? "text" : "password"}
                 placeholder="password"
                 className="ml-3 w-full outline-none"
               />
-              <Eye className="cursor-pointer text-gray-400" />
+                <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <EyeOff className="cursor-pointer text-gray-400" />
+                ) : (
+                  <Eye className="cursor-pointer text-gray-400" />
+                )}
+              </button>
             </div>
+             {errors.password && (
+              <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Login Button */}

@@ -1,14 +1,15 @@
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Mail, Lock, Eye } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import api from "../api/axios";
 
 function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, reset } = useForm({
+  const [showPassword, setShowPassword] = useState(false);
+  const { register, handleSubmit, reset, formState: {errors} } = useForm({
     defaultValues: { role: "patient" },
   });
 
@@ -18,10 +19,10 @@ function Register() {
       await api.post("/auth/register", data);
       toast.success("Account created — please log in");
       reset();
-      navigate("/verify-email",{
-        state:{
-          email: data.email
-        }
+      navigate("/verify-email", {
+        state: {
+          email: data.email,
+        },
       });
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed");
@@ -63,6 +64,9 @@ function Register() {
                 className="ml-3 w-full outline-none"
               />
             </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -70,36 +74,58 @@ function Register() {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
+            <div className="relative flex items-center rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
               <Lock className="text-gray-400" />
               <input
-                {...register("password")}
-                type="password"
-                placeholder="password"
+                {...register("password", {
+                  required: "Password is required",
+                })}
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
                 className="ml-3 w-full outline-none"
               />
-              <Eye className="cursor-pointer text-gray-400" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <EyeOff className="cursor-pointer text-gray-400" />
+                ) : (
+                  <Eye className="cursor-pointer text-gray-400" />
+                )}
+              </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Checkbox */}
+          <div>
           <div className="flex items-start gap-2">
             <input
-              {...register("agreedToTerms")}
+              {...register("agreedToTerms", {
+                  required: "agreedToTerms is required",
+                })}
               type="checkbox"
               className="mt-1 h-4 w-4 accent-blue-600"
             />
             <p className="text-sm text-gray-500">
               I agree to the{" "}
-              <span className="font-medium text-blue-600 cursor-pointer">
+              <span className="font-medium text-blue-600">
                 Terms of Service
               </span>{" "}
               and{" "}
-              <span className="font-medium text-blue-600 cursor-pointer">
+              <span className="font-medium text-blue-600">
                 Privacy Policy
               </span>
               .
             </p>
+          </div>
+           {errors.agreedToTerms && (
+              <p className="text-red-500 text-sm mt-1">{errors.agreedToTerms.message}</p>
+            )}
           </div>
 
           {/* Role selection */}
