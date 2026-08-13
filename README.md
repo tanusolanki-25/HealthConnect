@@ -46,23 +46,6 @@ Records stay **patient-centric**, not hospital-wise. No doctor or hospital can v
 
 > Note: the backend is on a free tier and may take 30–60 seconds to respond on the first request after inactivity.
 
-## 📂 Project Structure
-
-```
-healthconnect-backend/
-├── controllers/       → business logic per feature (auth, profile, appointments, etc.)
-├── routes/             → API route definitions per role (patient, doctor, hospital)
-├── middleware/         → auth (JWT) and file upload (multer) middleware
-├── prisma/schema.prisma → database schema
-├── utils/               → shared helpers (ApiError, ApiResponse, asyncHandler, cloudinary)
-└── index.js             → app entry point
-
-healthconnect-frontend/
-├── src/pages/           → route-level pages (Login, Signup, Dashboards, etc.)
-├── src/components/      → reusable UI (Navbar, ProtectedRoute)
-├── src/context/         → AuthContext (login state across the app)
-└── src/api/axios.js     → configured API client
-```
 
 ## ⚙️ Local Setup
 
