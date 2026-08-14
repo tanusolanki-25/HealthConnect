@@ -1,46 +1,26 @@
-import nodemailer from "nodemailer";
+import { BrevoClient } from "@getbrevo/brevo";
 import { ApiError } from "../utils/ApiError.js";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, 
-  auth: {
-    type: "OAuth2",
-    user: process.env.GOOGLE_USER,
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-  },
-  connectionTimeout: 20000, // 20 seconds
-  greetingTimeout: 20000,
-  socketTimeout: 20000,
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("GMAIL VERIFY ERROR:", error);
-  } else {
-    console.log("Email server is ready to send message");
-  }
+const client = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY,
 });
 
 export const sendEmail = async (to, subject, text, html) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"HealthConnect" <${process.env.GOOGLE_USER}>`,
-      to,
+    const response = await client.transactionalEmails.sendTransacEmail({
+      sender: {
+        name: "HealthConnect",
+        email: process.env.BREVO_SENDER_EMAIL,
+      },
+      to: [{ email: to }],
       subject,
-      text,
-      html,
+      textContent: text,
+      htmlContent: html,
     });
 
-    console.log("Message sent:", info.messageId);
+    console.log("Message sent:", response.messageId);
   } catch (error) {
     console.error("EMAIL SEND ERROR:", error);
-    console.error("ERROR MESSAGE:", error.message);
-    console.error("ERROR CODE:", error.code);
-
     throw new ApiError(500, "Unable to send verification email");
   }
 };
