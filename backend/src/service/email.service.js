@@ -2,7 +2,9 @@ import nodemailer from "nodemailer";
 import { ApiError } from "../utils/ApiError.js";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, 
   auth: {
     type: "OAuth2",
     user: process.env.GOOGLE_USER,
@@ -10,6 +12,9 @@ const transporter = nodemailer.createTransport({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   },
+  connectionTimeout: 20000, // 20 seconds
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
 });
 
 transporter.verify((error, success) => {
