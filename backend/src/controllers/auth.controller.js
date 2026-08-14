@@ -66,7 +66,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-  await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+  try {
+    await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+  } catch (error) {
+     console.error(error);
+  }
 
   const createdUser = await prisma.user.findUnique({
     where: { id: user.id },
