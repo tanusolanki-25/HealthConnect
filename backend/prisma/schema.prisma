@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,119 +7,114 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String    @id @default(uuid())
+  email        String    @unique
   passwordHash String
   role         String
-  createdAt    DateTime @default(now())
-
-  patient      Patient?
-  otp          Otp?
+  createdAt    DateTime  @default(now())
+  refreshToken String?   @unique
+  verified     Boolean   @default(false)
   doctor       Doctor?
-  hospital     Hospital?   
-
-  refreshToken String? @unique
-  verified     Boolean @default(false)
+  hospital     Hospital?
+  otp          Otp?
+  patient      Patient?
 }
 
 model Patient {
   id            String             @id @default(uuid())
   userId        String             @unique
-  user          User               @relation(fields: [userId], references: [id])
   name          String
   dob           DateTime
   gender        String
   bloodGroup    String?
   contact       String?
-  records       MedicalRecord[]
-  prescriptions Prescription[]
-  appointments  Appointment[]
   permissions   AccessPermission[]
+  appointments  Appointment[]
+  records       MedicalRecord[]
+  user          User               @relation(fields: [userId], references: [id])
+  prescriptions Prescription[]
 }
 
 model Doctor {
   id             String             @id @default(uuid())
   userId         String             @unique
-  user           User               @relation(fields: [userId], references: [id])
   name           String
   specialization String
   licenseNo      String?
   hospitalId     String?
-
-  hospital       Hospital? @relation(fields: [hospitalId], references: [id])
+  permissions    AccessPermission[]
+  appointments   Appointment[]
+  hospital       Hospital?          @relation(fields: [hospitalId], references: [id])
+  user           User               @relation(fields: [userId], references: [id])
   records        MedicalRecord[]
   prescriptions  Prescription[]
-  appointments   Appointment[]
-  permissions    AccessPermission[]
 }
 
 model Hospital {
-  id              String @id @default(uuid())
-  userId          String @unique
-  user            User   @relation(fields: [userId], references: [id])
-
-  name            String
-  address         String
-  registrationNo  String?
-  
-  records         MedicalRecord[]
-  doctors         Doctor[]
-  appointments    Appointment[]
+  id             String          @id @default(uuid())
+  name           String
+  address        String
+  registrationNo String?
+  userId         String          @unique
+  appointments   Appointment[]
+  doctors        Doctor[]
+  user           User            @relation(fields: [userId], references: [id])
+  records        MedicalRecord[]
 }
 
 model AccessPermission {
   id         String    @id @default(uuid())
   patientId  String
-  patient    Patient   @relation(fields: [patientId], references: [id])
   doctorId   String
-  doctor     Doctor    @relation(fields: [doctorId], references: [id])
-  status     String    @default("pending") // pending | approved | denied
+  status     String    @default("pending")
   expiryDate DateTime?
   createdAt  DateTime  @default(now())
+  doctor     Doctor    @relation(fields: [doctorId], references: [id])
+  patient    Patient   @relation(fields: [patientId], references: [id])
 }
 
 model MedicalRecord {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   patientId  String
-  patient    Patient  @relation(fields: [patientId], references: [id])
   doctorId   String?
-  doctor     Doctor?  @relation(fields: [doctorId], references: [id])
   hospitalId String?
-  hospital   Hospital? @relation(fields: [hospitalId], references: [id])
   recordType String
   fileUrl    String?
-  uploadDate DateTime @default(now())
+  uploadDate DateTime  @default(now())
+  doctor     Doctor?   @relation(fields: [doctorId], references: [id])
+  hospital   Hospital? @relation(fields: [hospitalId], references: [id])
+  patient    Patient   @relation(fields: [patientId], references: [id])
 }
 
 model Prescription {
   id         String   @id @default(uuid())
   patientId  String
-  patient    Patient  @relation(fields: [patientId], references: [id])
   doctorId   String
-  doctor     Doctor   @relation(fields: [doctorId], references: [id])
   medicines  String
   notes      String?
   issuedDate DateTime @default(now())
+  doctor     Doctor   @relation(fields: [doctorId], references: [id])
+  patient    Patient  @relation(fields: [patientId], references: [id])
 }
 
 model Appointment {
   id          String    @id @default(uuid())
   patientId   String
-  patient     Patient   @relation(fields: [patientId], references: [id])
   doctorId    String
-  doctor      Doctor    @relation(fields: [doctorId], references: [id])
   hospitalId  String?
-  hospital    Hospital? @relation(fields: [hospitalId], references: [id])
   scheduledAt DateTime
-  status      String    @default("booked") // booked | completed | cancelled
+  status      String    @default("booked")
+  doctor      Doctor    @relation(fields: [doctorId], references: [id])
+  hospital    Hospital? @relation(fields: [hospitalId], references: [id])
+  patient     Patient   @relation(fields: [patientId], references: [id])
 }
 
 model Otp {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  otpHash      String
-  createdAt    DateTime @default(now())
-  userId       String             @unique
-  user         User               @relation(fields: [userId], references: [id])
-  expiresAt   DateTime?  
+  id        String    @id @default(cuid())
+  email     String    @unique
+  otpHash   String
+  createdAt DateTime  @default(now())
+  userId    String    @unique
+  expiresAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/axios";
+import toast from "react-hot-toast"
 
 export default function UploadRecord({showUploadModal, setShowUploadModal}) {
   const [file, setFile] = useState(null);
@@ -21,11 +22,11 @@ export default function UploadRecord({showUploadModal, setShowUploadModal}) {
         },
       });
 
-      alert("Uploaded!");
+      toast.success("Uploaded!");
       setRecordType("");
       setFile(null);
     } catch (err) {
-      alert("Upload failed");
+      toast.error(err.response?.data?.message || "Could not upload record")
     }
     finally {
     setLoading(false);

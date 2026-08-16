@@ -79,71 +79,73 @@ export default function PatientDashboard() {
   );
 
  return (
-  <div className="min-h-screen bg-gray-50/50 p-4">
-    <div className="max-w-7xl mx-auto space-y-6">
+<div className="min-h-screen bg-gray-50/50 p-4">
+  <div className="max-w-9xl mx-auto">
 
-      {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
+    <div className="bg-white rounded shadow-xl border border-gray-200 p-4">
 
-        {/* Profile */}
-        <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-            {data.name?.slice(0, 2).toUpperCase()}
+      <div className="space-y-4">
+
+        {/* ================= HEADER ================= */}
+        <div className="bg-gray-50 rounded border border-gray-200 p-4 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
+
+          {/* Profile */}
+          <div className="flex items-center gap-5">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              {data.name?.slice(0, 2).toUpperCase()}
+            </div>
+
+            <div>
+              <h2 className="text-3xl font-bold text-gray-800">
+                {data.name
+                  .split(" ")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                  )
+                  .join(" ")}
+              </h2>
+
+   <p className="text-gray-500 mt-1">
+                {data.bloodGroup && `Blood Group : ${data.bloodGroup}`}
+                {data.contact && ` • ${data.contact}`}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800">
-              {data.name
-                .split(" ")
-                .map(
-                  (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                )
-                .join(" ")}
-            </h2>
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setShowAppointment(true)}
+              className="flex items-center gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
+            >
+              <Calendar size={18} />
+              Book Appointment
+            </button>
 
-            <p className="text-gray-500 mt-1">
-              {data.bloodGroup &&
-                `Blood Group : ${data.bloodGroup}`}
-              {data.contact && ` • ${data.contact}`}
-            </p>
+            <BookAppointment
+              showAppointment={showAppointment}
+              setShowAppointment={setShowAppointment}
+            />
+
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition shadow-md font-medium"
+            >
+              <Upload size={18} />
+              Upload Record
+            </button>
+
+           <UploadRecord
+              showUploadModal={showUploadModal}
+              setShowUploadModal={setShowUploadModal}
+            />
           </div>
         </div>
-
-        {/* Buttons */}
-        <div className="flex flex-wrap gap-3">
-
-          <button
-            onClick={() => setShowAppointment(true)}
-            className="flex items-center gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
-          >
-            <Calendar size={18} />
-            Book Appointment
-          </button>
-
-          <BookAppointment
-            showAppointment={showAppointment}
-            setShowAppointment={setShowAppointment}
-          />
-
-          <button
-            onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition shadow-md font-medium"
-          >
-            <Upload size={18} />
-            Upload Record
-          </button>
-
-          <UploadRecord
-            showUploadModal={showUploadModal}
-            setShowUploadModal={setShowUploadModal}
-          />
-        </div>
-      </div>
 
       {/* ================= PATIENT ID ================= */}
 
-      <div className="bg-white rounded-2xl shadow border border-gray-100 p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
+      <div className="bg-white rounded shadow border border-gray-100 p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
 
         <div>
           <p className="text-sm text-gray-500">
@@ -176,19 +178,19 @@ export default function PatientDashboard() {
         <StatCard
           label="Pending Requests"
           value={data.permissions.length}
-          color="yellow"
+          color="gray"
         />
 
         <StatCard
           label="Prescriptions"
           value={data.prescriptions.length}
-          color="green"
+          color="blue"
         />
 
         <StatCard
           label="Medical Records"
           value={data.records.length}
-          color="purple"
+          color="gray"
         />
 
       </div>
@@ -293,6 +295,8 @@ export default function PatientDashboard() {
       </div>
 
     </div>
+    </div>
+    </div>
   </div>
 );
 }
@@ -300,14 +304,12 @@ export default function PatientDashboard() {
 function StatCard({ label, value, color }) {
   const colors = {
     blue: "from-blue-500 to-cyan-500",
-    green: "from-green-500 to-emerald-500",
-    yellow: "from-yellow-500 to-orange-500",
-    purple: "from-purple-500 to-pink-500",
+    gray: "from-gray-100 to-gray-200"
   };
 
   return (
     <div
-      className={`bg-gradient-to-r ${colors[color]} rounded-2xl p-5 text-white shadow-lg`}
+      className={`bg-gradient-to-r ${colors[color]} rounded-xl p-5 text-black shadow-lg`}
     >
       <p className="text-sm opacity-90">{label}</p>
 
@@ -320,7 +322,7 @@ function StatCard({ label, value, color }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white rounded-2xl shadow border border-gray-100 p-6">
+    <div className="bg-white rounded shadow border border-gray-100 p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-5">
         {title}
       </h2>

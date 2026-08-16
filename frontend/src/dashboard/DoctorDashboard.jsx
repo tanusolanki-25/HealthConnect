@@ -79,11 +79,15 @@ export default function DoctorDashboard() {
   const pendingSentRequests = data.permissions.filter((p) => p.status === "pending")
   const upcomingAppointments = data.appointments.filter((a) => a.status === "booked")
 return (
-  <div className="min-h-screen bg-gray-50/50 py-4">
-    <div className="max-w-7xl mx-auto px-4 space-y-6">
+  <div className="min-h-screen bg-gray-50/50 p-4">
+    <div className="max-w-9xl mx-auto">
+
+     <div className="bg-white rounded shadow-xl border border-gray-200 p-4">
+
+      <div className="space-y-4">
 
       {/* Header */}
-      <div className="bg-white border-gray-100 text-blue-700 rounded-2xl p-4 shadow-sm border">
+      <div className="bg-white border-gray-100 text-blue-700 rounded p-4 shadow-sm border">
         <div className="flex items-center justify-between flex-wrap gap-6">
 
           <div className="flex items-center gap-3">
@@ -276,7 +280,7 @@ return (
         {data.prescriptions.slice(0,5).map((p)=>(
           <div
             key={p.id}
-            className="rounded-xl bg-slate-50 p-4 hover:bg-slate-100"
+            className="rounded bg-slate-50 p-4 hover:bg-slate-100"
           >
 
             <h3 className="font-semibold">
@@ -297,7 +301,8 @@ return (
         </div>
 
       </Section>
-
+     </div>
+     </div>
     </div>
   </div>
 )
@@ -310,7 +315,7 @@ function StatCard({ label, value, color }) {
 
   return (
     <div
-      className={`bg-gradient-to-r ${colors[color]} text-white rounded-2xl shadow-lg p-5`}
+      className={`bg-gradient-to-r ${colors[color]} text-white rounded-xl shadow-lg p-5`}
     >
       <p className="text-sm opacity-90">
         {label}
@@ -325,7 +330,7 @@ function StatCard({ label, value, color }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
+    <div className="bg-white rounded shadow-lg p-6">
       <h2 className="text-xl font-bold mb-5">
         {title}
       </h2>

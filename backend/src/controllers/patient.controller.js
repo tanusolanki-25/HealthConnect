@@ -11,6 +11,15 @@ const registerPatient = asyncHandler(async (req, res) => {
   if (!name || !dob || !gender) {
     throw new ApiError(400, "Name, date of birth and gender are required");
   }
+ 
+  function validateContact(contact){
+    const phoneRegex = /^\+91[6-9]\d{9}$/;
+    return phoneRegex.test(contact)
+  }
+
+  if(!validateContact(contact)){
+    throw new ApiError(400, 'Invalid phone Number')
+  }
 
   if (req.user.role !== "patient") {
     throw new ApiError(

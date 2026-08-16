@@ -20,12 +20,9 @@ export default function DoctorPrescription() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 py-10 px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-4 mb-3 text-center max-w-5xl mx-auto ">
-        <h1 className="text-3xl font-bold text-blue-700">
-          Prescriptions Issued
-        </h1>
-      </div>
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+      <div className="bg-white max-w-5xl mx-auto ">
+      
+      <div className="max-w-5xl mx-auto bg-white rounded shadow-lg p-6">
         {prescriptions.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-lg text-gray-500">
@@ -37,8 +34,11 @@ export default function DoctorPrescription() {
             {prescriptions.map((p) => (
               <div
                 key={p.id}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-300 p-5"
+                className="bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition duration-300 p-5"
               >
+                  <h2 className="text-3xl mb-4 pb-4 border-b font-bold text-black">
+                 Prescriptions Issued
+              </h2>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">
@@ -78,6 +78,7 @@ export default function DoctorPrescription() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

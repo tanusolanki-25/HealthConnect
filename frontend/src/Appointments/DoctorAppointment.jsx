@@ -20,12 +20,9 @@ export default function DoctorAppointment() {
 
  return (
   <div className="min-h-screen bg-gray-50/50 py-10 px-4">
-    <div className="max-w-4xl mx-auto text-center bg-white rounded-2xl mb-3 shadow-lg p-4">
-      <h1 className="text-3xl font-bold text-blue-700">
-        My Appointments
-      </h1>
-      </div>
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+    <div className="max-w-4xl mx-auto ">
+
+    <div className="bg-white rounded shadow-lg p-6">
       {appointments.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
@@ -37,8 +34,11 @@ export default function DoctorAppointment() {
           {appointments.map((appt) => (
             <div
               key={appt.id}
-              className="border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row md:items-center md:justify-between"
+              className="border border-gray-200 rounded p-5 shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row md:items-center md:justify-between"
             >
+              <h2 className="text-3xl mb-4 pb-4 border-b font-bold text-black">
+        My Appointments
+      </h2>
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
                   {appt.patient.name.split(" ")
@@ -71,7 +71,7 @@ export default function DoctorAppointment() {
           ))}
         </div>
       )}
-
+     </div>
     </div>
   </div>
 );

@@ -42,7 +42,7 @@ export default function SentAccessRequests() {
     <div className="min-h-screen bg-gray-50/50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded shadow-sm border border-gray-100">
           <div>
             <div className="flex items-center gap-2">
               <span className="p-2 bg-blue-100 text-blue-700 rounded-xl">
@@ -59,8 +59,7 @@ export default function SentAccessRequests() {
 
           <button
             onClick={fetchRequests}
-            className="flex items-center gap-2 self-start md:self-auto px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition"
-          >
+            className="flex items-center gap-2 self-start md:self-auto px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition">
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} /> Refresh List
           </button>
         </div>
@@ -103,7 +102,7 @@ export default function SentAccessRequests() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse flex justify-between items-center"
+                className="bg-white rounded p-6 shadow-sm border border-gray-100 animate-pulse flex justify-between items-center"
               >
                 <div className="space-y-2">
                   <div className="h-5 bg-gray-200 rounded w-48"></div>
@@ -114,7 +113,7 @@ export default function SentAccessRequests() {
             ))}
           </div>
         ) : filteredRequests.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+          <div className="bg-white rounded p-12 text-center border border-gray-100 shadow-sm">
             <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
               📋
             </div>
@@ -130,7 +129,7 @@ export default function SentAccessRequests() {
             {filteredRequests.map((req) => (
               <div
                 key={req.id}
-                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200/70 hover:shadow-md transition-all"
+                className="bg-white rounded p-5 shadow-sm border border-gray-200/70 hover:shadow-md transition-all"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Patient Details */}
