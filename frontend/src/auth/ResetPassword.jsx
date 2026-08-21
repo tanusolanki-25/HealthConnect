@@ -36,22 +36,25 @@ function ResetPassword() {
         </div>
 
         <h2 className="text-gray-400 text-center">Reset Password</h2>
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-20 space-y-4">
-      <h2 className="text-xl font-semibold">Reset Password</h2>
+    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-4 space-y-4">
+       <div className="flex items-center mb-4 rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
       <input
         type="password"
         placeholder="New password"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full outline-none"
       />
+      </div>
+             <div className="flex items-center mb-4 rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
       <input
         type="password"
         placeholder="Confirm new password"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full outline-none"
       />
+      </div>
       <button type="submit" className="w-full bg-blue-600 text-white rounded p-2">
         Reset Password
       </button>
