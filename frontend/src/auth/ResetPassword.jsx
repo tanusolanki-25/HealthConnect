@@ -27,6 +27,15 @@ function ResetPassword() {
   }
 
   return (
+      <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Card */}
+      <div className="relative z-10 bg-white rounded-xl shadow-md w-full max-w-md p-5">
+        <div className="flex justify-center items-center gap-2 text-blue-600 font-bold text-xl">
+          <img src="/favicon.png" alt="logo" className="w-12 h-12" />
+          <span>HealthConnect</span>
+        </div>
+
+        <h2 className="text-gray-400 text-center">Reset Password</h2>
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-20 space-y-4">
       <h2 className="text-xl font-semibold">Reset Password</h2>
       <input
@@ -47,6 +56,8 @@ function ResetPassword() {
         Reset Password
       </button>
     </form>
+    </div>
+    </div>
   )
 }
 
