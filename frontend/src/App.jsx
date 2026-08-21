@@ -1,4 +1,4 @@
-import { BrowserRouter , Route, Routes} from "react-router-dom"
+import { BrowserRouter , Route, Routes, useParams} from "react-router-dom"
 import  Home  from "./components/Home"
 import ProtectedRoute from './components/ProtectedRoute'
 import Footer from "./components/Footer"
@@ -22,9 +22,12 @@ import DoctorPrescription from "./prescriptions/DoctorPrescription"
 import DoctorAppointment from "./Appointments/DoctorAppointment"
 import { Toaster } from "react-hot-toast"
 import VerifyEmail from "./auth/Verify-Email"
+import ResetPassword from "./auth/ResetPassword"
+import ForgotPassword from "./auth/ForgotPassword"
 
 function App() {
-
+  const path = window.location.pathname   
+  const token = path.split("/")[2]
   return (
   <BrowserRouter >
   <Toaster position="top-center" /> 
@@ -35,6 +38,8 @@ function App() {
       <Route path="/register" element={<Register/>}/>
       <Route path="/verify-email" element={<VerifyEmail />}/>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/patient/profile" element={
         <ProtectedRoute allowedRole="patient">
         <PatientForm /> 

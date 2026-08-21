@@ -5,6 +5,7 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import GoogleIcon from "../components/GoogleIcon";
 
 export default function Login() {
   const { register, handleSubmit, formState: {errors} } = useForm();
@@ -30,6 +31,10 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const handleGoogleLogin = async() =>{
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`
+  }
 
   return (
     <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center relative overflow-hidden">
@@ -98,6 +103,17 @@ export default function Login() {
              {errors.password && (
               <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
             )}
+            <div className="flex justify-between">
+              <div className="flex space-x-2">
+              <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 accent-blue-600"
+            />
+            <p className=" text-gray-700">
+             Remember me</p>
+             </div>
+           <Link to="/reset-password" className="text-blue-500 mb-2 font-medium hover:text-blue-600 hover:underline cursor">Forgot Password</Link>
+           </div>
           </div>
 
           {/* Login Button */}
@@ -123,6 +139,25 @@ export default function Login() {
           >
             Sign Up
           </Link>
+              <div>
+      {/* baaki login form */}
+
+      <div className="my-4 flex items-center gap-2">
+        <div className="flex-1 border-t"></div>
+        <span className="text-sm text-gray-400">or</span>
+        <div className="flex-1 border-t"></div>
+      </div>
+
+      <button
+        type="submit"
+        onClick={handleGoogleLogin}
+        className="w-full flex items-center justify-center gap-3 border rounded-lg py-3 hover:bg-gray-50"
+      >
+        <GoogleIcon />
+        <span className="text-sm font-medium text-gray-700">Continue with Google</span>
+      </button>
+    </div>
+
         </p>
       </div>
     </div>

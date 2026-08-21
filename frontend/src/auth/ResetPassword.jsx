@@ -1,0 +1,53 @@
+import { useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import api from "../api/axios"
+
+function ResetPassword() {
+  const { token } = useParams()
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match")
+      return
+    }
+
+    try {
+      await api.post(`/auth/reset-password/${token}`, { newPassword })
+      toast.success("Password reset successfully — please log in")
+      navigate("/login")
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Reset link invalid or expired")
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-20 space-y-4">
+      <h2 className="text-xl font-semibold">Reset Password</h2>
+      <input
+        type="password"
+        placeholder="New password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        className="w-full border rounded p-2"
+      />
+      <input
+        type="password"
+        placeholder="Confirm new password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        className="w-full border rounded p-2"
+      />
+      <button type="submit" className="w-full bg-blue-600 text-white rounded p-2">
+        Reset Password
+      </button>
+    </form>
+  )
+}
+
+export default ResetPassword

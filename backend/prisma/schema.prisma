@@ -6,6 +6,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum AuthProvider {
+  google
+  github
+}
+
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
@@ -14,10 +19,14 @@ model User {
   createdAt    DateTime  @default(now())
   refreshToken String?   @unique
   verified     Boolean   @default(false)
+  isEmailValid Boolean   @default(false)
+  resetPasswordToken    String?
+  resetPasswordExpiry   DateTime?
   doctor       Doctor?
   hospital     Hospital?
   otp          Otp?
   patient      Patient?
+  oauthAccount OauthAccount? 
 }
 
 model Patient {
@@ -117,4 +126,14 @@ model Otp {
   userId    String    @unique
   expiresAt DateTime?
   user      User      @relation(fields: [userId], references: [id])
+}
+
+
+model OauthAccount {
+  id                String       @id @default(cuid())
+  userId            String       @unique
+  user              User         @relation(fields: [userId], references: [id])
+  provider          AuthProvider   
+  providerAccountId String       @unique
+  createdAt         DateTime     @default(now())
 }

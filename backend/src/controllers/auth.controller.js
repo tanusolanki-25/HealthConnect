@@ -1,12 +1,18 @@
 import jwt from "jsonwebtoken"
+import crypto from "crypto";
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { ApiError } from "../utils/ApiError.js"
 import prisma from "../lib/prisma.js"
 import { hashedPassword, verifyPassword } from "../utils/bcrypt.js"
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js"
-import { sendEmail } from "../service/email.service.js"
+import { client, sendEmail } from "../service/email.service.js"
 import { getOtpHtml, generateOTP } from "../service/generateOtp.js"
+import { generateState, generateCodeVerifier, decodeIdToken } from "arctic";
+import { google } from "../lib/oauth/google.js"
+import { OAUTH_EXCHANGE_EXPIRY } from "../config/constant.js"
+import { getUserWithOauthId } from "../utils/hasAccess.js"
+
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -240,6 +246,13 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Password is not valid")
   }
 
+  await prisma.user.update({
+    where: { email },
+    data: {
+      isValidEmail: true
+    }
+  })
+
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
   const loggedInUser = await prisma.user.findUnique({
@@ -269,6 +282,108 @@ const loginUser = asyncHandler(async (req, res) => {
     )
 })
 
+const getGoogleLoginPage = asyncHandler(async(req, res)=>{
+   if(req.user){
+    throw new ApiError(400, "User already logged in")
+   }
+
+   const state = generateState()
+   const codeVerifier = generateCodeVerifier();
+
+   const url = google.createAuthorizationURL(state, codeVerifier, [
+     "openid",
+     "profile",
+     "email"
+   ]);
+
+   const cookieConfig = {
+    httpOnly: true,
+    secure: true,
+    maxAge: OAUTH_EXCHANGE_EXPIRY,
+    sameSite: "lax"
+   }
+
+  res.cookie("google_oauth_state", state, cookieConfig)
+  res.cookie("google_code_verifier", codeVerifier, cookieConfig)
+  res.redirect(url.toString())
+})
+
+const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
+   const {code, state} = req.query
+   console.log(code, state)
+
+   const {
+    google_oauth_state: storedState,
+    google_code_verifier: codeVerifier
+   } = req.cookies
+
+   if(
+    !code ||
+    !state ||
+    !storedState ||
+    !codeVerifier ||
+    state != storedState
+   ){
+    req.flash(
+      "errors",
+      "Couldn't login with google because of invalid login attempt. Please try again!"
+    )
+    return res.redirect("/login")
+   }
+   
+
+   let tokens;
+   try {
+     tokens = await google.validateAuthorizationCode(code, codeVerifier)
+   } catch {
+     req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+     )
+     return res.redirect("/login")
+   }
+
+   console.log("token google:", tokens)
+
+   const claims = decodeIdToken(tokens.idToken())
+   const {sub: googleUserId, name, email} = claims
+
+  //  there are few things that we should do
+  // condition 1: User already exist with google oauth linked
+  // condition 2: user already exist with the same email but google oauth isnot linked
+  //  condition 3: user does not exist
+  let user = getUserWithOauthId()
+  if(user && !user.providerAccountId){
+    await linkUserWithOauth({
+      userId: user.id,
+      provider: "google",
+      providerAccountId: googleUserId
+    })
+  }
+
+  if(!user){
+    user = await createUserWithOauth({
+      name,
+      email,
+      provider: "google",
+      providerAccountId: googleUserId
+    })
+  }
+
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
+
+  res.cookie("refreshToken", refreshToken, options)
+  res.cookie("accessToken", accessToken, options)
+  res.redirect("/")
+
+})
 
 const logoutUser = asyncHandler(async (req, res) => {
   const userId = req.user.id
@@ -367,6 +482,78 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"))
 })
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body
+  if (!email) throw new ApiError(400, "Email is required")
+ 
+  const user = await prisma.user.findUnique({ where: { email } })
+ 
+  if (!user) {
+    throw new ApiError(400, "Email is not registered")
+  }
+
+  const rawToken = crypto.randomBytes(32).toString("hex")
+  const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex")
+ 
+  const expiry = new Date()
+  expiry.setMinutes(expiry.getMinutes() + 15) // valid for 15 minutes
+ 
+  await prisma.user.update({
+    where: { email },
+    data: { resetPasswordToken: hashedToken, resetPasswordExpiry: expiry }
+  })
+ 
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`
+   await client.transactionalEmails.sendTransacEmail({
+    sender: {
+      name: "HealthConnect",
+      email: process.env.BREVO_SENDER_EMAIL,
+    },
+      to: [{ email: email }],
+      subject: "Reset your HealthConnect password",
+      htmlContent: `<p>Click the link below to reset your password. This link expires in 15 minutes.</p>
+           <a href="${resetLink}">${resetLink}</a>`,
+    });
+ 
+  return res.status(200).json(
+    new ApiResponse(200, {}, "If that email is registered, a reset link has been sent")
+  )
+})
+ 
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params
+  const { newPassword } = req.body
+ 
+  if (!newPassword) throw new ApiError(400, "New password is required")
+ 
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex")
+ 
+  const user = await prisma.user.findFirst({
+    where: {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpiry: { gte: new Date() } // must not be expired
+    }
+  })
+ 
+  if (!user) {
+    throw new ApiError(400, "Reset link is invalid or has expired")
+  }
+ 
+  const newPasswordHash = await bcrypt.hash(newPassword, 10)
+ 
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: newPasswordHash,
+      resetPasswordToken: null,
+      resetPasswordExpiry: null
+    }
+  })
+ 
+  return res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"))
+})
+  
+
 const getCurrentUser = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -384,5 +571,9 @@ export {
   getCurrentUser,
   refreshAccessToken,
   changePassword,
-  resendOtp
+  resendOtp,
+  forgotPassword,
+  resetPassword,
+  getGoogleLoginPage,
+  getGoogleLoginCallback
 }

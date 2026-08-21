@@ -1,7 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { ApiError } from "../utils/ApiError.js";
 
-const client = new BrevoClient({
+export const client = new BrevoClient({
   apiKey: process.env.BREVO_API_KEY,
 });
 

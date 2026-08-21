@@ -4,11 +4,15 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
-const rawOrigins = (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim().replace(/\/$/, '')).filter(Boolean);
+const rawOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
 const defaultOrigins = [
-  'https://health-connect-zeta-seven.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:3000'
+  "https://health-connect-zeta-seven.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
 ];
 
 const allowedOrigins = Array.from(new Set([...rawOrigins, ...defaultOrigins]));

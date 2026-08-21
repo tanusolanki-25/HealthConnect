@@ -15,6 +15,7 @@
     "@getbrevo/brevo": "^6.0.3",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
+    "arctic": "^3.7.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
@@ -25,7 +26,8 @@
     "multer": "^2.2.0",
     "nodemailer": "^9.0.5",
     "pg": "^8.22.0",
-    "prisma": "^7.9.0"
+    "prisma": "^7.9.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
