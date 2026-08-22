@@ -6,19 +6,10 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const registerPatient = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, dob, gender, bloodGroup, contact } = req.body;
+  const { name, dob, gender, bloodGroup, phone, address, city, state, pincode, emergencyContactName, emergencyContactPhone, emergencyRelationship, height, weight, allergies, existingDiseases} = req.body;
 
-  if (!name || !dob || !gender) {
-    throw new ApiError(400, "Name, date of birth and gender are required");
-  }
- 
-  function validateContact(contact){
-    const phoneRegex = /^\+91[6-9]\d{9}$/;
-    return phoneRegex.test(contact)
-  }
-
-  if(!validateContact(contact)){
-    throw new ApiError(400, 'Invalid phone Number')
+  if (!name || !dob || !gender || !phone) {
+    throw new ApiError(400, "Name, date of birth, phone and gender are required");
   }
 
   if (req.user.role !== "patient") {
@@ -43,7 +34,18 @@ const registerPatient = asyncHandler(async (req, res) => {
       dob: new Date(dob),
       gender,
       bloodGroup,
-      contact,
+      phone,
+      address, 
+      city, 
+      state, 
+      pincode, 
+      emergencyContactName, 
+      emergencyContactPhone, 
+      relationship: emergencyRelationship, 
+      height: height ? Number(height) : null,
+      weight: weight ? Number(weight) : null, 
+      allergies, 
+      existingDiseases
     },
   });
 

@@ -11,7 +11,7 @@ import { getOtpHtml, generateOTP } from "../service/generateOtp.js"
 import { generateState, generateCodeVerifier, decodeIdToken } from "arctic";
 import { google } from "../lib/oauth/google.js"
 import { OAUTH_EXCHANGE_EXPIRY } from "../config/constant.js"
-import { getUserWithOauthId } from "../utils/hasAccess.js"
+import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js"
 
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -249,7 +249,7 @@ const loginUser = asyncHandler(async (req, res) => {
   await prisma.user.update({
     where: { email },
     data: {
-      isValidEmail: true
+      isEmailValid: true
     }
   })
 
@@ -352,13 +352,9 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
   // condition 1: User already exist with google oauth linked
   // condition 2: user already exist with the same email but google oauth isnot linked
   //  condition 3: user does not exist
-  let user = getUserWithOauthId()
+  let user = await getUserWithOauthId()
   if(user && !user.providerAccountId){
-    await linkUserWithOauth({
-      userId: user.id,
-      provider: "google",
-      providerAccountId: googleUserId
-    })
+    await linkUserWithOauth(user.id, "google", googleUserId)
   }
 
   if(!user){
@@ -370,19 +366,47 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
     })
   }
 
+  res.redirect(`${process.env.FRONTEND_URL}/role`)
+})
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
-
+// used by OAuth users who signed up via Google and don't have a role yet
+const setRole = asyncHandler(async (req, res) => {
+  const { role } = req.body
+ 
+  if (!["patient", "doctor", "hospital"].includes(role)) {
+    throw new ApiError(400, "Role must be patient, doctor, or hospital")
+  }
+ 
+  const existingUser = await prisma.user.findUnique({ where: { id: req.user.id } })
+  if (existingUser.role) {
+    throw new ApiError(409, "Role is already set for this account")
+  }
+ 
+  const updatedUser = await prisma.user.update({
+    where: { id: req.user.id },
+    data: { role },
+    select: { id: true, email: true, role: true }
+  })
+ 
+  const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(user.id)
+ 
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
-
-  res.cookie("refreshToken", refreshToken, options)
-  res.cookie("accessToken", accessToken, options)
-  res.redirect("/")
-
+ 
+   return res
+      .status(200)
+      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { data: updatedUser, accessToken, refreshToken: newRefreshToken },
+          "Role set successfully"
+        )
+      )
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -531,7 +555,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   const user = await prisma.user.findFirst({
     where: {
       resetPasswordToken: hashedToken,
-      resetPasswordExpiry: { gte: new Date() } // must not be expired
+      resetPasswordExpiry: { gte: new Date() } 
     }
   })
  
@@ -575,5 +599,6 @@ export {
   forgotPassword,
   resetPassword,
   getGoogleLoginPage,
-  getGoogleLoginCallback
+  getGoogleLoginCallback,
+  setRole
 }

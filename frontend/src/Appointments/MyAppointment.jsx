@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import Sidebar from "../dashboard/SideBar";
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -34,6 +35,8 @@ export default function MyAppointments() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 p-6">
+    <div className="flex">
+      <Sidebar />
       <div className="max-w-5xl mx-auto">
         {appointments.length === 0 ? (
           <div className="bg-white rounded shadow-md p-8 text-center text-gray-500">
@@ -99,6 +102,7 @@ export default function MyAppointments() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -6,11 +6,7 @@ import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = {
   patient: [
-    { label: "Dashboard", to: "/patient/dashboard" },
-    { label: "Appointments", to: "/patient/my-appointments" },
-    { label: "Records", to: "/patient/records" },
-    { label: "Prescriptions", to: "/patient/prescriptions" },
-    { label: "Access Requests", to: "/patient/access-requests" }
+
   ],
   doctor: [
     { label: "Dashboard", to: "/doctor/dashboard" },

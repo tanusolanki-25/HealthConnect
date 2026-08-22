@@ -24,6 +24,7 @@ import { Toaster } from "react-hot-toast"
 import VerifyEmail from "./auth/Verify-Email"
 import ResetPassword from "./auth/ResetPassword"
 import ForgotPassword from "./auth/ForgotPassword"
+import RoleSelection from "./auth/RoleSelection"
 
 function App() {
   const path = window.location.pathname   
@@ -33,7 +34,8 @@ function App() {
   <Toaster position="top-center" /> 
     <Navbar />
     <Routes>
-      <Route path="/" element={<Home />}/>
+      {/* <Route path="/" element={<Home />}/> */}
+      <Route path="/" element={<RoleSelection />}/>
       <Route path="/about" element={<About />}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/verify-email" element={<VerifyEmail />}/>
@@ -42,8 +44,8 @@ function App() {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/patient/profile" element={
         <ProtectedRoute allowedRole="patient">
-        <PatientForm /> 
-        </ProtectedRoute>}/>
+        <PatientForm />
+        </ProtectedRoute>} />
       <Route path="/doctor/profile" element={
         <ProtectedRoute allowedRole="doctor">
         <DoctorForm />

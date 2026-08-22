@@ -6,16 +6,23 @@ datasource db {
   provider = "postgresql"
 }
 
+
 enum AuthProvider {
   google
   github
 }
 
+enum Gender {
+   Male
+  Female
+  Other
+}
+
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
-  passwordHash String
-  role         String
+  passwordHash String?
+  role         String?
   createdAt    DateTime  @default(now())
   refreshToken String?   @unique
   verified     Boolean   @default(false)
@@ -34,9 +41,26 @@ model Patient {
   userId        String             @unique
   name          String
   dob           DateTime
-  gender        String
+  gender        Gender
   bloodGroup    String?
-  contact       String?
+
+  phone         String
+
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+
+  emergencyContactName   String?
+  emergencyContactPhone  String?
+  relationship           String?
+
+  height                 Float?
+  weight                 Float?
+
+  allergies              String?
+  existingDiseases       String?
+
   permissions   AccessPermission[]
   appointments  Appointment[]
   records       MedicalRecord[]
