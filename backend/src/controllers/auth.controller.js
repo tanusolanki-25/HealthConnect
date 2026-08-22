@@ -298,7 +298,7 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
 
    const cookieConfig = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: OAUTH_EXCHANGE_EXPIRY,
     sameSite: "lax"
    }
@@ -324,23 +324,14 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
     !codeVerifier ||
     state != storedState
    ){
-    req.flash(
-      "errors",
-      "Couldn't login with google because of invalid login attempt. Please try again!"
-    )
-    return res.redirect("/login")
+    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=invalid_oauth`)
    }
-   
 
    let tokens;
    try {
      tokens = await google.validateAuthorizationCode(code, codeVerifier)
    } catch {
-     req.flash(
-      "errors",
-      "Couldn't login with Google because of invalid login attempt. Please try again!"
-     )
-     return res.redirect("/login")
+     return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=invalid_oauth`)
    }
 
    console.log("token google:", tokens)
