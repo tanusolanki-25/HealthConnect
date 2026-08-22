@@ -352,7 +352,7 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
   // condition 1: User already exist with google oauth linked
   // condition 2: user already exist with the same email but google oauth isnot linked
   //  condition 3: user does not exist
-  let user = await getUserWithOauthId()
+  let user = await getUserWithOauthId({ email, provider: "google" })
   if(user && !user.providerAccountId){
     await linkUserWithOauth(user.id, "google", googleUserId)
   }
