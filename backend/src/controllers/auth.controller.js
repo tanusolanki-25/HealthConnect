@@ -283,9 +283,6 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 const getGoogleLoginPage = asyncHandler(async(req, res)=>{
-   if(req.user){
-     throw new ApiError(401, "User already logged in")
-   }
 
    const state = generateState()
    const codeVerifier = generateCodeVerifier();
