@@ -34,8 +34,8 @@ function App() {
   <Toaster position="top-center" /> 
     <Navbar />
     <Routes>
-      {/* <Route path="/" element={<Home />}/> */}
-      <Route path="/" element={<RoleSelection />}/>
+      <Route path="/" element={<Home />}/>
+      <Route path="/set-role" element={<RoleSelection />}/>
       <Route path="/about" element={<About />}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/verify-email" element={<VerifyEmail />}/>

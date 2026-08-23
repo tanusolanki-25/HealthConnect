@@ -4,6 +4,7 @@ import api from "../api/axios"
 export const AuthContext = createContext()
 
 async function checkProfileCompleted(role) {
+  if (!role) return false
   try {
     const res = await api.get(`/${role}/dashboard`)
     return !!res.data.data 
@@ -49,8 +50,12 @@ export const AuthProvider = ({children}) =>{
   const markProfileCompleted = () => {
     setUser((prev) => (prev ? { ...prev, profileCompleted: true } : prev))
   }
+
+  const setRoleLocally = (role) => {
+    setUser((prev) => (prev ? { ...prev, role, profileCompleted: false } : prev))
+  }
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading, markProfileCompleted, checkProfileCompleted }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading, markProfileCompleted, checkProfileCompleted, setRoleLocally }}>
       {children}
     </AuthContext.Provider>
   )

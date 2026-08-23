@@ -1,56 +1,52 @@
-import {
-  User,
-  Stethoscope,
-  Building2,
-  Microscope,
-  UserCheck,
-  ShieldCheck,
-  CheckCircle2,
-  HeartPulse,
-} from "lucide-react";
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import { useAuth } from "../context/AuthContext"
+import api from "../api/axios"
 import { useState } from "react";
+import { Building2, Stethoscope, User } from "lucide-react";
 
 const roles = [
-  {
-    id: "patient",
-    title: "Patient",
-    description: "Manage your health records and appointments.",
-    icon: User,
-  },
-  {
-    id: "doctor",
-    title: "Doctor",
-    description: "Access patient data and consult remotely.",
-    icon: Stethoscope,
-  },
-  {
-    id: "hospital",
-    title: "Hospital",
-    description: "Coordinate staff and facility operations.",
-    icon: Building2,
-  },
-];
+  { value: "patient", label: "Patient", description: "Manage your health records and appointments", icon: User, },
+  { value: "doctor", label: "Doctor", description: "Access patient records and issue prescriptions", icon: Stethoscope, },
+  { value: "hospital", label: "Hospital", description: "Manage affiliated doctors and appointments", icon: Building2, }
+]
 
 export default function RoleSelection() {
-  const [selectedRole, setSelectedRole] = useState("patient");
+  const { setRoleLocally, user } = useAuth()
+  const [selectedRole, setSelectedRole] = useState("")
+  const navigate = useNavigate()
+
+  const handleSelect = async () => {
+    try {
+      await api.patch("/auth/set-role", { selectedRole })
+      setRoleLocally(role)
+       if (!user.profileCompleted) {
+        navigate(`/${user.role}/profile`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not set role")
+    }
+  }
+ 
 
   return (
     <div>
       <div className="max-w-xl mt-10 mx-auto bg-white rounded-xl p-6 shadow-md">
-        <p className="text-gray-500 mb-6">
-          Select your role to get started with your professional or personal
-          healthcare journey.
-        </p>
+        <h1 className="text-2xl text-center mb-1 font-semibold">One last thing — who are you?</h1>
+        <p className="text-gray-500 text-center mb-6 text-sm">This can't be changed later, so pick carefully.</p>
+ 
 
         <div className="space-y-3">
           {roles.map((role) => {
             const Icon = role.icon;
-            const selected = selectedRole === role.id;
+            const selected = selectedRole === role.value;
 
             return (
               <div
-                key={role.id}
-                onClick={() => setSelectedRole(role.id)}
+                key={role.value}
+                onClick={() => setSelectedRole(role.value)}
                 className={`cursor-pointer rounded-xl border transition-all duration-200
                 ${
                   selected
@@ -73,7 +69,7 @@ export default function RoleSelection() {
 
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">
-                        {role.title}
+                        {role.label}
                       </h3>
 
                       <p className="text-gray-500 mt-1">{role.description}</p>
@@ -94,7 +90,9 @@ export default function RoleSelection() {
           })}
         </div>
 
-        <button className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">
+        <button 
+        onClick={handleSelect}
+        className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">
           Continue
         </button>
       </div>

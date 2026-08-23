@@ -19,7 +19,7 @@ export async function getUserWithOauthId({ email, provider }) {
       id: true,
       email: true,
       role: true,
-      isValidEmail: true,
+      isEmailValid: true,
       oauthAccount: {
         select: {
           providerAccountId: true,
@@ -29,15 +29,16 @@ export async function getUserWithOauthId({ email, provider }) {
     }
   })
 
-  if (!user || !user.oauthAccount || user.oauthAccount.provider !== provider ||  user.oauthAccount.userId !== user.id) {
+  if (!user) {
     return null
   }
 
   return {
     id: user.id,
     email: user.email,
-    providerAccountId: user.oauthAccount.providerAccountId,
-    provider: user.oauthAccount.provider
+    role: user.role,
+    providerAccountId: user.oauthAccount?.providerAccountId || null,
+    provider: user.oauthAccount?.provider || null
   }
 }
 

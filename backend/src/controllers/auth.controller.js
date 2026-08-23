@@ -324,14 +324,14 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
     !codeVerifier ||
     state != storedState
    ){
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=invalid_oauth`)
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
 
    let tokens;
    try {
      tokens = await google.validateAuthorizationCode(code, codeVerifier)
    } catch {
-     return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=invalid_oauth`)
+     return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
 
    console.log("token google:", tokens)
@@ -357,7 +357,22 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
     })
   }
 
-  res.redirect(`${process.env.FRONTEND_URL}/role`)
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
+
+  res.cookie("refreshToken", refreshToken, options)
+  res.cookie("accessToken", accessToken, options)
+
+  if (!user.role) {
+    return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
+  }
+
+  return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
 })
 
 // used by OAuth users who signed up via Google and don't have a role yet
