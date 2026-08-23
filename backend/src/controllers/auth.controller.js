@@ -295,8 +295,10 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
      "profile",
      "email"
    ]);
-
-
+    
+   console.log("Google Login Route Hit");
+console.log("Generated state:", state);
+   
    const cookieConfig = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -334,6 +336,9 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    ){
      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
+
+   console.log("Callback state:", state);
+console.log("Cookie state:", storedState);
 
    let tokens;
    try {
