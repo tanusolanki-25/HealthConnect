@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoogleIcon from "../components/GoogleIcon";
 
 export default function Login() {
