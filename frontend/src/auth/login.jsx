@@ -1,6 +1,6 @@
 import { Mail, Lock, Eye, EyeOff, ArrowRight, UserCheck, ShieldCheck, HeartPulse, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
