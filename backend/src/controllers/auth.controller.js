@@ -300,7 +300,7 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: "lax"
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
    }
 
   res.cookie("google_oauth_state", state, cookieConfig)
