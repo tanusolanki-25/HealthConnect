@@ -311,12 +311,15 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
 
 const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    const {code, state} = req.query
+   console.log(code )
+   console.log(state )
 
    const {
     google_oauth_state: storedState,
     google_code_verifier: codeVerifier
    } = req.cookies
 
+   console.log( req.cookies)
    if(
     !code ||
     !state ||
