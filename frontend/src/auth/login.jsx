@@ -17,8 +17,8 @@ export default function Login() {
   useEffect(() => {
    const params = new URLSearchParams(location.search);
 
-    if (params.get("error") === "invalid_oauth") {
-      toast.error("This email already exist");
+    if (params.get("error") === "already_logged_in") {
+      toast.error("You are already logged in");
     }
   }, [location]);
 
