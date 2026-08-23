@@ -311,15 +311,20 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
 
 const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    const {code, state} = req.query
-   console.log(code )
-   console.log(state )
 
    const {
     google_oauth_state: storedState,
     google_code_verifier: codeVerifier
    } = req.cookies
 
-   console.log( req.cookies)
+   console.log({
+  code,
+  state,
+  storedState,
+  codeVerifier,
+  cookies: req.cookies
+});
+
    if(
     !code ||
     !state ||
@@ -334,6 +339,7 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    try {
      tokens = await google.validateAuthorizationCode(code, codeVerifier)
    } catch {
+       console.error(err);
      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
 
