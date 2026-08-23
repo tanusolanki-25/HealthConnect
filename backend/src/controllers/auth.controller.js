@@ -284,7 +284,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const getGoogleLoginPage = asyncHandler(async(req, res)=>{
    if(req.user){
-    throw new ApiError(400, "User already logged in")
+    return res.redirect(
+   `${process.env.FRONTEND_URL}/login?error=already_logged_in`)
    }
 
    const state = generateState()

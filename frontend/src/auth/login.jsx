@@ -1,7 +1,6 @@
 import { Mail, Lock, Eye, EyeOff, ArrowRight, UserCheck, ShieldCheck, HeartPulse, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
@@ -12,6 +11,16 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+
+  useEffect(() => {
+   const params = new URLSearchParams(location.search);
+
+    if (params.get("error") === "already_logged_in") {
+      toast.error("You are already logged in");
+    }
+  }, [location]);
 
   const onSubmit = async (data) => {
     setLoading(true);
