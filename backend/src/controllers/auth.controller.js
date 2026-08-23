@@ -296,11 +296,13 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
      "email"
    ]);
 
+   const isSecure = process.env.NODE_ENV === "production" || req.headers["x-forwarded-proto"] === "https";
+
    const cookieConfig = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isSecure,
     maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    sameSite: isSecure ? "none" : "lax"
    }
 
   res.cookie("google_oauth_state", state, cookieConfig)
@@ -310,7 +312,6 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
 
 const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    const {code, state} = req.query
-   console.log(code, state)
 
    const {
     google_oauth_state: storedState,
@@ -324,7 +325,7 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
     !codeVerifier ||
     state != storedState
    ){
-    return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
+     return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
 
    let tokens;
@@ -334,15 +335,9 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
 
-   console.log("token google:", tokens)
-
    const claims = decodeIdToken(tokens.idToken())
    const {sub: googleUserId, name, email} = claims
 
-  //  there are few things that we should do
-  // condition 1: User already exist with google oauth linked
-  // condition 2: user already exist with the same email but google oauth isnot linked
-  //  condition 3: user does not exist
   let user = await getUserWithOauthId({ email, provider: "google" })
   if(user && !user.providerAccountId){
     await linkUserWithOauth(user.id, "google", googleUserId)
@@ -359,20 +354,19 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
+  const isSecure = process.env.NODE_ENV === "production" || req.headers["x-forwarded-proto"] === "https";
+
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    secure: isSecure,
+    sameSite: isSecure ? "none" : "lax"
   }
 
   res.cookie("refreshToken", refreshToken, options)
   res.cookie("accessToken", accessToken, options)
 
-  if (!user.role) {
-    return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
-  }
-
-  return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
+  const targetPath = !user.role ? "/set-role" : `/${user.role}/dashboard`;
+  return res.redirect(`${process.env.FRONTEND_URL}${targetPath}?accessToken=${accessToken}&refreshToken=${refreshToken}`)
 })
 
 // used by OAuth users who signed up via Google and don't have a role yet

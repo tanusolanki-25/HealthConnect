@@ -19,6 +19,13 @@ export const AuthProvider = ({children}) =>{
 
 
    useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("accessToken");
+    if (urlToken) {
+      localStorage.setItem("accessToken", urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     api.get("/auth/current-user")
       .then(async (res) => {
         const loggedInUser = res.data.data
@@ -34,17 +41,24 @@ export const AuthProvider = ({children}) =>{
   }, [])
   
   const login = async (email, password) => {
-  const res = await api.post("/auth/login", { email, password })
-  const loggedInUser = res.data.data.user
-  const profileCompleted = await checkProfileCompleted(loggedInUser.role)
-  const fullUser = { ...loggedInUser, profileCompleted }
-  setUser(fullUser)
-  return fullUser 
-}
+    const res = await api.post("/auth/login", { email, password })
+    const { user: loggedInUser, accessToken } = res.data.data
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken);
+    }
+    const profileCompleted = await checkProfileCompleted(loggedInUser.role)
+    const fullUser = { ...loggedInUser, profileCompleted }
+    setUser(fullUser)
+    return fullUser 
+  }
 
   const logout = async()=>{
-    await api.post("/auth/logout")
-    setUser(null)
+    try {
+      await api.post("/auth/logout")
+    } finally {
+      localStorage.removeItem("accessToken")
+      setUser(null)
+    }
   }
 
   const markProfileCompleted = () => {
