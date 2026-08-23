@@ -308,6 +308,7 @@ console.log("Generated state:", state);
 
   res.cookie("google_oauth_state", state, cookieConfig)
   res.cookie("google_code_verifier", codeVerifier, cookieConfig)
+  console.log(res.getHeaders()["set-cookie"]);
   res.redirect(url.toString())
 })
 
