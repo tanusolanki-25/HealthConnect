@@ -19,7 +19,7 @@ export default function RoleSelection() {
   const handleSelect = async () => {
     try {
       await api.patch("/auth/set-role", { selectedRole })
-      setRoleLocally(role)
+      setRoleLocally(selectedRole)
        if (!user.profileCompleted) {
         navigate(`/${user.role}/profile`);
       } else {
