@@ -10,7 +10,7 @@ router.route("/verify-email").post(verifyEmail)
 router.route("/resend-otp").post(resendOtp)
 router.route("/forgot-password").post(forgotPassword)
 router.route("/reset-password/:token").post(resetPassword)
-router.route("/google").get(verifyJWT, getGoogleLoginPage)
+router.route("/google").get(getGoogleLoginPage)
 router.route("/google/callback").get(getGoogleLoginCallback)
 router.route("/set-role").patch(verifyJWT, setRole)
 
