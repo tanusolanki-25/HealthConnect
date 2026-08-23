@@ -296,13 +296,12 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
      "email"
    ]);
 
-   const isSecure = process.env.NODE_ENV === "production" || req.headers["x-forwarded-proto"] === "https";
 
    const cookieConfig = {
     httpOnly: true,
-    secure: isSecure,
+    secure: process.env.NODE_ENV === "production",
     maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: isSecure ? "none" : "lax"
+    sameSite: "none"
    }
 
   res.cookie("google_oauth_state", state, cookieConfig)
@@ -354,19 +353,20 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  const isSecure = process.env.NODE_ENV === "production" || req.headers["x-forwarded-proto"] === "https";
-
   const options = {
     httpOnly: true,
-    secure: isSecure,
-    sameSite: isSecure ? "none" : "lax"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none"
   }
 
   res.cookie("refreshToken", refreshToken, options)
   res.cookie("accessToken", accessToken, options)
 
-  const targetPath = !user.role ? "/set-role" : `/${user.role}/dashboard`;
-  return res.redirect(`${process.env.FRONTEND_URL}${targetPath}?accessToken=${accessToken}&refreshToken=${refreshToken}`)
+  if (!user.role) {
+    return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
+  }
+
+  return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
 })
 
 // used by OAuth users who signed up via Google and don't have a role yet
