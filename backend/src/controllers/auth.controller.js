@@ -303,7 +303,7 @@ console.log("Generated state:", state);
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: "none"
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
    }
 
   res.cookie("google_oauth_state", state, cookieConfig)
@@ -344,7 +344,7 @@ console.log("Cookie state:", storedState);
    let tokens;
    try {
      tokens = await google.validateAuthorizationCode(code, codeVerifier)
-   } catch {
+   } catch (err) {
        console.error(err);
      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
    }
@@ -371,7 +371,7 @@ console.log("Cookie state:", storedState);
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none"
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
 
   res.cookie("refreshToken", refreshToken, options)
@@ -403,7 +403,7 @@ const setRole = asyncHandler(async (req, res) => {
     select: { id: true, email: true, role: true }
   })
  
-  const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(user.id)
+  const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(updatedUser.id)
  
   const options = {
     httpOnly: true,
@@ -578,7 +578,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Reset link is invalid or has expired")
   }
  
-  const newPasswordHash = await bcrypt.hash(newPassword, 10)
+  const newPasswordHash = await hashedPassword(newPassword)
  
   await prisma.user.update({
     where: { id: user.id },
