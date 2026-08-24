@@ -297,13 +297,16 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
    ]);
     
    console.log("Google Login Route Hit");
-console.log("Generated state:", state);
+   console.log("Generated state:", state);
    
+   const isSecure = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
+
    const cookieConfig = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isSecure,
     maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    sameSite: isSecure ? "none" : "lax",
+    path: "/"
    }
 
   res.cookie("google_oauth_state", state, cookieConfig)
@@ -368,10 +371,13 @@ console.log("Cookie state:", storedState);
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
+  const isSecure = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
+
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    secure: isSecure,
+    sameSite: isSecure ? "none" : "lax",
+    path: "/"
   }
 
   res.cookie("refreshToken", refreshToken, options)
