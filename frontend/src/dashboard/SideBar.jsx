@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const menuItems = [
@@ -21,8 +22,14 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <aside className="w-72 min-h-screen rounded bg-blue-900 text-white flex flex-col">
+    <aside
+      className={`w-72 fixed md:static 
+      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      md:translate-x-0
+      transition-transform duration-300 min-h-screen rounded bg-blue-900 text-white flex flex-col`}
+    >
       <div className="p-6 border-b border-blue-800">
         <h1 className="text-2xl font-bold">🏥 HealthConnect</h1>
       </div>
@@ -34,9 +41,7 @@ export default function Sidebar() {
             to={item.path}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
-                isActive
-                  ? "bg-white text-blue-900"
-                  : "hover:bg-blue-800"
+                isActive ? "bg-white text-blue-900" : "hover:bg-blue-800"
               }`
             }
           >
@@ -47,9 +52,11 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-blue-800">
-        <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-red-600 transition">
-          <LogOut size={20} />
-          Logout
+        <button
+          className="md:hidden"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          ☰
         </button>
       </div>
     </aside>

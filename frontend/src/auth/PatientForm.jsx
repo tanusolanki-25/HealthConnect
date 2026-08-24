@@ -1,33 +1,33 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 
 import {
   User,
-  Calendar,
   Phone,
   Mail,
-  Home,
-  MapPin,
   ShieldAlert,
-  Activity,
   HeartPulse,
   Save,
-  CheckCircle2,
   ChevronDown,
+  ArrowLeft,
+  Loader2
 } from "lucide-react";
 
 function PatientForm() {
   const { user, markProfileCompleted } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -52,10 +52,63 @@ function PatientForm() {
     },
   });
 
-  const onSubmit = async (data) => {
+  // Fetch existing profile on mount to pre-fill form for edit mode
+  useEffect(() => {
+    const fetchPatientProfile = async () => {
+      try {
+        const res = await api.get("/patient/profile");
+        const profile = res.data.data;
+
+        if (profile) {
+          setIsEditMode(true);
+          
+          // Split full name into first and last name
+          const nameParts = (profile.name || "").trim().split(" ");
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
+
+          // Format DOB for HTML date input (YYYY-MM-DD)
+          let formattedDob = "";
+          if (profile.dob) {
+            formattedDob = new Date(profile.dob).toISOString().split("T")[0];
+          }
+
+          reset({
+            firstName,
+            lastName,
+            dob: formattedDob,
+            gender: profile.gender || "Female",
+            bloodGroup: profile.bloodGroup || "O+",
+            phone: profile.phone || "",
+            email: user?.email || "",
+            address: profile.address || "",
+            city: profile.city || "",
+            state: profile.state || "",
+            pincode: profile.pincode || "",
+            emergencyContactName: profile.emergencyContactName || "",
+            emergencyContactPhone: profile.emergencyContactPhone || "",
+            emergencyRelationship: profile.relationship || "Father",
+            height: profile.height || "",
+            weight: profile.weight || "",
+            allergies: profile.allergies || "None",
+            existingDiseases: profile.existingDiseases || "None",
+          });
+        }
+      } catch (error) {
+        // If 404, user has no profile yet -> create mode
+        setIsEditMode(false);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchPatientProfile();
+  }, [reset, user?.email]);
+
+  const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      let formattedContact = data.phone?.trim() || "";
+      let formattedContact = formData.phone?.trim() || "";
       if (formattedContact) {
         const digits = formattedContact.replace(/\D/g, "");
         if (digits.length === 10) {
@@ -66,27 +119,34 @@ function PatientForm() {
       }
 
       const payload = {
-        name: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
-        dob: data.dob,
-        gender: data.gender,
-        bloodGroup: data.bloodGroup,
+        name: `${formData.firstName || ""} ${formData.lastName || ""}`.trim(),
+        dob: formData.dob,
+        gender: formData.gender,
+        bloodGroup: formData.bloodGroup,
         phone: formattedContact,
-        address: data.address,
-        city: data.city,
-        state: data.state,
-        pincode: data.pincode,
-        emergencyContactName: data.emergencyContactName,
-        emergencyContactPhone: data.emergencyContactPhone,
-        emergencyRelationship: data.emergencyRelationship,
-        height: data.height,
-        weight: data.weight,
-        allergies: data.allergies,
-        existingDiseases: data.existingDiseases,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        emergencyContactName: formData.emergencyContactName,
+        emergencyContactPhone: formData.emergencyContactPhone,
+        emergencyRelationship: formData.emergencyRelationship,
+        height: formData.height,
+        weight: formData.weight,
+        allergies: formData.allergies,
+        existingDiseases: formData.existingDiseases,
       };
 
-      await api.post("/patient/profile", payload);
-      toast.success("Profile saved successfully!");
-      markProfileCompleted();
+      if (isEditMode) {
+        // Update existing profile
+        await api.patch("/patient/update-profile", payload);
+        toast.success("Profile updated successfully!");
+      } else {
+        // Create new profile
+        await api.post("/patient/profile", payload);
+        toast.success("Profile created successfully!");
+        markProfileCompleted();
+      }
 
       navigate("/patient/dashboard");
     } catch (err) {
@@ -96,20 +156,43 @@ function PatientForm() {
     }
   };
 
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <p className="text-gray-600 text-sm font-medium">Loading profile details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50/80 py-8 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
-      <div className="max-w-3xl w-full bg-white rounded shadow-xl border border-gray-100 overflow-hidden">
+      <div className="max-w-3xl w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-4 sm:p-4 text-white text-center relative">
-          <div className="w-10 h-10 mx-auto bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl border border-white/30 shadow-inner">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-6 sm:p-8 text-white text-center relative">
+          {isEditMode && (
+            <Link
+              to="/patient/dashboard"
+              className="absolute top-6 left-6 inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Dashboard</span>
+            </Link>
+          )}
+
+          <div className="w-12 h-12 mx-auto bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl border border-white/30 shadow-inner mb-3">
             👤
           </div>
-          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
-            Patient Profile
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            {isEditMode ? "Edit Patient Profile" : "Complete Patient Profile"}
           </h1>
           <p className="text-blue-100 text-xs sm:text-sm mt-1 font-medium">
-            Complete your information to continue
+            {isEditMode
+              ? "Update your personal and medical information below"
+              : "Complete your information to get started"}
           </p>
         </div>
 
@@ -117,7 +200,7 @@ function PatientForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-10 space-y-8">
           
           {/* SECTION 1: Personal Information */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="flex items-center gap-2 border-b border-gray-200 pb-2 text-gray-800 font-bold text-lg">
               <User className="w-5 h-5 text-blue-600" />
               <span>Personal Information</span>
@@ -132,7 +215,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="Tanu"
+                    placeholder="First Name"
                     {...register("firstName", { required: "First name is required" })}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -149,7 +232,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="Solanki"
+                    placeholder="Last Name"
                     {...register("lastName", { required: "Last name is required" })}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -257,13 +340,13 @@ function PatientForm() {
               <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Email
               </label>
-              <div className="relative flex items-center rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all px-3 py-2.5">
+              <div className="relative flex items-center rounded-xl border border-gray-300 bg-gray-100/70 px-3 py-2.5">
                 <span className="mr-2 text-base">✉</span>
                 <input
                   type="email"
-                  placeholder="tanu@gmail.com"
+                  readOnly
                   {...register("email")}
-                  className="w-full bg-transparent text-sm text-gray-800 outline-none"
+                  className="w-full bg-transparent text-sm text-gray-600 outline-none cursor-not-allowed"
                 />
               </div>
             </div>
@@ -293,7 +376,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="Kanpur"
+                    placeholder="City"
                     {...register("city")}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -307,7 +390,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="UP"
+                    placeholder="State"
                     {...register("state")}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -321,7 +404,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="208001"
+                    placeholder="Pincode"
                     {...register("pincode")}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -346,7 +429,7 @@ function PatientForm() {
                 <div className="relative rounded-xl border border-gray-300 bg-gray-50/50 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <input
                     type="text"
-                    placeholder="Father"
+                    placeholder="Contact Person Name"
                     {...register("emergencyContactName")}
                     className="w-full px-3.5 py-2.5 bg-transparent text-sm text-gray-800 outline-none rounded-xl"
                   />
@@ -473,11 +556,14 @@ function PatientForm() {
               }`}
             >
               {loading ? (
-                <span>Saving Profile...</span>
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{isEditMode ? "Updating Profile..." : "Saving Profile..."}</span>
+                </>
               ) : (
                 <>
                   <Save className="w-5 h-5" />
-                  <span>Save Profile</span>
+                  <span>{isEditMode ? "Update Profile" : "Save Profile"}</span>
                 </>
               )}
             </button>
@@ -489,4 +575,3 @@ function PatientForm() {
 }
 
 export default PatientForm;
-

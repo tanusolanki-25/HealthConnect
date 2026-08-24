@@ -85,11 +85,53 @@ const updatePatientAccount = asyncHandler(async (req, res) => {
     );
   }
 
-  const { name, bloodGroup, contact } = req.body;
+  const {
+    name,
+    dob,
+    gender,
+    bloodGroup,
+    phone,
+    address,
+    city,
+    state,
+    pincode,
+    emergencyContactName,
+    emergencyContactPhone,
+    emergencyRelationship,
+    height,
+    weight,
+    allergies,
+    existingDiseases,
+  } = req.body;
+
+  const existingProfile = await prisma.patient.findUnique({
+    where: { userId },
+  });
+
+  if (!existingProfile) {
+    throw new ApiError(404, "Patient profile does not exist");
+  }
 
   const updated = await prisma.patient.update({
     where: { userId },
-    data: { name, bloodGroup, contact },
+    data: {
+      ...(name && { name }),
+      ...(dob && { dob: new Date(dob) }),
+      ...(gender && { gender }),
+      ...(bloodGroup !== undefined && { bloodGroup }),
+      ...(phone && { phone }),
+      ...(address !== undefined && { address }),
+      ...(city !== undefined && { city }),
+      ...(state !== undefined && { state }),
+      ...(pincode !== undefined && { pincode }),
+      ...(emergencyContactName !== undefined && { emergencyContactName }),
+      ...(emergencyContactPhone !== undefined && { emergencyContactPhone }),
+      ...(emergencyRelationship !== undefined && { relationship: emergencyRelationship }),
+      ...(height !== undefined && { height: height ? Number(height) : null }),
+      ...(weight !== undefined && { weight: weight ? Number(weight) : null }),
+      ...(allergies !== undefined && { allergies }),
+      ...(existingDiseases !== undefined && { existingDiseases }),
+    },
   });
 
   return res

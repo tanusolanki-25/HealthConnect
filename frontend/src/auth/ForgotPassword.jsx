@@ -1,78 +1,146 @@
-import { useState } from "react"
-import toast from "react-hot-toast"
-import api from "../api/axios"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import api from "../api/axios";
+import { Mail, ArrowLeft, Loader2, KeyRound, CheckCircle2, Send } from "lucide-react";
 
 function ForgotPassword() {
-  const [email, setEmail] = useState("")
-  const [sent, setSent] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault()
-    try {
-      await api.post("/auth/forgot-password", { email })
-      setSent(true)
-      toast.success("Link send Successfully");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong")
+    e.preventDefault();
+    if (!email || !email.trim()) {
+      toast.error("Please enter your registered email");
+      return;
     }
-    finally {
+
+    setLoading(true);
+    try {
+      await api.post("/auth/forgot-password", { email: email.trim() });
+      setSent(true);
+      toast.success("Reset link sent successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   if (sent) {
     return (
-       <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Card */}
-      <div className="relative z-10 bg-white rounded-xl shadow-md w-full max-w-md p-5">
-      <div className="max-w-sm mx-auto mt-20 text-center">
-        <h2 className="text-xl font-semibold">Check your email</h2>
-        <p className="text-gray-500 mt-2">
-          If that email is registered, we've sent a password reset link.
-        </p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-12">
+        <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 text-center">
+          
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-4 border border-emerald-100">
+            <CheckCircle2 size={30} />
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Check Your Inbox</h2>
+          <p className="text-gray-500 text-sm mt-3 leading-relaxed">
+            We sent a password reset link to <span className="font-semibold text-gray-800">{email}</span> if it is associated with a HealthConnect account.
+          </p>
+
+          <div className="mt-8 space-y-3">
+            <button
+              onClick={() => setSent(false)}
+              className="w-full py-3 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+            >
+              Try another email
+            </button>
+
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center gap-1.5 w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-sm font-semibold text-white shadow-md transition"
+            >
+              <ArrowLeft size={16} />
+              <span>Back to Login</span>
+            </Link>
+          </div>
+        </div>
       </div>
-      </div>
-      </div>
-    )
+    );
   }
 
   return (
-     <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Card */}
-      <div className="relative z-10 bg-white rounded-xl shadow-md w-full max-w-md p-5">
-        <div className="flex justify-center items-center gap-2 text-blue-600 font-bold text-xl">
-          <img src="/favicon.png" alt="logo" className="w-12 h-12" />
-          <span>HealthConnect</span>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-12">
+      <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100">
+        
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center gap-2 mb-4">
+            <img src="/favicon.png" alt="HealthConnect Logo" className="w-10 h-10 object-contain" />
+            <span className="text-2xl font-bold text-blue-600 tracking-tight">HealthConnect</span>
+          </div>
+
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center mb-3">
+            <KeyRound size={24} />
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+            Forgot Password?
+          </h1>
+          <p className="text-gray-500 mt-2 text-xs sm:text-sm">
+            No worries! Enter your email and we'll send you a password reset link.
+          </p>
         </div>
 
-        <h2 className="text-gray-400 text-center">Reset Password</h2>
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4 mt-4">
-       <div className="flex items-center mb-4 rounded-lg border border-gray-300 px-3 py-3 focus-within:border-blue-600">
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full outline-none"
-      />
-      </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+              Registered Email Address
+            </label>
+            <div className="relative flex items-center rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-3 transition-all focus-within:border-blue-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/20">
+              <Mail size={18} className="text-gray-400 mr-3 shrink-0" />
+              <input
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-transparent outline-none text-gray-900 text-sm placeholder:text-gray-400"
+              />
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
+            className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-white shadow-md transition-all duration-200 ${
               loading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
+                ? "bg-blue-400 cursor-not-allowed shadow-none"
+                : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-blue-500/25"
             }`}
           >
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Sending Reset Link...</span>
+              </>
+            ) : (
+              <>
+                <span>Send Reset Link</span>
+                <Send size={16} />
+              </>
+            )}
           </button>
-    </form>
+        </form>
+
+        {/* Back Link */}
+        <div className="mt-8 text-center border-t border-gray-100 pt-5">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Login</span>
+          </Link>
+        </div>
+
+      </div>
     </div>
-  </div>
-  )
+  );
 }
 
-export default ForgotPassword
+export default ForgotPassword;

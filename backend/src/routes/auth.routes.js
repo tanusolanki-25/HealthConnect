@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { changePassword, forgotPassword, getCurrentUser, googleCallback, googleRedirect, loginUser, logoutUser, refreshAccessToken, registerUser, resendOtp, resetPassword, setRole, verifyEmail } from "../controllers/auth.controller.js"
+import { forgotPassword, getCurrentUser, googleCallback, googleRedirect, loginUser, logoutUser, refreshAccessToken, registerUser, resendOtp, resetPassword, setRole, verifyEmail } from "../controllers/auth.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
 const router = Router()
@@ -16,7 +16,6 @@ router.route("/set-role").patch(verifyJWT, setRole)
 
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post( verifyJWT,changePassword)
 router.route("/current-user").get(verifyJWT,getCurrentUser)
 
 

@@ -449,31 +449,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 })
 
-const changePassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword } = req.body
-
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.id }
-  })
-
-  const isPasswordCorrect = await verifyPassword(oldPassword, user.passwordHash)
-
-  if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid old password")
-  }
-
-  const newPasswordHash = await hashedPassword(newPassword)
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { passwordHash: newPasswordHash }
-  })
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password changed successfully"))
-})
-
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body
   if (!email) throw new ApiError(400, "Email is required")
@@ -545,11 +520,9 @@ const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"))
 })
   
-
 const getCurrentUser = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
-    select: { id: true, email: true, role: true }
   })
   return res.status(201).json(
     new ApiResponse(201, user, ''))
@@ -562,7 +535,6 @@ export {
   logoutUser,
   getCurrentUser,
   refreshAccessToken,
-  changePassword,
   resendOtp,
   forgotPassword,
   resetPassword,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { Calendar, Upload, Check, X } from "lucide-react";
-import api from "../api/axios";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Calendar, Upload, Check, X, UserCog } from "lucide-react";
+import api from "../api/axios";
 import UploadRecord from "../records/UploadRecords";
 import BookAppointment from "../Appointments/BookAppointment";
 import Sidebar from "./SideBar";
@@ -30,7 +30,7 @@ export default function PatientDashboard() {
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(data.id);
-    alert("Patient ID copied!");
+    toast.success("Patient ID copied!");
   };
 
   const handleApprove = async (id) => {
@@ -81,10 +81,10 @@ export default function PatientDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-4">
+    <div className="min-h-screen bg-gray-50/50 p-2">
       <div className=" flex gap-2">
         <Sidebar/>
-        <div className="bg-white w-296 rounded shadow-xl border border-gray-200 p-4">
+        <div className="bg-white w-300 rounded shadow-xl border border-gray-200 p-4">
            <div className="space-y-4">
             {/* ================= HEADER ================= */}
             <div className="bg-gray-50 rounded border border-gray-200 p-4 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
@@ -113,6 +113,14 @@ export default function PatientDashboard() {
 
               {/* Buttons */}
               <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/patient/profile"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-3 rounded-xl transition shadow-sm font-medium"
+                >
+                  <UserCog size={18} className="text-blue-600" />
+                  Edit Profile
+                </Link>
+
                 <button
                   onClick={() => setShowAppointment(true)}
                   className="flex items-center gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
