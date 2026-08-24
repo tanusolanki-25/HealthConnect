@@ -52,7 +52,7 @@ export async function linkUserWithOauth(userId, provider, providerAccountId) {
   })
 }
 
-export async function createUserWithOauth({ email, provider, providerAccountId, refreshToken }) {
+export async function createUserWithOauth({ email, provider, providerAccountId }) {
   const user = await prisma.$transaction(async (tx) => {
     const newUser = await tx.user.create({
       data: {

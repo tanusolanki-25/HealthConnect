@@ -8,10 +8,10 @@ import { hashedPassword, verifyPassword } from "../utils/bcrypt.js"
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js"
 import { client, sendEmail } from "../service/email.service.js"
 import { getOtpHtml, generateOTP } from "../service/generateOtp.js"
-// import { generateState, generateCodeVerifier, decodeIdToken } from "arctic";
-// import { google } from "../lib/oauth/google.js"
+
+import  { googleClient } from "../lib/oauth/googleClient.js"
 // import { OAUTH_EXCHANGE_EXPIRY } from "../config/constant.js"
-// import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js"
+import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js"
 
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -282,32 +282,60 @@ const loginUser = asyncHandler(async (req, res) => {
     )
 })
 
-// const getGoogleLoginPage = asyncHandler(async(req, res)=>{
-//    if(req.user){
-//      throw new ApiError(401, "User already logged")
-//    }
-//    const state = generateState()
-//    const codeVerifier = generateCodeVerifier();
- 
-//    const url = google.createAuthorizationURL(state, codeVerifier, [
-//      "openid",
-//      "profile",
-//      "email"
-//    ]);
-    
-   
-//    const cookieConfig = {
-//     httpOnly: true,
-//     secure: process.env.NODE_ENV === "production",
-//     maxAge: OAUTH_EXCHANGE_EXPIRY,
-//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-//    }
+const googleRedirect = (req, res) => {
+  const authUrl = googleClient.generateAuthUrl({
+    access_type: "offline",
+    scope: ["profile", "email"],
+    prompt: "consent"
+  })
 
-//   res.cookie("google_oauth_state", state, cookieConfig)
-//   res.cookie("google_code_verifier", codeVerifier, cookieConfig)
-//   console.log(res.getHeaders()["set-cookie"]);
-//   res.redirect(url.toString())
-// })
+  res.redirect(authUrl) // Google ki apni login screen pe bhej diya
+}
+
+const googleCallback = asyncHandler(async (req, res) => {
+  const { code } = req.query
+
+  if (!code) {
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`)
+  }
+
+  const { tokens } = await googleClient.getToken(code)
+  googleClient.setCredentials(tokens)
+
+  const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+    headers: { Authorization: `Bearer ${tokens.access_token}` }
+  })
+  const googleProfile = await userInfoRes.json()
+  
+  let user = await getUserWithOauthId({ email: googleProfile.email, provider: "google" })
+
+  if(user && !user.providerAccountId){
+    await linkUserWithOauth(user.id, "google", googleProfile.id)
+  }
+
+  if(!user){
+    user = await createUserWithOauth({
+      email: googleProfile.email,
+      provider: "google",
+      providerAccountId: googleProfile.id
+    })
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
+
+  await prisma.user.update({ where: { id: user.id }, data: { refreshToken } })
+
+  const options = { httpOnly: true, secure: true, sameSite: "none" }
+
+  res .cookie("accessToken", accessToken, options)
+  res.cookie("refreshToken", refreshToken, options)
+
+  if (!user.role) {
+    return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
+  }
+
+  return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
+})
 
 // const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
 //    const {code, state} = req.query
@@ -607,5 +635,7 @@ export {
   resendOtp,
   forgotPassword,
   resetPassword,
-  setRole
+  setRole,
+  googleRedirect,
+  googleCallback
 }

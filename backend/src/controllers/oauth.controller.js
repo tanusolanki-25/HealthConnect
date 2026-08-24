@@ -97,4 +97,3 @@ const googleCallback = asyncHandler(async (req, res) => {
     .redirect(`${process.env.FRONTEND_URL}/oauth-redirect`) // frontend yahan decide karega age kahan bhejna hai
 })
 
-export { googleRedirect, googleCallback }

@@ -1,8 +1,6 @@
 import {Router} from "express"
-import { changePassword, forgotPassword, getCurrentUser, loginUser, logoutUser, refreshAccessToken, registerUser, resendOtp, resetPassword, setRole, verifyEmail } from "../controllers/auth.controller.js"
+import { changePassword, forgotPassword, getCurrentUser, googleCallback, googleRedirect, loginUser, logoutUser, refreshAccessToken, registerUser, resendOtp, resetPassword, setRole, verifyEmail } from "../controllers/auth.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
-import passport from "passport"
-import { googleCallback, googleRedirect } from "../controllers/oauth.controller.js"
 
 const router = Router()
 
