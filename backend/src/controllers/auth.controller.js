@@ -287,8 +287,10 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
      throw new ApiError(401, "User already logged")
    }
 
-   const state = generateState()
    const codeVerifier = generateCodeVerifier();
+   const secret = process.env.ACCESS_TOKEN_SECRET || "oauth_secret_fallback";
+   const signature = crypto.createHmac("sha256", secret).update(codeVerifier).digest("hex");
+   const state = `${codeVerifier}.${signature}`;
 
    const url = google.createAuthorizationURL(state, codeVerifier, [
      "openid",
@@ -318,18 +320,30 @@ const getGoogleLoginPage = asyncHandler(async(req, res)=>{
 const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    const {code, state} = req.query
 
-   const {
-    google_oauth_state: storedState,
-    google_code_verifier: codeVerifier
-   } = req.cookies
+   let storedState = req.cookies?.google_oauth_state;
+   let codeVerifier = req.cookies?.google_code_verifier;
+
+   // Fallback: If cookies were blocked by the browser (cross-domain Vercel <-> Render),
+   // verify HMAC signature embedded in the state parameter returned by Google
+   if ((!storedState || !codeVerifier) && state && typeof state === "string" && state.includes(".")) {
+     const [extractedVerifier, signature] = state.split(".");
+     const secret = process.env.ACCESS_TOKEN_SECRET || "oauth_secret_fallback";
+     const expectedSignature = crypto.createHmac("sha256", secret).update(extractedVerifier).digest("hex");
+     
+     if (extractedVerifier && signature && signature === expectedSignature) {
+       codeVerifier = extractedVerifier;
+       storedState = state;
+       console.log("Verified OAuth state via HMAC signature (browser blocked cookies)");
+     }
+   }
 
    console.log({
-  code,
-  state,
-  storedState,
-  codeVerifier,
-  cookies: req.cookies
-});
+     code,
+     state,
+     storedState,
+     codeVerifier,
+     cookies: req.cookies
+   });
 
    if(
     !code ||
@@ -342,7 +356,7 @@ const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
    }
 
    console.log("Callback state:", state);
-console.log("Cookie state:", storedState);
+   console.log("Cookie state:", storedState);
 
    let tokens;
    try {
