@@ -21,9 +21,8 @@ const errorHandler = (err, req, res, next) => {
     return res.status(error.statusCode).json(response);
   } catch (error) {
     console.error(error);
-  console.error(error.message);
-  console.error(error.stack);
-  throw error;
+    console.error(error.message);
+    console.error(error.stack);
   }
 };
 
