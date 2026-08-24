@@ -13,13 +13,13 @@ passport.use(new GoogleStrategy({
     try {
       let user = await prisma.user.findUnique({
         where:{
-          googleId: profile.id,
+          googleID: profile.id,
         }
       })
       if(!user){
         user = await prisma.user.create({
           data:{
-          googleId: profile.id,
+          googleID: profile.id,
           email: profile.emails[0].value,
           passwordHash: null,   // OAuth user ka password nahi hota
           verified: true,
