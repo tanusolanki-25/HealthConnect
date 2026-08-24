@@ -323,8 +323,6 @@ const googleCallback = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  await prisma.user.update({ where: { id: user.id }, data: { refreshToken } })
-
   const options = { httpOnly: true, secure: true, sameSite: "none" }
 
   res .cookie("accessToken", accessToken, options)
