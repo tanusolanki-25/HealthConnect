@@ -2,6 +2,7 @@ import passport from "passport";
 import dotenv from "dotenv"
 import {Strategy as GoogleStrategy} from "passport-google-oauth20"
 import prisma from "../lib/prisma.js";
+import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js";
 
 dotenv.config()
 
@@ -11,22 +12,21 @@ passport.use(new GoogleStrategy({
   callbackURL: process.env.GOOGLE_URL
 }, async(accessToken, refreshToken, profile, done)=>{
     try {
-      let user = await prisma.user.findUnique({
-        where:{
-          googleID: profile.id,
-        }
-      })
-      if(!user){
-        user = await prisma.user.create({
-          data:{
-          googleID: profile.id,
-          email: profile.emails[0].value,
-          passwordHash: null,   // OAuth user ka password nahi hota
-          verified: true,
-          isEmailValid: true
-          }
-        })
+      let user = await getUserWithOauthId({email: profile.emails[0].value, provider: "google"})
+
+      if(user && !user.providerAccountId){
+       await linkUserWithOauth(user.id, "google", profile.id)   
       }
+       
+      if(!user){
+        user = await createUserWithOauth({
+        email: profile.emails[0].value,
+        provider: "google",
+        providerAccountId: profile.id,
+        refreshToken
+    })
+  }
+
       return done(null, user)
     } catch (error) {
       return done(error, null)

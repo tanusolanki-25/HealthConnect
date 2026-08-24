@@ -52,14 +52,15 @@ export async function linkUserWithOauth(userId, provider, providerAccountId) {
   })
 }
 
-export async function createUserWithOauth({ email, provider, providerAccountId }) {
+export async function createUserWithOauth({ email, provider, providerAccountId, refreshToken }) {
   const user = await prisma.$transaction(async (tx) => {
     const newUser = await tx.user.create({
       data: {
         email,
         passwordHash: null,   // OAuth user ka password nahi hota
         verified: true,
-        isEmailValid: true
+        isEmailValid: true,
+        refreshToken
       }
     })
 
