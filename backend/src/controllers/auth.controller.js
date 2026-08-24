@@ -8,10 +8,10 @@ import { hashedPassword, verifyPassword } from "../utils/bcrypt.js"
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js"
 import { client, sendEmail } from "../service/email.service.js"
 import { getOtpHtml, generateOTP } from "../service/generateOtp.js"
-import { generateState, generateCodeVerifier, decodeIdToken } from "arctic";
-import { google } from "../lib/oauth/google.js"
-import { OAUTH_EXCHANGE_EXPIRY } from "../config/constant.js"
-import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js"
+// import { generateState, generateCodeVerifier, decodeIdToken } from "arctic";
+// import { google } from "../lib/oauth/google.js"
+// import { OAUTH_EXCHANGE_EXPIRY } from "../config/constant.js"
+// import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../utils/hasAccess.js"
 
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -282,127 +282,101 @@ const loginUser = asyncHandler(async (req, res) => {
     )
 })
 
-const getGoogleLoginPage = asyncHandler(async(req, res)=>{
-   if(req.user){
-     throw new ApiError(401, "User already logged")
-   }
-
-   const codeVerifier = generateCodeVerifier();
-   const secret = process.env.ACCESS_TOKEN_SECRET || "oauth_secret_fallback";
-   const signature = crypto.createHmac("sha256", secret).update(codeVerifier).digest("hex");
-   const state = `${codeVerifier}.${signature}`;
-
-   const url = google.createAuthorizationURL(state, codeVerifier, [
-     "openid",
-     "profile",
-     "email"
-   ]);
+// const getGoogleLoginPage = asyncHandler(async(req, res)=>{
+//    if(req.user){
+//      throw new ApiError(401, "User already logged")
+//    }
+//    const state = generateState()
+//    const codeVerifier = generateCodeVerifier();
+ 
+//    const url = google.createAuthorizationURL(state, codeVerifier, [
+//      "openid",
+//      "profile",
+//      "email"
+//    ]);
     
-   console.log("Google Login Route Hit");
-   console.log("Generated state:", state);
    
-   const isSecure = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
+//    const cookieConfig = {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     maxAge: OAUTH_EXCHANGE_EXPIRY,
+//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+//    }
 
-   const cookieConfig = {
-    httpOnly: true,
-    secure: isSecure,
-    maxAge: OAUTH_EXCHANGE_EXPIRY,
-    sameSite: isSecure ? "none" : "lax",
-    path: "/"
-   }
+//   res.cookie("google_oauth_state", state, cookieConfig)
+//   res.cookie("google_code_verifier", codeVerifier, cookieConfig)
+//   console.log(res.getHeaders()["set-cookie"]);
+//   res.redirect(url.toString())
+// })
 
-  res.cookie("google_oauth_state", state, cookieConfig)
-  res.cookie("google_code_verifier", codeVerifier, cookieConfig)
-  console.log(res.getHeaders()["set-cookie"]);
-  res.redirect(url.toString())
-})
+// const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
+//    const {code, state} = req.query
 
-const getGoogleLoginCallback = asyncHandler(async(req, res)=>{
-   const {code, state} = req.query
+//    const {
+//     google_oauth_state: storedState,
+//     google_code_verifier: codeVerifier
+//    } = req.cookies
 
-   let storedState = req.cookies?.google_oauth_state;
-   let codeVerifier = req.cookies?.google_code_verifier;
+//    console.log({
+//      code,
+//      state,
+//      storedState,
+//      codeVerifier,
+//      cookies: req.cookies
+//    });
 
-   // Fallback: If cookies were blocked by the browser (cross-domain Vercel <-> Render),
-   // verify HMAC signature embedded in the state parameter returned by Google
-   if ((!storedState || !codeVerifier) && state && typeof state === "string" && state.includes(".")) {
-     const [extractedVerifier, signature] = state.split(".");
-     const secret = process.env.ACCESS_TOKEN_SECRET || "oauth_secret_fallback";
-     const expectedSignature = crypto.createHmac("sha256", secret).update(extractedVerifier).digest("hex");
-     
-     if (extractedVerifier && signature && signature === expectedSignature) {
-       codeVerifier = extractedVerifier;
-       storedState = state;
-       console.log("Verified OAuth state via HMAC signature (browser blocked cookies)");
-     }
-   }
+//    if(
+//     !code ||
+//     !state ||
+//     !storedState ||
+//     !codeVerifier ||
+//     state != storedState
+//    ){
+//      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
+//    }
 
-   console.log({
-     code,
-     state,
-     storedState,
-     codeVerifier,
-     cookies: req.cookies
-   });
+//    let tokens;
+//    try {
+//      tokens = await google.validateAuthorizationCode(code, codeVerifier)
+//    } catch (err) {
+//        console.error(err);
+//      return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
+//    }
 
-   if(
-    !code ||
-    !state ||
-    !storedState ||
-    !codeVerifier ||
-    state != storedState
-   ){
-     return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
-   }
+//    const claims = decodeIdToken(tokens.idToken())
+//    const {sub: googleUserId, name, email} = claims
 
-   console.log("Callback state:", state);
-   console.log("Cookie state:", storedState);
+//   let user = await getUserWithOauthId({ email, provider: "google" })
+//   if(user && !user.providerAccountId){
+//     await linkUserWithOauth(user.id, "google", googleUserId)
+//   }
 
-   let tokens;
-   try {
-     tokens = await google.validateAuthorizationCode(code, codeVerifier)
-   } catch (err) {
-       console.error(err);
-     return res.redirect(`${process.env.FRONTEND_URL}/login?error=invalid_oauth`)
-   }
+//   if(!user){
+//     user = await createUserWithOauth({
+//       name,
+//       email,
+//       provider: "google",
+//       providerAccountId: googleUserId
+//     })
+//   }
 
-   const claims = decodeIdToken(tokens.idToken())
-   const {sub: googleUserId, name, email} = claims
+//   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  let user = await getUserWithOauthId({ email, provider: "google" })
-  if(user && !user.providerAccountId){
-    await linkUserWithOauth(user.id, "google", googleUserId)
-  }
+//   const options = {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+//   }
 
-  if(!user){
-    user = await createUserWithOauth({
-      name,
-      email,
-      provider: "google",
-      providerAccountId: googleUserId
-    })
-  }
+//   res.cookie("refreshToken", refreshToken, options)
+//   res.cookie("accessToken", accessToken, options)
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
+//   if (!user.role) {
+//     return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
+//   }
 
-  const isSecure = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
-
-  const options = {
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: isSecure ? "none" : "lax",
-    path: "/"
-  }
-
-  res.cookie("refreshToken", refreshToken, options)
-  res.cookie("accessToken", accessToken, options)
-
-  if (!user.role) {
-    return res.redirect(`${process.env.FRONTEND_URL}/set-role`)
-  }
-
-  return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
-})
+//   return res.redirect(`${process.env.FRONTEND_URL}/${user.role}/dashboard`)
+// })
 
 // used by OAuth users who signed up via Google and don't have a role yet
 const setRole = asyncHandler(async (req, res) => {
@@ -633,7 +607,5 @@ export {
   resendOtp,
   forgotPassword,
   resetPassword,
-  getGoogleLoginPage,
-  getGoogleLoginCallback,
   setRole
 }

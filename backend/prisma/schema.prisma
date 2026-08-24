@@ -22,6 +22,7 @@ model User {
   id           String    @id @default(uuid())
   email        String    @unique
   passwordHash String?
+  googleID     String
   role         String?
   createdAt    DateTime  @default(now())
   refreshToken String?   @unique

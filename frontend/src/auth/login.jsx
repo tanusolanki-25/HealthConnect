@@ -41,8 +41,7 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async() =>{
-    const baseUrl = import.meta.env.VITE_API_URL || "https://healthconnect-tfpt.onrender.com/api";
-    window.location.href = `${baseUrl}/auth/google`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`
   }
 
   return (
