@@ -323,6 +323,8 @@ const googleCallback = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
+  console.log("accessToken :", accessToken)
+  console.log("refreshToken :", refreshToken)
   const options = { httpOnly: true, secure: true, sameSite: "none" }
 
   res .cookie("accessToken", accessToken, options)
