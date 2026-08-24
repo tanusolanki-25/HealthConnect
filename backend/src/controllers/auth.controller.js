@@ -327,7 +327,7 @@ const googleCallback = asyncHandler(async (req, res) => {
   console.log("refreshToken :", refreshToken)
   const options = { httpOnly: true, secure: true, sameSite: "none" }
 
-  res .cookie("accessToken", accessToken, options)
+  res.cookie("accessToken", accessToken, options)
   res.cookie("refreshToken", refreshToken, options)
 
   if (!user.role) {
