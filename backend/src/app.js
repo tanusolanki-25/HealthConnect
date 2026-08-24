@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
+app.set("trust proxy", 1)
+
 const rawOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
   .map((o) => o.trim().replace(/\/$/, ""))
