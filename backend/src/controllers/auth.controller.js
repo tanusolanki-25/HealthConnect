@@ -321,15 +321,10 @@ const googleCallback = asyncHandler(async (req, res) => {
     })
   }
 
-  const accessToken = generateAccessToken(user)
-  const refreshToken = generateRefreshToken(user)
-
-  await prisma.user.update({ where: { id: user.id }, data: { refreshToken } })
-
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
   console.log("accessToken :", accessToken)
   console.log("refreshToken :", refreshToken)
-  
   const options = { httpOnly: true, secure: true, sameSite: "none" }
 
   res.cookie("accessToken", accessToken, options)
@@ -488,7 +483,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     )
 
     const user = await prisma.user.findUnique({
-      where: { id: decodedToken.userId }
+      where: { id: decodedToken.id }
     })
 
     if (!user) {

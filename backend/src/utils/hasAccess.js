@@ -59,8 +59,7 @@ export async function createUserWithOauth({ email, provider, providerAccountId }
         email,
         passwordHash: null,   // OAuth user ka password nahi hota
         verified: true,
-        isEmailValid: true,
-        refreshToken
+        isEmailValid: true
       }
     })
 
