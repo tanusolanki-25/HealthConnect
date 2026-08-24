@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import prisma from "../lib/prisma.js"
-import { googleClient } from "../lib/googleClient.js"
+import  { googleClient } from "../lib/oauth/googleClient.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
 const generateAccessToken = (user) =>
