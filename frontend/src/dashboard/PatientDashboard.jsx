@@ -81,10 +81,10 @@ export default function PatientDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-2">
-      <div className=" flex gap-2">
-        <Sidebar/>
-        <div className="bg-white w-300 rounded shadow-xl border border-gray-200 p-4">
+    <div className="min-h-screen bg-slate-50/80 p-3 sm:p-2">
+      <div className="flex flex-col md:flex-row gap-2 max-w-9xl mx-auto">
+        <Sidebar />
+        <div className="flex-1 min-w-0 space-y-4">
            <div className="space-y-4">
             {/* ================= HEADER ================= */}
             <div className="bg-gray-50 rounded border border-gray-200 p-4 flex flex-col lg:flex-row justify-between lg:items-center gap-6">

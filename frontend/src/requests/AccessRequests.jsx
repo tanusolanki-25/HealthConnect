@@ -1,115 +1,169 @@
-import { useEffect, useState } from "react"
-import api from "../api/axios"
+import { useEffect, useState } from "react";
+import api from "../api/axios";
+import Sidebar from "../dashboard/SideBar";
+import toast from "react-hot-toast";
+import { ShieldCheck, CheckCircle2, XCircle, Clock, Loader2, Stethoscope } from "lucide-react";
 
 export default function AccessRequests() {
-  const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRequests()
-  }, [])
+    fetchRequests();
+  }, []);
 
-  const fetchRequests = () => {
-    api.get("/patient/access-requests")
-      .then((res) => setRequests(res.data.data))
-      setLoading(false)
-  }
+  const fetchRequests = async () => {
+    try {
+      const res = await api.get("/patient/access-requests");
+      setRequests(res.data.data || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not fetch access requests");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleApprove = async (id) => {
-    await api.patch(`/patient/access-requests/${id}/approve`)
-    fetchRequests()
-  }
+    try {
+      await api.patch(`/patient/access-requests/${id}/approve`);
+      toast.success("Access request approved successfully!");
+      fetchRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not approve request");
+    }
+  };
 
   const handleDeny = async (id) => {
-    await api.patch(`/patient/access-requests/${id}/deny`)
-    fetchRequests()
-  }
+    try {
+      await api.patch(`/patient/access-requests/${id}/deny`);
+      toast.success("Access request denied");
+      fetchRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not deny request");
+    }
+  };
 
-  if (loading)
-   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-2xl font-semibold text-blue-600 animate-pulse">
-        Loading...
-      </p>
+  return (
+    <div className="min-h-screen bg-slate-50/80 p-3 sm:p-6">
+      <div className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto">
+        <Sidebar />
+
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                  <ShieldCheck className="w-6 h-6" />
+                </span>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                  Shared Access Requests
+                </h1>
+              </div>
+              <p className="text-gray-500 text-sm mt-1">
+                Manage doctor permissions to view your medical records & history
+              </p>
+            </div>
+
+            <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-semibold self-start sm:self-auto border border-blue-100">
+              Total: {requests.length}
+            </div>
+          </div>
+
+          {/* Requests List */}
+          {loading ? (
+            <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+              <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
+              <p className="text-gray-500 text-sm font-medium">Loading access requests...</p>
+            </div>
+          ) : requests.length === 0 ? (
+            <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+              <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                🛡️
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">No Access Requests Yet</h3>
+              <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+                When doctors request access to view your medical history, their requests will appear here for your approval.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {requests.map((req) => (
+                <div
+                  key={req.id}
+                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 p-6 border border-gray-200/80"
+                >
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                    {/* Doctor Info */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                        <Stethoscope className="w-6 h-6" />
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          Dr. {req.doctor?.name}
+                        </h3>
+
+                        <p className="text-sm text-blue-600 font-semibold mt-0.5">
+                          {req.doctor?.specialization}
+                        </p>
+
+                        <p className="text-xs text-gray-400 mt-1">
+                          Requested on: {new Date(req.createdAt || Date.now()).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                          req.status === "approved"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : req.status === "denied"
+                            ? "bg-rose-50 text-rose-700 border border-rose-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                        }`}
+                      >
+                        {req.status === "approved" ? (
+                          <CheckCircle2 size={14} />
+                        ) : req.status === "denied" ? (
+                          <XCircle size={14} />
+                        ) : (
+                          <Clock size={14} />
+                        )}
+                        <span>{req.status}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions for Pending Requests */}
+                  {req.status === "pending" && (
+                    <div className="flex items-center gap-3 mt-5 pt-4 border-t border-gray-100">
+                      <button
+                        onClick={() => handleApprove(req.id)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition"
+                      >
+                        <CheckCircle2 size={16} />
+                        <span>Approve Access</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDeny(req.id)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm transition"
+                      >
+                        <XCircle size={16} />
+                        <span>Deny Access</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
-
-return (
-  <div className="min-h-screen bg-gray-50/50 p-6">
-    <div className="max-w-5xl mx-auto">
-      
-      {/* Empty State */}
-      {requests.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow p-10 text-center">
-          <h2 className="text-xl font-semibold text-gray-700">
-            No Requests Yet
-          </h2>
-          <p className="text-gray-500 mt-2">
-            You don't have any access requests at the moment.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          {requests.map((req) => (
-            <div
-              key={req.id}
-              className="bg-white rounded-2xl shadow hover:shadow-lg transition p-6 border border-gray-100"
-            >
-              <div className="flex flex-col md:flex-row justify-between md:items-center">
-
-                {/* Doctor Info */}
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    Dr. {req.doctor.name}
-                  </h2>
-
-                  <p className="text-gray-500 mt-1">
-                    {req.doctor.specialization}
-                  </p>
-                </div>
-
-                {/* Status */}
-                <div className="mt-4 md:mt-0">
-                  <span
-                    className={`px-4 py-2 rounded-full text-sm font-medium
-                      ${
-                        req.status === "approved"
-                          ? "bg-green-100 text-green-700"
-                          : req.status === "denied"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                  >
-                    {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              {req.status === "pending" && (
-                <div className="flex gap-4 mt-6">
-
-                  <button
-                    onClick={() => handleApprove(req.id)}
-                    className="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => handleDeny(req.id)}
-                    className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
-                  >
-                    Deny
-                  </button>
-
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-);
 }
