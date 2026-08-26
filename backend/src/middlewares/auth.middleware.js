@@ -15,9 +15,15 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
+    const userId = decodedToken?.id || decodedToken?.userId;
+
+    if (!userId) {
+      throw new ApiError(401, "Invalid access token payload");
+    }
+
     const user = await prisma.user.findUnique({
       where: {
-        id: decodedToken.id,
+        id: userId,
       },
       select: {
         id: true,

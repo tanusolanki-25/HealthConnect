@@ -13,6 +13,10 @@ export const hasAccess = async (doctorId, patientId) => {
 }
 
 export async function getUserWithOauthId({ email, provider }) {
+  if (!email) {
+    return null;
+  }
+
   const user = await prisma.user.findUnique({
     where: { email },
     select: {

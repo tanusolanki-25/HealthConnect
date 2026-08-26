@@ -16,6 +16,10 @@ import { createUserWithOauth, getUserWithOauthId, linkUserWithOauth } from "../u
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
+    if (!userId) {
+      throw new ApiError(400, "User ID is required")
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userId }
     })
@@ -222,6 +226,7 @@ const resendOtp = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
+  console.log(req.body.email)
 
   if (!email) {
     throw new ApiError(400, "Email is required")
@@ -340,11 +345,15 @@ const googleCallback = asyncHandler(async (req, res) => {
 // used by OAuth users who signed up via Google and don't have a role yet
 const setRole = asyncHandler(async (req, res) => {
   const { role } = req.body
- 
+
   if (!["patient", "doctor", "hospital"].includes(role)) {
     throw new ApiError(400, "Role must be patient, doctor, or hospital")
   }
- 
+
+  if (!req.user?.id) {
+    throw new ApiError(401, "Unauthorized access")
+  }
+
   const existingUser = await prisma.user.findUnique({ where: { id: req.user.id } })
   if (existingUser.role) {
     throw new ApiError(409, "Role is already set for this account")
@@ -413,8 +422,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     )
 
+    const userId = decodedToken?.id || decodedToken?.userId;
+    if (!userId) {
+      throw new ApiError(401, "Invalid refresh token payload");
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: decodedToken.id }
+      where: { id: userId }
     })
 
     if (!user) {
@@ -520,13 +534,20 @@ const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"))
 })
   
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = asyncHandler(async (req, res) => {
+  if (!req.user?.id) {
+    throw new ApiError(401, "Unauthorized access")
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
+    select: { id: true, email: true, role: true }
   })
-  return res.status(201).json(
-    new ApiResponse(201, user, ''))
-}
+
+  return res.status(200).json(
+    new ApiResponse(200, user, "Current user fetched successfully")
+  )
+})
 
 export {
   registerUser,
