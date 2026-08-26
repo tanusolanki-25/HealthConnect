@@ -18,7 +18,7 @@ export default function Login() {
    const params = new URLSearchParams(location.search);
 
     if (params.get("error") === "already_logged_in") {
-      toast.error("You are already logged in");
+      toast.error("This email is already registered");
     }
   }, [location]);
 

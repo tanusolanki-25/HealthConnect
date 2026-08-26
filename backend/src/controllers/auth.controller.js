@@ -226,7 +226,6 @@ const resendOtp = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
-  console.log(req.body.email)
 
   if (!email) {
     throw new ApiError(400, "Email is required")
@@ -315,7 +314,8 @@ const googleCallback = asyncHandler(async (req, res) => {
   let user = await getUserWithOauthId({ email: googleProfile.email, provider: "google" })
 
   if(user && !user.providerAccountId){
-    await linkUserWithOauth(user.id, "google", googleProfile.id)
+    // await linkUserWithOauth(user.id, "google", googleProfile.id)
+    return res.redirect(`${process.env.FRONTEND_URL}/login/error?already_logged_in`)
   }
 
   if(!user){
@@ -328,8 +328,6 @@ const googleCallback = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  console.log("accessToken :", accessToken)
-  console.log("refreshToken :", refreshToken)
   const options = { httpOnly: true, secure: true, sameSite: "none" }
 
   res.cookie("accessToken", accessToken, options)

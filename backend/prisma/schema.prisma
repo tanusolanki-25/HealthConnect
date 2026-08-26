@@ -6,66 +6,48 @@ datasource db {
   provider = "postgresql"
 }
 
-
-enum AuthProvider {
-  google
-  github
-}
-
-enum Gender {
-   Male
-  Female
-  Other
-}
-
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String?
-  role         String?
-  createdAt    DateTime  @default(now())
-  refreshToken String?   @unique
-  verified     Boolean   @default(false)
-  isEmailValid Boolean   @default(false)
-  resetPasswordToken    String?
-  resetPasswordExpiry   DateTime?
-  doctor       Doctor?
-  hospital     Hospital?
-  otp          Otp?
-  patient      Patient?
-  oauthAccount OauthAccount? 
+  id                  String        @id @default(uuid())
+  email               String        @unique
+  passwordHash        String?
+  role                String?
+  createdAt           DateTime      @default(now())
+  refreshToken        String?       @unique
+  verified            Boolean       @default(false)
+  resetPasswordExpiry DateTime?
+  resetPasswordToken  String?
+  isEmailValid        Boolean       @default(false)
+  doctor              Doctor?
+  hospital            Hospital?
+  oauthAccount        OauthAccount?
+  otp                 Otp?
+  patient             Patient?
 }
 
 model Patient {
-  id            String             @id @default(uuid())
-  userId        String             @unique
-  name          String
-  dob           DateTime
-  gender        Gender
-  bloodGroup    String?
-
-  phone         String
-
-  address       String?
-  city          String?
-  state         String?
-  pincode       String?
-
-  emergencyContactName   String?
-  emergencyContactPhone  String?
-  relationship           String?
-
-  height                 Float?
-  weight                 Float?
-
-  allergies              String?
-  existingDiseases       String?
-
-  permissions   AccessPermission[]
-  appointments  Appointment[]
-  records       MedicalRecord[]
-  user          User               @relation(fields: [userId], references: [id])
-  prescriptions Prescription[]
+  id                    String             @id @default(uuid())
+  userId                String             @unique
+  name                  String
+  dob                   DateTime
+  address               String?
+  allergies             String?
+  city                  String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  existingDiseases      String?
+  height                Float?
+  phone                 String
+  pincode               String?
+  relationship          String?
+  state                 String?
+  weight                Float?
+  gender                Gender
+  bloodGroup            String?
+  permissions           AccessPermission[]
+  appointments          Appointment[]
+  records               MedicalRecord[]
+  user                  User               @relation(fields: [userId], references: [id])
+  prescriptions         Prescription[]
 }
 
 model Doctor {
@@ -152,12 +134,22 @@ model Otp {
   user      User      @relation(fields: [userId], references: [id])
 }
 
-
 model OauthAccount {
   id                String       @id @default(cuid())
   userId            String       @unique
-  user              User         @relation(fields: [userId], references: [id])
-  provider          AuthProvider   
+  provider          AuthProvider
   providerAccountId String       @unique
   createdAt         DateTime     @default(now())
+  user              User         @relation(fields: [userId], references: [id])
+}
+
+enum AuthProvider {
+  google
+  github
+}
+
+enum Gender {
+  Male
+  Female
+  Other
 }
