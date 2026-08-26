@@ -235,7 +235,6 @@ const loginUser = asyncHandler(async (req, res) => {
     where: { email }
   })
 
-
   if (!user) {
     throw new ApiError(404, "Don't have an account with this email")
   }
@@ -259,7 +258,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  const loggedInUser = await prisma.user.findUnique({
+  const loggedInUser = await prisma.user.findFirst({
     where: { id: user.id },
     select: {
       email: true,
