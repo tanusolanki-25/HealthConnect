@@ -81,16 +81,16 @@ export default function PatientDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/80 p-3 sm:p-2">
-      <div className="flex flex-col md:flex-row gap-2 max-w-9xl mx-auto">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex h-full">
         <Sidebar />
-        <div className="flex-1 min-w-0 space-y-4">
-           <div className="space-y-4">
+        <div className="flex-1 min-w-0 md:ml-64 hide-scrollbar overflow-y-auto h-full p-2">
+          <div className="space-y-2">
             {/* ================= HEADER ================= */}
-            <div className="bg-gray-50 rounded border border-gray-200 p-4 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
+            <div className="bg-white rounded border border-gray-200/80 p-6 shadow-sm flex flex-col lg:flex-row justify-between lg:items-center gap-6">
               {/* Profile */}
               <div className="flex items-center gap-5">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white text-xl font-bold shadow-md shrink-0">
                   {data.name?.slice(0, 2).toUpperCase()}
                 </div>
 
@@ -113,14 +113,6 @@ export default function PatientDashboard() {
 
               {/* Buttons */}
               <div className="flex flex-wrap gap-3">
-                <Link
-                  to="/patient/profile"
-                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 py-3 rounded-xl transition shadow-sm font-medium"
-                >
-                  <UserCog size={18} className="text-blue-600" />
-                  Edit Profile
-                </Link>
-
                 <button
                   onClick={() => setShowAppointment(true)}
                   className="flex items-center gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
@@ -197,7 +189,6 @@ export default function PatientDashboard() {
             </div>
 
             {/* ================= APPOINTMENTS ================= */}
-
             <Section title="Upcoming Appointments">
               {upcomingAppointments.length === 0 ? (
                 <EmptyText text="No upcoming appointments." />
@@ -224,7 +215,6 @@ export default function PatientDashboard() {
                 ))
               )}
             </Section>
-
             {/* ================= PRESCRIPTION + RECORD ================= */}
 
             <div className="grid lg:grid-cols-2 gap-6">
@@ -274,7 +264,7 @@ export default function PatientDashboard() {
                 )}
               </Section>
             </div>
-           </div>
+          </div>
         </div>
       </div>
     </div>
@@ -303,7 +293,7 @@ function Section({ title, children }) {
     <div className="bg-white rounded shadow border border-gray-100 p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-5">{title}</h2>
 
-      <div className="space-y-2">{children}</div>
+      <div className="space-y-2 hide-scrollbar overflow-scroll h-40">{children}</div>
     </div>
   );
 }

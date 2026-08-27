@@ -53,11 +53,11 @@ export default function MedicalHistory() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/80 p-3 sm:p-2">
-      <div className="flex flex-col md:flex-row gap-2 max-w-9xl mx-auto">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex h-full">
         <Sidebar />
 
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="flex-1 md:ml-64 h-full space-y-2 flex flex-col p-2">
           {/* Header */}
           <div className="bg-white rounded p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -120,6 +120,7 @@ export default function MedicalHistory() {
           </div>
 
           {/* Record Cards List */}
+          <div className="flex-1 hide-scrollbar overflow-y-auto mt-2">
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -233,6 +234,7 @@ export default function MedicalHistory() {
               })}
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>

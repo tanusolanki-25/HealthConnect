@@ -44,12 +44,14 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password, role } = req.body
-  if ([email, password, role].some((field) => !field?.trim())) {
+  if ([email, password, role].some((field) => !field || typeof field !== "string" || !field.trim())) {
     throw new ApiError(400, "All fields are required")
   }
 
+  const cleanedEmail = email.trim().toLowerCase()
+
   const existedUser = await prisma.user.findUnique({
-    where: { email }
+    where: { email: cleanedEmail }
   })
 
   if (existedUser) {
@@ -59,7 +61,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const passwordHash = await hashedPassword(password)
 
   const user = await prisma.user.create({
-    data: { email, passwordHash, role }
+    data: { email: cleanedEmail, passwordHash, role }
   })
 
   const otp = await generateOTP()
@@ -225,23 +227,33 @@ const resendOtp = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+  let { email, password } = req.body
 
-  if (!email) {
+  if (!email || typeof email !== "string" || !email.trim()) {
     throw new ApiError(400, "Email is required")
   }
 
+  if (!password) {
+    throw new ApiError(400, "Password is required")
+  }
+
+  const cleanedEmail = email.trim().toLowerCase()
+
   const user = await prisma.user.findUnique({
-    where: { email }
+    where: { email: cleanedEmail }
   })
 
   if (!user) {
     throw new ApiError(404, "Don't have an account with this email")
   }
 
-  if(!user.verified){
-    throw new ApiError(403, "User does not verified")
-  } 
+  if (!user.verified) {
+    throw new ApiError(403, "User is not verified")
+  }
+
+  if (!user.passwordHash) {
+    throw new ApiError(400, "This account was created via Google Sign-In. Please use Google to log in.")
+  }
 
   const isValidPassword = await verifyPassword(password, user.passwordHash)
 
@@ -250,7 +262,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   await prisma.user.update({
-    where: { email },
+    where: { id: user.id },
     data: {
       isEmailValid: true
     }
@@ -258,7 +270,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.id)
 
-  const loggedInUser = await prisma.user.findFirst({
+  const loggedInUser = await prisma.user.findUnique({
     where: { id: user.id },
     select: {
       email: true,
@@ -313,8 +325,8 @@ const googleCallback = asyncHandler(async (req, res) => {
   let user = await getUserWithOauthId({ email: googleProfile.email, provider: "google" })
 
   if(user && !user.providerAccountId){
-    // await linkUserWithOauth(user.id, "google", googleProfile.id)
-    return res.redirect(`${process.env.FRONTEND_URL}/login/error?already_logged_in`)
+    await linkUserWithOauth(user.id, "google", googleProfile.id)
+
   }
 
   if(!user){
@@ -531,6 +543,42 @@ const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"))
 })
   
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body
+
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, "Old password and new password are required")
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } })
+
+  if (!user) {
+    throw new ApiError(404, "User not found")
+  }
+
+  // OAuth se aaye user ka koi password hi nahi hota — unhe alag message do
+  if (!user.passwordHash) {
+    throw new ApiError(400, "This account uses Google sign-in and has no password to change")
+  }
+
+  const isPasswordCorrect = await verifyPassword(oldPassword, user.passwordHash)
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Old password is incorrect")
+  }
+
+  const newPasswordHash = await hashedPassword(newPassword)
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: newPasswordHash }
+  })
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"))
+})
+
 const getCurrentUser = asyncHandler(async (req, res) => {
   if (!req.user?.id) {
     throw new ApiError(401, "Unauthorized access")
@@ -558,5 +606,6 @@ export {
   resetPassword,
   setRole,
   googleRedirect,
+  changePassword,
   googleCallback
 }

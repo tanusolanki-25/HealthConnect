@@ -6,36 +6,44 @@ import {
   Calendar,
   ShieldCheck,
   Menu,
-  X
+  X,
+  Settings,
+  ChevronDown,
+  KeyRound,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink,Link } from "react-router-dom";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/patient/dashboard" },
-  { name: "My Profile", icon: User, path: "/patient/profile" },
   { name: "Medical Records", icon: FileText, path: "/patient/records" },
   { name: "Prescriptions", icon: Pill, path: "/patient/prescriptions" },
   { name: "Appointments", icon: Calendar, path: "/patient/my-appointments" },
-  { name: "Shared Access", icon: ShieldCheck, path: "/patient/access-requests" },
+  {
+    name: "Shared Access",
+    icon: ShieldCheck,
+    path: "/patient/access-requests",
+  },
 ];
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
       {/* Mobile Hamburger Toggle Button */}
-      <div className="md:hidden flex items-center justify-between bg-blue-900 text-white p-4 rounded-xl mb-4">
-        <div className="flex items-center gap-2 font-bold text-lg">
-          <img src="/favicon.png" alt="logo" className="w-7 h-7" />
-          <span>HealthConnect</span>
+      <div className="md:hidden flex items-center justify-between bg-blue-950 text-white p-3.5 rounded-xl mb-4 border border-blue-800/60 shadow-sm">
+        <div className="flex items-center gap-2.5 font-bold text-base">
+          <LayoutDashboard size={20} className="text-blue-400" />
+          <span>Patient Menu</span>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg bg-blue-800 hover:bg-blue-700 transition"
+          className="p-1.5 rounded-lg bg-blue-800/80 hover:bg-blue-700 transition"
+          aria-label="Toggle Navigation"
         >
-          {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
@@ -43,35 +51,39 @@ export default function Sidebar() {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="md:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40"
+          className="md:hidden fixed inset-0 top-16 bg-slate-900/50 backdrop-blur-sm z-40"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed md:static top-0 left-0 z-50 h-full md:h-auto w-64 shrink-0
+        className={`fixed top-16 md:top-18 left-0 z-40 h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] w-64 shrink-0
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
-        transition-transform duration-300 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950 text-white rounded shadow-xl flex flex-col border border-blue-800/50`}
+        transition-transform duration-300 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950 text-white rounded shadow-xl flex flex-col border border-blue-800/50 overflow-hidden`}
       >
         {/* Header Branding */}
-        <div className="p-6 border-b border-blue-800/60 flex items-center gap-3">
-          <img src="/favicon.png" alt="logo" className="w-8 h-8 object-contain" />
+        <div className="p-5 border-b border-blue-800/60 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-400/30 flex items-center justify-center text-blue-300">
+            <LayoutDashboard size={18} />
+          </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">HealthConnect</h1>
-            <p className="text-xs text-blue-300 font-medium">Patient Portal</p>
+            <h1 className="text-base font-bold tracking-tight text-white">
+              Patient Portal
+            </h1>
+            <p className="text-xs text-blue-300 font-medium">Dashboard Menu</p>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
           {menuItems.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
                   isActive
                     ? "bg-white text-blue-950 shadow-md font-semibold"
                     : "text-blue-100 hover:bg-blue-800/60 hover:text-white"
@@ -82,10 +94,45 @@ export default function Sidebar() {
               <span>{item.name}</span>
             </NavLink>
           ))}
+          <div className="relative">
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-blue-800/60"
+            >
+              <Settings size={20} />
+              <span>Settings</span>
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${
+                  isSettingsOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isSettingsOpen && (
+              <div className="absolute right-0 mt-2 w-52 rounded-lg z-50">
+                <Link
+                  to="/patient/profile"
+                  className="flex items-center w-full rounded gap-3 px-4 py-2 hover:bg-blue-800/60"
+                  onClick={() => setIsSettingsOpen(false)}
+                >
+                  My Profile
+                </Link>
+
+                <Link
+                  to="/patient/change-password"
+                  className="flex items-center rounded gap-3 px-4 py-2 hover:bg-blue-800/60"
+                  onClick={() => setIsSettingsOpen(false)}
+                >
+                  Change Password
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Footer Note */}
-        <div className="p-4 border-t border-blue-800/60 text-xs text-blue-300 text-center">
+        <div className="p-3 border-t border-blue-800/60 text-[11px] text-blue-300/80 text-center">
           HealthConnect Portal v1.0
         </div>
       </aside>

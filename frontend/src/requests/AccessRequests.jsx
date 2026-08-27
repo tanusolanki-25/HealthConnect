@@ -44,13 +44,13 @@ export default function AccessRequests() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/80 p-3 sm:p-6">
-      <div className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-3 max-w-9xl mx-auto">
         <Sidebar />
 
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
           {/* Header */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white rounded p-6 shadow-sm border border-gray-100 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="p-2 bg-blue-50 text-blue-600 rounded-xl">
@@ -71,13 +71,14 @@ export default function AccessRequests() {
           </div>
 
           {/* Requests List */}
+          <div className="flex-1 hide-scrollbar overflow-y-auto mt-2">
           {loading ? (
-            <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+            <div className="bg-white rounded p-12 text-center border border-gray-100 shadow-sm">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
               <p className="text-gray-500 text-sm font-medium">Loading access requests...</p>
             </div>
           ) : requests.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+            <div className="bg-white rounded p-12 text-center border border-gray-100 shadow-sm">
               <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 🛡️
               </div>
@@ -91,7 +92,7 @@ export default function AccessRequests() {
               {requests.map((req) => (
                 <div
                   key={req.id}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 p-6 border border-gray-200/80"
+                  className="bg-white rounded shadow-sm hover:shadow-md transition-all duration-200 p-6 border border-gray-200/80"
                 >
                   <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     {/* Doctor Info */}
@@ -162,6 +163,7 @@ export default function AccessRequests() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>

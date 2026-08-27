@@ -1,6 +1,7 @@
 import About from "../pages/About";
 import Features from "../pages/Features";
 import HeroSection from "../pages/HeroSection";
+import Footer from "./Footer"
 
 const Home = () => {
   return (
@@ -8,6 +9,7 @@ const Home = () => {
      <HeroSection />
      <About />
      <Features />
+     <Footer />
     </>
   );
 };

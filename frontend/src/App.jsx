@@ -1,7 +1,6 @@
 import { BrowserRouter , Route, Routes, useParams} from "react-router-dom"
 import  Home  from "./components/Home"
 import ProtectedRoute from './components/ProtectedRoute'
-import Footer from "./components/Footer"
 import Navbar from "./components/Navbar"
 import About from "./pages/About"
 import Register from "./auth/Register"
@@ -25,6 +24,7 @@ import VerifyEmail from "./auth/Verify-Email"
 import ResetPassword from "./auth/ResetPassword"
 import ForgotPassword from "./auth/ForgotPassword"
 import RoleSelection from "./auth/RoleSelection"
+import ChangePassword from "./auth/ChangePassword"
 
 function App() {
   const path = window.location.pathname   
@@ -33,84 +33,92 @@ function App() {
   <BrowserRouter >
   <Toaster position="top-center" /> 
     <Navbar />
-    <Routes>
-      <Route path="/" element={<Home />}/>
-      <Route path="/set-role" element={<RoleSelection />}/>
-      <Route path="/about" element={<About />}/>
-      <Route path="/register" element={<Register/>}/>
-      <Route path="/verify-email" element={<VerifyEmail />}/>
-      <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/patient/profile" element={
-        <ProtectedRoute allowedRole="patient">
-        <PatientForm />
-        </ProtectedRoute>} />
-      <Route path="/doctor/profile" element={
-        <ProtectedRoute allowedRole="doctor">
-        <DoctorForm />
-        </ProtectedRoute>} />
-      <Route path="/hospital/profile" element={
-        <ProtectedRoute allowedRole="hospital">
-        <HospitalForm />
-        </ProtectedRoute>} />
-      <Route path="/patient/dashboard" 
-      element={
-       <ProtectedRoute allowedRole="patient">
-        <PatientDashboard />
-       </ProtectedRoute>} />
-      <Route path="/doctor/dashboard" 
-       element={
-       <ProtectedRoute allowedRole="doctor"> 
-        <DoctorDashboard />
-       </ProtectedRoute>} />
-      <Route path="/doctor/records/:patientId" 
-       element={
-       <ProtectedRoute allowedRole="doctor"> 
-        <ViewRecords />
-       </ProtectedRoute>} />
-        <Route path="/doctor/access-request/sent" 
-       element={
-       <ProtectedRoute allowedRole="doctor"> 
-        <SentAccessRequests />
-       </ProtectedRoute>} />
-       <Route path="/doctor/prescriptions" 
-       element={
-       <ProtectedRoute allowedRole="doctor"> 
-        <DoctorPrescription />
-       </ProtectedRoute>} />
-        <Route path="/doctor/appointments" 
-       element={
-       <ProtectedRoute allowedRole="doctor"> 
-        <DoctorAppointment />
-       </ProtectedRoute>} />
-      <Route path="/hospital/dashboard" 
-       element={
-       <ProtectedRoute allowedRole="hospital"> 
-        <HospitalDashboard />
-       </ProtectedRoute>} />
-       <Route path="/patient/my-appointments" 
-       element={
-       <ProtectedRoute allowedRole="patient"> 
-        <MyAppointments />
-       </ProtectedRoute>} />
-       <Route path="/patient/records" 
-       element={
-       <ProtectedRoute allowedRole="patient"> 
-        <MedicalHistory />
-       </ProtectedRoute>} />
-       <Route path="/patient/prescriptions" 
-       element={
-       <ProtectedRoute allowedRole="patient"> 
-        <MyPrescriptions />
-       </ProtectedRoute>} />
-       <Route path="/patient/access-requests" 
-       element={
-       <ProtectedRoute allowedRole="patient"> 
-        <AccessRequests />
-       </ProtectedRoute>} />
-    </Routes>
-    <Footer />
+    <main className="pt-16 min-h-screen bg-slate-50/80">
+      <Routes>
+        <Route path="/" element={<Home />}/>
+        <Route path="/set-role" element={<RoleSelection />}/>
+        <Route path="/about" element={<About />}/>
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/verify-email" element={<VerifyEmail />}/>
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/patient/profile" element={
+          <ProtectedRoute allowedRole="patient">
+          <PatientForm />
+          </ProtectedRoute>} />
+        <Route path="/doctor/profile" element={
+          <ProtectedRoute allowedRole="doctor">
+          <DoctorForm />
+          </ProtectedRoute>} />
+        <Route path="/hospital/profile" element={
+          <ProtectedRoute allowedRole="hospital">
+          <HospitalForm />
+          </ProtectedRoute>} />
+        <Route path="/patient/dashboard" 
+        element={
+         <ProtectedRoute allowedRole="patient">
+          <PatientDashboard />
+         </ProtectedRoute>} />
+        <Route path="/doctor/dashboard" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
+          <DoctorDashboard />
+         </ProtectedRoute>} />
+        <Route path="/doctor/records/:patientId" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
+          <ViewRecords />
+         </ProtectedRoute>} />
+          <Route path="/doctor/access-request/sent" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
+          <SentAccessRequests />
+         </ProtectedRoute>} />
+         <Route path="/doctor/prescriptions" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
+          <DoctorPrescription />
+         </ProtectedRoute>} />
+          <Route path="/doctor/appointments" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
+          <DoctorAppointment />
+         </ProtectedRoute>} />
+        <Route path="/hospital/dashboard" 
+         element={
+         <ProtectedRoute allowedRole="hospital"> 
+          <HospitalDashboard />
+         </ProtectedRoute>} />
+         <Route path="/patient/my-appointments" 
+         element={
+         <ProtectedRoute allowedRole="patient"> 
+          <MyAppointments />
+         </ProtectedRoute>} />
+         <Route path="/patient/records" 
+         element={
+         <ProtectedRoute allowedRole="patient"> 
+          <MedicalHistory />
+         </ProtectedRoute>} />
+         <Route path="/patient/prescriptions" 
+         element={
+         <ProtectedRoute allowedRole="patient"> 
+          <MyPrescriptions />
+         </ProtectedRoute>} />
+
+         <Route path="/patient/change-password" 
+         element={
+         <ProtectedRoute allowedRole="patient"> 
+          <ChangePassword />
+         </ProtectedRoute>} />
+         
+         <Route path="/patient/access-requests" 
+         element={
+         <ProtectedRoute allowedRole="patient"> 
+          <AccessRequests />
+         </ProtectedRoute>} />
+      </Routes>
+    </main>
   </BrowserRouter>
   )
 }

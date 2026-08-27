@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import { Mail, Lock,  ShieldCheck, HeartPulse, CheckCircle2, UserCheck, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import api from "../api/axios";
-import GoogleIcon from "../components/GoogleIcon";
 
 function Register() {
   const navigate = useNavigate();
@@ -38,9 +37,9 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/80 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className=" bg-slate-50/80 flex items-center justify-center p-5">
       {/* Main Card Container */}
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-11 min-h-[660px] border border-gray-100">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-11 min-h-[600px] border border-gray-100">
         
         {/* Left Side: Hero Image & Branding */}
         <div className="lg:col-span-5 relative hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-blue-700 via-blue-600 to-teal-600 text-white overflow-hidden">

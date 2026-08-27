@@ -8,3 +8,18 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* Chrome, Edge, Safari */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* IE & Edge */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+}
