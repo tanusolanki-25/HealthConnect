@@ -10,9 +10,12 @@ import {
   Settings,
   ChevronDown,
   KeyRound,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink,Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/patient/dashboard" },
@@ -28,6 +31,18 @@ const menuItems = [
 
 export default function ({ sidebarOpen, setSidebarOpen }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+   const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out");
+      navigate("/login");
+    } catch (err) {
+      toast.error("Logout failed");
+    }
+  };
 
   return (
     <>
@@ -115,6 +130,15 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
 
         {/* Footer Note */}
         <div className="p-3 border-t border-blue-800/60 text-[11px] text-blue-300/80 text-center">
+          <div className="md:hidden p-3 border-t border-blue-800/60">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
+          </div>
           HealthConnect Portal v1.0
         </div>
       </aside>

@@ -83,14 +83,6 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <div className="flex h-full">
-        <div className="md:hidden p-2">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg bg-blue-600 text-white"
-          >
-            <Menu size={24} />
-          </button>
-        </div>
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="flex-1 min-w-0 md:ml-64 hide-scrollbar overflow-y-auto h-full p-2">
           <div className="space-y-2">
