@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Calendar, Upload, Check, X, UserCog } from "lucide-react";
+import { Calendar, Upload, Check, X, UserCog, Menu } from "lucide-react";
 import api from "../api/axios";
 import UploadRecord from "../records/UploadRecords";
 import BookAppointment from "../Appointments/BookAppointment";
 import Sidebar from "./SideBar";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -83,7 +83,15 @@ export default function PatientDashboard() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <div className="flex h-full">
-        <Sidebar />
+        <div className="md:hidden p-2">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 rounded-lg bg-blue-600 text-white"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="flex-1 min-w-0 md:ml-64 hide-scrollbar overflow-y-auto h-full p-2">
           <div className="space-y-2">
             {/* ================= HEADER ================= */}
@@ -293,7 +301,9 @@ function Section({ title, children }) {
     <div className="bg-white rounded shadow border border-gray-100 p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-5">{title}</h2>
 
-      <div className="space-y-2 hide-scrollbar overflow-scroll h-40">{children}</div>
+      <div className="space-y-2 hide-scrollbar overflow-scroll h-40">
+        {children}
+      </div>
     </div>
   );
 }

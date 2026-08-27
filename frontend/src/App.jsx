@@ -25,14 +25,16 @@ import ResetPassword from "./auth/ResetPassword"
 import ForgotPassword from "./auth/ForgotPassword"
 import RoleSelection from "./auth/RoleSelection"
 import ChangePassword from "./auth/ChangePassword"
+import { useState } from "react"
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const path = window.location.pathname   
   const token = path.split("/")[2]
   return (
   <BrowserRouter >
   <Toaster position="top-center" /> 
-    <Navbar />
+    <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
     <main className="pt-16 min-h-screen bg-slate-50/80">
       <Routes>
         <Route path="/" element={<Home />}/>
@@ -58,7 +60,7 @@ function App() {
         <Route path="/patient/dashboard" 
         element={
          <ProtectedRoute allowedRole="patient">
-          <PatientDashboard />
+          <PatientDashboard sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
          </ProtectedRoute>} />
         <Route path="/doctor/dashboard" 
          element={

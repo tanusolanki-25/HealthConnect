@@ -25,7 +25,7 @@ const NAV_LINKS = {
   ]
 }
  
-const Navbar = () => {
+const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
   const {user, logout} = useAuth()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
@@ -96,12 +96,12 @@ const Navbar = () => {
     </div>
 
     {/* Mobile Menu Button */}
-    <button
-      className="md:hidden"
-      onClick={() => setIsOpen(!isOpen)}
-    >
-      {isOpen ? <X size={28} /> : <Menu size={28} />}
-    </button>
+   <button
+  className="md:hidden"
+  onClick={() => setSidebarOpen(!sidebarOpen)}
+>
+  {sidebarOpen ? <X size={28} /> : <Menu size={28} />}
+</button>
   </div>
 
   {/* Mobile Menu */}

@@ -26,28 +26,11 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function ({ sidebarOpen, setSidebarOpen }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
-      {/* Mobile Hamburger Toggle Button */}
-      <div className="md:hidden flex items-center justify-between bg-blue-950 text-white p-3.5 rounded-xl mb-4 border border-blue-800/60 shadow-sm">
-        <div className="flex items-center gap-2.5 font-bold text-base">
-          <LayoutDashboard size={20} className="text-blue-400" />
-          <span>Patient Menu</span>
-        </div>
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-1.5 rounded-lg bg-blue-800/80 hover:bg-blue-700 transition"
-          aria-label="Toggle Navigation"
-        >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Overlay backdrop for mobile */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -55,7 +38,6 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar Container */}
       <aside
         className={`fixed top-16 md:top-18 left-0 z-40 h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] w-64 shrink-0
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
