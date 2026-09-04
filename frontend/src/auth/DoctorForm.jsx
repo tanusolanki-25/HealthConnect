@@ -1,104 +1,315 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import api from '../api/axios'
-
-
-import { useAuth } from '../context/AuthContext'
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
 
 function DoctorForm() {
-  const { register, handleSubmit } = useForm()
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const { markProfileCompleted } = useAuth()
-   
-    const onSubmit = async (data) => {
-      setLoading(true)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [preview, setPreview] = useState(null);
+  const { markProfileCompleted, user } = useAuth();
+  
+  const data = new FormData();
+
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+
+  if (file) {
+    data.append("file", file);
+  }
+};
+
+  useEffect(() => {
+    const fetchPatientProfile = async () => {
       try {
-        await api.post("/doctor/profile", data)
-        toast.success("Profile saved successfully")
-        markProfileCompleted()
-        navigate("/doctor/dashboard")
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Could not save profile")
+        const res = await api.get("/doctor/profile");
+        const profile = res.data.data;
+
+        if (profile) {
+          setIsEditMode(true);
+          setPreview(profile.fileUrl)
+          reset({
+            fullname: profile.name || "",
+            specialization: profile.specialization || "",
+            qualification: profile.qualification || "",
+            experience: profile.experience || "",
+            phone: profile.phone || "",
+            hospital: profile.hospital || "",
+            consultationFee: profile.consultationFee || "",
+            licenseNo: profile.licenseNo || "",
+            address: profile.address || "",
+          });
+        }
+      } catch (error) {
+        setIsEditMode(false);
+      } finally {
+        setFetching(false);
       }
-      finally{
-        setLoading(false)
+    };
+
+    fetchPatientProfile();
+  }, [reset, user?.email]);
+
+  const onSubmit = async (formData) => {
+    setLoading(true);
+    try {
+      const payload = {
+        name: formData.fullname,
+        specialization: formData.specialization,
+        qualification: formData.qualification,
+        fileUrl: data,
+        experience: formData.experience,
+        phone: formData.phone,
+        hospital: formData.hospital,
+        consultationFee: formData.consultationFee,
+        licenseNo: formData.licenseNo,
+        address: formData.address,
+      };
+
+      if (isEditMode) {
+        await api.patch("/doctor/update-profile", payload);
+        toast.success("Profile updated successfully!");
+      } else {
+        // Create new profile
+        await api.post("/doctor/profile", payload);
+        toast.success("Profile created successfully!");
+        markProfileCompleted();
       }
+
+      navigate("/patient/dashboard");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not save profile");
+    } finally {
+      setLoading(false);
     }
+  };
 
   return (
-     <div className="min-h-screen bg-gray-50/50 flex flex-col items-center justify-center px-4 relative overflow-hidden">
-      {/* Card */}
-      <div className="relative z-10 bg-white rounded-2xl shadow-md w-full max-w-md p-4 m-4">
-        <div className="flex items-center gap-2 text-blue-600 font-bold text-xl mb-2">
-          <img src="/favicon.png" alt="logo" className="w-12 h-12" />
-          <span>HealthConnect</span>
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 px-4 py-2 flex justify-center items-start hide-scrollbar">
+      <div className="w-full max-w-3xl bg-white rounded shadow-xl border border-gray-200 overflow-hidden ">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-2 sm:p-3 text-center text-white">
+          {isEditMode && (
+            <Link
+              to="/doctor/dashboard"
+              className="absolute top-6 left-6 inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Dashboard</span>
+            </Link>
+          )}
+          <h1 className="text-3xl font-bold">
+            {isEditMode ? "Edit Doctor Profile" : "Complete Doctor Profile"}
+          </h1>
+          <p className="text-blue-100 mt-2">
+            {isEditMode
+              ? "Update your professional details."
+              : "Complete your professional details."}
+          </p>
         </div>
 
-        <h2 className="text-4xl font-bold p-2">Enter Doctor Details</h2>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-6 sm:p-5 space-y-2"
+        >
+          {/* Profile Photo */}
+          <div className="flex justify-center">
+            <label className="relative cursor-pointer">
+              <div className="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden bg-gray-100 flex items-center justify-center">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Doctor"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-500">Photo</span>
+                )}
+              </div>
 
-        <p className="text-gray-500 p-2">
-          Complete your doctor profile
-        </p>
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm mx-auto mt-2 space-y-4">
-       <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <div className="flex items-center rounded-lg border border-gray-300 py-3 focus-within:border-blue-600">
               <input
-                {...register("name")}
-                type="full name"
-                placeholder='Mr. Rahul Kumar'
-                className="ml-3 w-full outline-none"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
               />
-            </div>
+            </label>
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Specialization
-            </label>
-            <div className="flex items-center rounded-lg border border-gray-300 py-3 focus-within:border-blue-600">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Full Name */}
+            <div>
+              <label className="block font-medium mb-2">Full Name</label>
               <input
-                {...register("specialization")} placeholder="Specialization" 
-                type='text'
-                className="ml-3 w-full outline-none"
+                type="text"
+                placeholder="Full Name"
+                {...register("fullName", {
+                  required: "Full name is required",
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.fullName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
+                )}
             </div>
-          </div>
 
-    <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              License No.
-            </label>
-            <div className="flex items-center rounded-lg border border-gray-300 py-3 focus-within:border-blue-600">
+            {/* Specialization */}
+            <div>
+              <label className="block font-medium mb-2">Specialization</label>
               <input
-               {...register("licenseNo")} 
-               placeholder="License number (optional)"
+                type="text"
+                placeholder="Cardiologist"
+                {...register("specialization", {
+                  required: "Specialization is required",
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.specialization && (
+                  <p className="text-red-500 text-xs mt-1">{errors.specialization.message}</p>
+                )}
+            </div>
+
+            {/* Qualification */}
+            <div>
+              <label className="block font-medium mb-2">Qualification</label>
+              <input
+                type="text"
+                placeholder="MBBS, MD"
+                {...register("qualification", {
+                  required: "Qualification is required",
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.qualification && (
+                  <p className="text-red-500 text-xs mt-1">{errors.qualification.message}</p>
+                )}
+            </div>
+
+            {/* Experience */}
+            <div>
+              <label className="block font-medium mb-2">
+                Experience (Years)
+              </label>
+              <input
                 type="number"
-                className="ml-3 w-full outline-none"
+                placeholder="10"
+                {...register("experience", {
+                  required: "Experience is required",
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.experience && (
+                  <p className="text-red-500 text-xs mt-1">{errors.experience.message}</p>
+                )}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="block font-medium mb-2">Phone</label>
+              <input
+                type="text"
+                placeholder="+91 9876543210"
+                {...register("phone", {
+                  required: "Phone number is required",
+                })}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.phone && (
+                  <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+                )}
+            </div>
+
+            {/* Hospital */}
+            <div>
+              <label className="block font-medium mb-2">Hospital</label>
+              <input
+                type="text"
+                placeholder="City Hospital"
+                {...register("hospital")}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            
+          {/* License */}
+          <div>
+            <label className="block font-medium mb-2">
+              Medical License Number
+            </label>
+            <input
+              type="text"
+              placeholder="LIC123456"
+              {...register("licenseNo")}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.licenseNo && (
+                  <p className="text-red-500 text-xs mt-1">{errors.licenseNo.message}</p>
+                )}
           </div>
-      
-       <button
-            type="submit"
-            disabled={loading}
-            className={`flex w-full items-center justify-center gap-2 rounded-lg p-3 ${
-                  loading
-                   ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 hover:shadow-xl"
-                }`}
-          > 
-          {loading ? "loading..." : "Save"} 
-          </button>
-      </form>
+
+            {/* Consultation Fee */}
+            <div>
+              <label className="block font-medium mb-2">Consultation Fee</label>
+              <input
+                type="number"
+                placeholder="500"
+                {...register("consultationFee")}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.consultationFee && (
+                  <p className="text-red-500 text-xs mt-1">{errors.consultationFee.message}</p>
+                )}
+            </div>
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className="block font-medium mb-2">Clinic Address</label>
+            <textarea
+              rows={4}
+              placeholder="Enter clinic address"
+              {...register("address")}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+          </div>
+
+          {/* Button */}
+          <div className="pt-6 text-center">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full sm:w-auto px-10 py-2.5 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 flex items-center justify-center gap-2 mx-auto ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 hover:shadow-blue-500/25 active:scale-[0.99]"
+              }`}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{isEditMode ? "Updating Profile..." : "Saving Profile..."}</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>{isEditMode ? "Update Profile" : "Save Profile"}</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default DoctorForm
+export default DoctorForm;

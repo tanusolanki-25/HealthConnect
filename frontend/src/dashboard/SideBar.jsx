@@ -1,15 +1,11 @@
 import {
   LayoutDashboard,
-  User,
   FileText,
   Pill,
   Calendar,
   ShieldCheck,
-  Menu,
-  X,
   Settings,
   ChevronDown,
-  KeyRound,
   LogOut,
 } from "lucide-react";
 import { useState } from "react";
@@ -17,7 +13,8 @@ import toast from "react-hot-toast";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const menuItems = [
+const menuItems = {
+  patient: [
   { name: "Dashboard", icon: LayoutDashboard, path: "/patient/dashboard" },
   { name: "Medical Records", icon: FileText, path: "/patient/records" },
   { name: "Prescriptions", icon: Pill, path: "/patient/prescriptions" },
@@ -25,13 +22,19 @@ const menuItems = [
   {
     name: "Shared Access",
     icon: ShieldCheck,
-    path: "/patient/access-requests",
-  },
-];
+    path: "/patient/access-requests",},
+]  ,
+  doctor: [
+    { name: "Dashboard", icon: LayoutDashboard, path: "/doctor/dashboard" },
+  { name: "Access Requests", icon: FileText, path: "/doctor/access-request/sent" },
+  { name: "Prescriptions", icon: Pill, path: "/doctor/prescriptions" },
+  { name: "Appointments", icon: Calendar, path: "/doctor/appointments" },
+  ],
+};
 
 export default function ({ sidebarOpen, setSidebarOpen }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
    const handleLogout = async () => {
@@ -74,7 +77,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
 
         {/* Navigation Items */}
         <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
-          {menuItems.map((item) => (
+          {menuItems[user.role]?.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
@@ -109,7 +112,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
             {isSettingsOpen && (
               <div className="absolute right-0 mt-2 w-52 rounded-lg z-50">
                 <Link
-                  to="/patient/profile"
+                  to={`/${user.role}/profile`}
                   className="flex items-center w-full rounded gap-3 px-4 py-2 hover:bg-blue-800/60"
                   onClick={() => setIsSettingsOpen(false)}
                 >
@@ -117,7 +120,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
                 </Link>
 
                 <Link
-                  to="/patient/change-password"
+                  to={`/${user.role}/change-password`}
                   className="flex items-center rounded gap-3 px-4 py-2 hover:bg-blue-800/60"
                   onClick={() => setIsSettingsOpen(false)}
                 >

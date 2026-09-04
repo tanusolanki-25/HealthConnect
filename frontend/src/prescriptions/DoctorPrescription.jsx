@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import SideBar from "../dashboard/SideBar";
 
 export default function DoctorPrescription() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -19,16 +20,20 @@ export default function DoctorPrescription() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-10 px-4">
-      <div className="bg-white max-w-5xl mx-auto ">
-      
-      <div className="max-w-5xl mx-auto bg-white rounded shadow-lg p-6">
+     <div className="h-[calc(100vh-4rem)] overflow-hidden">
+           <div className="flex h-full">
+             <SideBar />
+     
+             <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
+        <div className="flex-1 hide-scrollbar overflow-y-auto">
         {prescriptions.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-gray-500">
-              No prescriptions issued yet.
-            </p>
-          </div>
+          <div className="bg-white rounded p-12 text-center border border-gray-100 shadow-sm">
+              <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                💊
+              </div>
+              <h3 className="text-lg font-bold text-gray-800">No Prescriptions Issued</h3>
+
+            </div>
         ) : (
           <div className="space-y-5">
             {prescriptions.map((p) => (
@@ -78,6 +83,7 @@ export default function DoctorPrescription() {
             ))}
           </div>
         )}
+      </div>
       </div>
       </div>
     </div>

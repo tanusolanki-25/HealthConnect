@@ -51,7 +51,7 @@ function App() {
           </ProtectedRoute>} />
         <Route path="/doctor/profile" element={
           <ProtectedRoute allowedRole="doctor">
-          <DoctorForm />
+          <DoctorForm sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
           </ProtectedRoute>} />
         <Route path="/hospital/profile" element={
           <ProtectedRoute allowedRole="hospital">
@@ -65,7 +65,7 @@ function App() {
         <Route path="/doctor/dashboard" 
          element={
          <ProtectedRoute allowedRole="doctor"> 
-          <DoctorDashboard />
+          <DoctorDashboard sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
          </ProtectedRoute>} />
         <Route path="/doctor/records/:patientId" 
          element={
@@ -90,7 +90,7 @@ function App() {
         <Route path="/hospital/dashboard" 
          element={
          <ProtectedRoute allowedRole="hospital"> 
-          <HospitalDashboard />
+          <HospitalDashboard sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
          </ProtectedRoute>} />
          <Route path="/patient/my-appointments" 
          element={
@@ -111,6 +111,11 @@ function App() {
          <Route path="/patient/change-password" 
          element={
          <ProtectedRoute allowedRole="patient"> 
+          <ChangePassword sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+         </ProtectedRoute>} />
+         <Route path="/doctor/change-password" 
+         element={
+         <ProtectedRoute allowedRole="doctor"> 
           <ChangePassword />
          </ProtectedRoute>} />
          

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import api from "../api/axios";
 
-function ChangePassword() {
+function ChangePassword({ sidebarOpen, setSidebarOpen }) {
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -39,9 +39,8 @@ function ChangePassword() {
   return (
     <div className="">
       <div className="flex flex-col md:flex-row gap-2  max-w-9xl mx-auto">
-        <Sidebar />
-        <div className="flex-1 min-w-0 space-y-4 mt-2">
-          <div className="space-y-2">
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+<div className="flex-1 min-w-0 md:ml-64 overflow-y-auto h-full p-2">          <div className="space-y-2">
             {/* ================= HEADER ================= */}
             <div className="bg-white rounded border border-gray-200/80 p-6 shadow-sm gap-6">
               <div className="flex items-center justify-center gap-3 mb-6">

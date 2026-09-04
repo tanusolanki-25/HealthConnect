@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import Sidebar from "../dashboard/SideBar";
 import toast from "react-hot-toast";
 import { Pill, Calendar, Stethoscope, Loader2, Trash2 } from "lucide-react";
+import SideBar from "../dashboard/SideBar";
 
 export default function MyPrescriptions() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -39,7 +39,7 @@ export default function MyPrescriptions() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <div className="flex h-full">
-        <Sidebar />
+        <SideBar />
 
         <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
           {/* Header */}

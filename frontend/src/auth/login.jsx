@@ -29,6 +29,7 @@ export default function Login() {
       toast.success("Login successfully");
 
       if (!user.profileCompleted) {
+        console.log(user.profileCompleted)
         navigate(`/${user.role}/profile`);
       } else {
         navigate(`/${user.role}/dashboard`);

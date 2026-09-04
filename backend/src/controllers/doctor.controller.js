@@ -10,11 +10,13 @@ const registerDoctor = asyncHandler(async(req, res)=>{
    if(req.user.role !== 'doctor'){
     throw new ApiError(403, 'Only doctor can create a doctor profile')
    }
-
-   const {name, specialization, licenseNo, hospitalId} = req.body
    
-   if (!name || !specialization) {
-    throw new ApiError(400, "Name and specialization are required");
+   const {name, specialization, qualification, experience, phone,consultationFee, licenseNo, address, hospitalId} = req.body
+   
+   console.log(req.body)
+
+   if (!name || !specialization || !licenseNo || !qualification || !consultationFee || !experience) {
+    throw new ApiError(400, "Mandatory fields is required");
   }
 
   const existingProfile = await prisma.doctor.findUnique({
@@ -27,13 +29,26 @@ const registerDoctor = asyncHandler(async(req, res)=>{
     throw new ApiError(409, 'Doctor profile is already exists for this user')
   }
 
+  const localFilePath = req.file?.path 
+  const cloudinaryResponse = await uploadOnCloudinary(localFilePath)
+
+  if(!cloudinaryResponse){
+    throw new ApiError(500, 'File upload failed, please try again')
+  }
+
   const doctor = await prisma.doctor.create({
     data:{
       userId,
       name,
       specialization,
       licenseNo,
+      qualification,
+      experience,
       hospitalId: hospitalId || null,
+      fileUrl: cloudinaryResponse.url,
+      phone,
+      consultationFee,
+      address: address || "",
     }
   })
 
@@ -76,16 +91,24 @@ const updateDoctorAccount = asyncHandler(async(req, res)=>{
     throw new ApiError(403, 'Only doctor can update this account')
   }
 
-  const {specialization, licenseNo, hospitalId} = req.body
+  const {name, specialization, qualification, experience, phone,consultationFee, licenseNo, address, hospitalId} = req.body
 
   const updated = await prisma.doctor.update({
     where:{
       userId
     },
     data:{
+      userId,
+      name,
       specialization,
       licenseNo,
-      hospitalId
+      qualification,
+      experience,
+      hospitalId: hospitalId || null,
+      fileUrl: cloudinaryResponse.url,
+      phone,
+      consultationFee,
+      address: address || "",
     }
   })
 

@@ -3,6 +3,7 @@ import api from "../api/axios";
 import Sidebar from "../dashboard/SideBar";
 import toast from "react-hot-toast";
 import { ShieldCheck, CheckCircle2, XCircle, Clock, Loader2, Stethoscope } from "lucide-react";
+import SideBar from "../dashboard/SideBar";
 
 export default function AccessRequests() {
   const [requests, setRequests] = useState([]);
@@ -46,7 +47,7 @@ export default function AccessRequests() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <div className="flex flex-col md:flex-row gap-3 max-w-9xl mx-auto">
-        <Sidebar />
+        <SideBar />
 
         <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
           {/* Header */}

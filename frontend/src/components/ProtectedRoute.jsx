@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children, allowedRole }) {
   const { user, loading } = useAuth()
   const location = useLocation()
 
-  if (loading) return <p className="text-center mt-20">Loading...</p>
+  // if (loading) return <p className="text-center mt-20">Loading...</p>
   if (!user) return <Navigate to="/login" replace />
   if (allowedRole && user.role !== allowedRole) return <Navigate to="/" replace />
   

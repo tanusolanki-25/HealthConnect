@@ -37,9 +37,11 @@ export default function ViewRecords({ patientId: propPatientId }) {
   }
 
   return (
-    <div className="mt-20 px-6 pb-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+    <div className="p-2">
+      <div className="max-w-9xl mx-auto">
+        {records.length === 0 ? (
+          <div className="bg-white rounded shadow-md p-8 text-center text-gray-500">
+             <div className="flex items-center justify-center mb-8">
           <div>
             <h2 className="text-3xl font-bold text-blue-700">
               Patient Medical Records
@@ -49,9 +51,6 @@ export default function ViewRecords({ patientId: propPatientId }) {
             </p>
           </div>
         </div>
-
-        {records.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
             No medical records found for this patient.
           </div>
         ) : (

@@ -55,8 +55,14 @@ model Doctor {
   userId         String             @unique
   name           String
   specialization String
-  licenseNo      String?
+  licenseNo      String
+  qualification  String
+  experience     Int
   hospitalId     String?
+  fileUrl        String?
+  consultationFee   Float,
+  address           String?
+  phone             String
   permissions    AccessPermission[]
   appointments   Appointment[]
   hospital       Hospital?          @relation(fields: [hospitalId], references: [id])
