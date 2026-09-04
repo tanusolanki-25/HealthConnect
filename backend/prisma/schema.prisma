@@ -60,7 +60,7 @@ model Doctor {
   experience     Int
   hospitalId     String?
   fileUrl        String?
-  consultationFee   Float,
+  consultationFee   Float
   address           String?
   phone             String
   permissions    AccessPermission[]
