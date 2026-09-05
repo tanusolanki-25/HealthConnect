@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Calendar, Upload} from "lucide-react";
+import { Calendar, Upload } from "lucide-react";
 import api from "../api/axios";
 import UploadRecord from "../records/UploadRecords";
 import BookAppointment from "../Appointments/BookAppointment";
@@ -89,23 +89,18 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
             <div className="bg-white rounded border border-gray-200/80 p-6 shadow-sm flex flex-col lg:flex-row justify-between lg:items-center gap-6">
               {/* Profile */}
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white text-xl font-bold shadow-md shrink-0">
-                  {data.name?.slice(0, 2).toUpperCase()}
-                </div>
-
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-800">
+                  <p className=" text-gray-800 text-xl font-bold">
+                    👋 Welcome,{" "}
                     {data.name
                       .split(" ")
                       .map(
                         (word) => word.charAt(0).toUpperCase() + word.slice(1),
                       )
                       .join(" ")}
-                  </h2>
-
+                  </p>
                   <p className="text-gray-500 mt-1">
                     {data.bloodGroup && `Blood Group : ${data.bloodGroup}`}
-                    {data.contact && ` • ${data.contact}`}
                   </p>
                 </div>
               </div>
@@ -140,23 +135,66 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
               </div>
             </div>
 
-            {/* ================= PATIENT ID ================= */}
-
-            <div className="bg-white rounded shadow border border-gray-100 p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
-              <div>
-                <p className="text-sm text-gray-500">Patient ID</p>
-
-                <p className="font-semibold text-gray-800 break-all">
-                  {data.id}
-                </p>
+            <div className="bg-white rounded shadow-md p-4">
+              <div className="flex justify-between items-center mb-2 border-b">
+                <h2 className="text-xl font-bold text-slate-800">
+                  Personal Information
+                </h2>
               </div>
 
-              <button
-                onClick={handleCopyId}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition"
-              >
-                Copy ID
-              </button>
+              <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div className="flex gap-2 items-center">
+                  <p className="text-sm text-gray-500">Patient ID :</p>
+
+                  <p className="font-semibold text-gray-800 break-all">
+                    {data.id}
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleCopyId}
+                  className="text-blue-600 hover:text-blue-800 underline px-5 py-2 cursor-pointer transition"
+                >
+                  Copy ID
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">Phone</p>
+                  <p className="font-semibold">{data.phone}</p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">Gender :</p>
+                  <p className="font-semibold">{data.gender}</p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">Height :</p>
+                  <p className="font-semibold">
+                    {data.height ? `${data.height} cm` : "N/A"}
+                  </p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">Weight :</p>
+                  <p className="font-semibold">
+                    {data.weight ? `${data.weight} kg` : "N/A"}
+                  </p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">City :</p>
+                  <p className="font-semibold">{data.city || "N/A"}</p>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <p className="text-gray-500 text-sm">State :</p>
+                  <p className="font-semibold">{data.state || "N/A"}</p>
+                </div>
+              </div>
             </div>
 
             {/* ================= STATS ================= */}

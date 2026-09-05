@@ -168,11 +168,11 @@ function PatientForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/80 py-8 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
-      <div className="max-w-3xl w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+     <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 px-4 py-2 flex justify-center items-start hide-scrollbar">
+      <div className="w-full max-w-3xl bg-white rounded shadow-xl border border-gray-200 overflow-hidden ">
         
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-6 sm:p-8 text-white text-center relative">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-4 sm:p-4 text-white text-center relative">
           {isEditMode && (
             <Link
               to="/patient/dashboard"
@@ -197,10 +197,10 @@ function PatientForm() {
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-10 space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-6 space-y-4">
           
           {/* SECTION 1: Personal Information */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 border-b border-gray-200 pb-2 text-gray-800 font-bold text-lg">
               <User className="w-5 h-5 text-blue-600" />
               <span>Personal Information</span>

@@ -92,8 +92,16 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
             <div className="bg-white border-gray-100 text-blue-700 rounded p-4 shadow-sm border">
               <div className="flex items-center justify-between flex-wrap gap-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-20 h-20 rounded-full bg-blue-100 backdrop-blur flex items-center justify-center text-3xl font-bold">
-                    {data.name?.slice(0, 2).toUpperCase()}
+                  <div className="w-20 h-20 rounded-full bg-blue-100 backdrop-blur flex items-center justify-center text-3xl font-bold overflow-hidden">
+                    {data.fileUrl ? (
+                      <img
+                        src={data.fileUrl}
+                        alt="Doctor"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>{data.name?.slice(0, 2).toUpperCase()}</span>
+                    )}
                   </div>
 
                   <div>
@@ -123,6 +131,11 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
                         {data.hospital.name}
                       </p>
                     )}
+
+                    <p className="text-black mt-1">
+                      {data.experience} Years Experience
+                    </p>
+
                   </div>
                 </div>
 
@@ -322,7 +335,7 @@ function Section({ title, children }) {
   return (
     <div className="bg-white rounded shadow-lg p-6">
       <h2 className="text-xl font-bold mb-5">{title}</h2>
-       <div className="space-y-2 hide-scrollbar overflow-scroll h-30">
+      <div className="space-y-2 hide-scrollbar overflow-scroll h-30">
         {children}
       </div>
     </div>

@@ -1,14 +1,16 @@
 import { Router } from "express"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
-import { addPrescription, deleteMyAppointments, deletePrescription, getIssuedPrescriptions, getMyAppointments, getSentAccessRequests, registerDoctor, requestAccess, updateAppointmentStatus, updateDoctorAccount, uploadRecordForPatient, viewPatientRecords } from "../controllers/doctor.controller.js"
+import { addPrescription, deleteMyAppointments, deletePrescription, getDoctorProfile, getIssuedPrescriptions, getMyAppointments, getSentAccessRequests, registerDoctor, requestAccess, updateAppointmentStatus, updateDoctorAccount, uploadRecordForPatient, viewPatientRecords } from "../controllers/doctor.controller.js"
 import { getDoctorDashboard } from "../controllers/dashboard.controller.js"
 
 const router = Router()
 router.use(verifyJWT) 
  
 // ---- Profile ----
-router.post("/profile", registerDoctor)
+router.post("/profile", upload.single("file"), registerDoctor)
+router.route("/profile").get(getDoctorProfile)
+
 router.patch("/update-profile", updateDoctorAccount)
  
 // ---- Access permission ----

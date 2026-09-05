@@ -7,7 +7,9 @@ const getAllDoctors = asyncHandler(async(req, res) => {
     select: {
       id: true,
       name: true,
-      specialization: true
+      specialization: true,
+      experience: true,
+      consultationFee: true
     }
   })
   

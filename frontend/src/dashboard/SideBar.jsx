@@ -15,20 +15,25 @@ import { useAuth } from "../context/AuthContext";
 
 const menuItems = {
   patient: [
-  { name: "Dashboard", icon: LayoutDashboard, path: "/patient/dashboard" },
-  { name: "Medical Records", icon: FileText, path: "/patient/records" },
-  { name: "Prescriptions", icon: Pill, path: "/patient/prescriptions" },
-  { name: "Appointments", icon: Calendar, path: "/patient/my-appointments" },
-  {
-    name: "Shared Access",
-    icon: ShieldCheck,
-    path: "/patient/access-requests",},
-]  ,
+    { name: "Dashboard", icon: LayoutDashboard, path: "/patient/dashboard" },
+    { name: "Medical Records", icon: FileText, path: "/patient/records" },
+    { name: "Prescriptions", icon: Pill, path: "/patient/prescriptions" },
+    { name: "Appointments", icon: Calendar, path: "/patient/my-appointments" },
+    {
+      name: "Shared Access",
+      icon: ShieldCheck,
+      path: "/patient/access-requests",
+    },
+  ],
   doctor: [
     { name: "Dashboard", icon: LayoutDashboard, path: "/doctor/dashboard" },
-  { name: "Access Requests", icon: FileText, path: "/doctor/access-request/sent" },
-  { name: "Prescriptions", icon: Pill, path: "/doctor/prescriptions" },
-  { name: "Appointments", icon: Calendar, path: "/doctor/appointments" },
+    {
+      name: "Access Requests",
+      icon: FileText,
+      path: "/doctor/access-request/sent",
+    },
+    { name: "Prescriptions", icon: Pill, path: "/doctor/prescriptions" },
+    { name: "Appointments", icon: Calendar, path: "/doctor/appointments" },
   ],
 };
 
@@ -37,7 +42,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
       await logout();
       toast.success("Logged out");
@@ -69,7 +74,10 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-white">
-              Patient Portal
+              {`${user.role
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")} Portal`}
             </h1>
             <p className="text-xs text-blue-300 font-medium">Dashboard Menu</p>
           </div>

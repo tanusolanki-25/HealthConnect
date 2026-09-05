@@ -17,17 +17,16 @@ function DoctorForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [preview, setPreview] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null); // ✅ track file in state
   const { markProfileCompleted, user } = useAuth();
-  
-  const data = new FormData();
 
   const handleImageChange = (e) => {
-  const file = e.target.files[0];
-
-  if (file) {
-    data.append("file", file);
-  }
-};
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file); // ✅ store in state so onSubmit can access it
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
   useEffect(() => {
     const fetchPatientProfile = async () => {
@@ -37,9 +36,9 @@ function DoctorForm() {
 
         if (profile) {
           setIsEditMode(true);
-          setPreview(profile.fileUrl)
+          setPreview(profile.fileUrl);
           reset({
-            fullname: profile.name || "",
+            fullName: profile.name || "",           // ✅ fixed casing
             specialization: profile.specialization || "",
             qualification: profile.qualification || "",
             experience: profile.experience || "",
@@ -52,8 +51,6 @@ function DoctorForm() {
         }
       } catch (error) {
         setIsEditMode(false);
-      } finally {
-        setFetching(false);
       }
     };
 
@@ -63,30 +60,35 @@ function DoctorForm() {
   const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      const payload = {
-        name: formData.fullname,
-        specialization: formData.specialization,
-        qualification: formData.qualification,
-        fileUrl: data,
-        experience: formData.experience,
-        phone: formData.phone,
-        hospital: formData.hospital,
-        consultationFee: formData.consultationFee,
-        licenseNo: formData.licenseNo,
-        address: formData.address,
-      };
+      // ✅ Build a real FormData so multer can parse the file + text fields
+      const payload = new FormData();
+      payload.append("name", formData.fullName);        // ✅ fixed casing
+      payload.append("specialization", formData.specialization);
+      payload.append("qualification", formData.qualification);
+      payload.append("experience", formData.experience);
+      payload.append("phone", formData.phone || "");
+      payload.append("hospital", formData.hospital || "");
+      payload.append("consultationFee", formData.consultationFee);
+      payload.append("licenseNo", formData.licenseNo);
+      payload.append("address", formData.address || "");
+      if (selectedFile) {
+        payload.append("file", selectedFile);           // ✅ actual File object
+      }
 
       if (isEditMode) {
-        await api.patch("/doctor/update-profile", payload);
+        await api.patch("/doctor/update-profile", payload, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         toast.success("Profile updated successfully!");
       } else {
-        // Create new profile
-        await api.post("/doctor/profile", payload);
+        await api.post("/doctor/profile", payload, {
+          headers: { "Content-Type": "multipart/form-data" }, // ✅ tells axios/multer it's form-data
+        });
         toast.success("Profile created successfully!");
         markProfileCompleted();
       }
 
-      navigate("/patient/dashboard");
+      navigate("/doctor/dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Could not save profile");
     } finally {
@@ -100,13 +102,15 @@ function DoctorForm() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-2 sm:p-3 text-center text-white">
           {isEditMode && (
+          <div className="flex left-6"> 
             <Link
               to="/doctor/dashboard"
-              className="absolute top-6 left-6 inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
+              className="absolute inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
             >
               <ArrowLeft size={14} />
               <span>Back to Dashboard</span>
             </Link>
+            </div>
           )}
           <h1 className="text-3xl font-bold">
             {isEditMode ? "Edit Doctor Profile" : "Complete Doctor Profile"}

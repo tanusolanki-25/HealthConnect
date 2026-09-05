@@ -13,10 +13,8 @@ const registerDoctor = asyncHandler(async(req, res)=>{
    
    const {name, specialization, qualification, experience, phone,consultationFee, licenseNo, address, hospitalId} = req.body
    
-   console.log(req.body)
-
-   if (!name || !specialization || !licenseNo || !qualification || !consultationFee || !experience) {
-    throw new ApiError(400, "Mandatory fields is required");
+   if (!name || !specialization || !licenseNo || !qualification || consultationFee == null || experience == null) {
+    throw new ApiError(400, "Mandatory fields are required: name, specialization, licenseNo, qualification, consultationFee, experience");
   }
 
   const existingProfile = await prisma.doctor.findUnique({
@@ -43,11 +41,11 @@ const registerDoctor = asyncHandler(async(req, res)=>{
       specialization,
       licenseNo,
       qualification,
-      experience,
+      experience: parseInt(experience),          
       hospitalId: hospitalId || null,
       fileUrl: cloudinaryResponse.url,
       phone,
-      consultationFee,
+      consultationFee: parseFloat(consultationFee), 
       address: address || "",
     }
   })
@@ -98,16 +96,14 @@ const updateDoctorAccount = asyncHandler(async(req, res)=>{
       userId
     },
     data:{
-      userId,
       name,
       specialization,
       licenseNo,
       qualification,
-      experience,
+      experience: parseInt(experience),
       hospitalId: hospitalId || null,
-      fileUrl: cloudinaryResponse.url,
       phone,
-      consultationFee,
+      consultationFee: parseFloat(consultationFee),
       address: address || "",
     }
   })
