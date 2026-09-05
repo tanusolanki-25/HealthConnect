@@ -6,7 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const registerPatient = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, dob, gender, bloodGroup, phone, address, city, state, pincode, emergencyContactName, emergencyContactPhone, emergencyRelationship, height, weight, allergies, existingDiseases} = req.body;
+  const { name, dob, gender, bloodGroup, phone, address, city, state, pincode, emergencyContactName, emergencyContactPhone, emergencyRelationship, height, weight, allergies, existingDiseases} = req.body
 
   if (!name || !dob || !gender || !phone) {
     throw new ApiError(400, "Name, date of birth, phone and gender are required");
@@ -102,7 +102,7 @@ const updatePatientAccount = asyncHandler(async (req, res) => {
     weight,
     allergies,
     existingDiseases,
-  } = req.body;
+  } = req.body 
 
   const existingProfile = await prisma.patient.findUnique({
     where: { userId },

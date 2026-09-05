@@ -7,7 +7,7 @@ import { hasAccess } from "../utils/hasAccess.js";
 
 const registerHospital = asyncHandler(async (req, res) => {
   const userId = req.user.id
-  const { name, address, registrationNo } = req.body
+  const { name, address, registrationNo } = req.body || {}
  
   if (!name || !address) {
     throw new ApiError(400, "Name and address are required")
@@ -55,7 +55,7 @@ const updateHospitalAccount = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Only hospital accounts can update this profile")
   }
  
-  const { name, address, registrationNo } = req.body
+  const { name, address, registrationNo } = req.body || {}
  
   const updated = await prisma.hospital.update({
     where: { userId: req.user.id },

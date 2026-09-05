@@ -32,25 +32,25 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
     toast.success("Patient ID copied!");
   };
 
-  const handleApprove = async (id) => {
-    try {
-      await api.patch(`/patient/access-requests/${id}/approve`);
-      toast.success("Access approved");
-      fetchDashboard(); // refresh so the list reflects the new status
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Could not approve");
-    }
-  };
+  // const handleApprove = async (id) => {
+  //   try {
+  //     await api.patch(`/patient/access-requests/${id}/approve`);
+  //     toast.success("Access approved");
+  //     fetchDashboard(); // refresh so the list reflects the new status
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || "Could not approve");
+  //   }
+  // };
 
-  const handleDeny = async (id) => {
-    try {
-      await api.patch(`/patient/access-requests/${id}/deny`);
-      toast.success("Access denied");
-      fetchDashboard();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Could not deny");
-    }
-  };
+  // const handleDeny = async (id) => {
+  //   try {
+  //     await api.patch(`/patient/access-requests/${id}/deny`);
+  //     toast.success("Access denied");
+  //     fetchDashboard();
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || "Could not deny");
+  //   }
+  // };
 
   if (loading)
     return (
@@ -136,7 +136,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
             </div>
 
             <div className="bg-white rounded shadow-md p-4">
-              <div className="flex justify-between items-center mb-2 border-b">
+              <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-slate-800">
                   Personal Information
                 </h2>
@@ -160,7 +160,6 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              
                 <div className="flex gap-2 items-center">
                   <p className="text-gray-500 text-sm">Phone</p>
                   <p className="font-semibold">{data.phone}</p>
@@ -237,11 +236,24 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                   >
                     <div>
                       <h3 className="font-semibold text-gray-800">
-                        Dr. {appt.doctor.name}
+                        Dr.{" "}
+                        {appt.doctor.name
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
                       </h3>
 
                       <p className="text-gray-500 text-sm">
-                        {appt.doctor.specialization}
+                        {appt.doctor.specialization
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
                       </p>
                     </div>
 
@@ -266,7 +278,14 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                       </h3>
 
                       <p className="text-sm text-gray-500 mt-1">
-                        Dr. {p.doctor.name}
+                        Dr.{" "}
+                        {p.doctor.name
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
                       </p>
 
                       <p className="text-xs text-gray-400 mt-1">
@@ -284,12 +303,24 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                   data.records.slice(0, 3).map((r, i) => (
                     <div key={i} className="border-b last:border-0 py-4">
                       <h3 className="font-semibold text-gray-800">
-                        {r.recordType}
+                        {r.recordType
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
                       </h3>
 
                       <p className="text-sm text-gray-500 mt-1">
                         {r.doctor?.name
-                          ? `Dr. ${r.doctor.name}`
+                          ? `Dr. ${r.doctor.name
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1),
+                              )
+                              .join(" ")}`
                           : r.hospital?.name || "Self Uploaded"}
                       </p>
 
@@ -327,10 +358,10 @@ function StatCard({ label, value, color }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white rounded shadow border border-gray-100 p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-5">{title}</h2>
+    <div className="bg-white rounded shadow border border-gray-100 p-4">
+      <h2 className="text-xl font-bold text-gray-800 mb-2">{title}</h2>
 
-      <div className="space-y-2 hide-scrollbar overflow-scroll h-40">
+      <div className="space-y-2 hide-scrollbar overflow-scroll h-30">
         {children}
       </div>
     </div>

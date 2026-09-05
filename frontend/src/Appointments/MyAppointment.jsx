@@ -113,11 +113,21 @@ export default function MyAppointments() {
 
                         <div>
                           <h3 className="text-lg font-bold text-gray-900">
-                            Dr. {appt.doctor?.name}
+                            Dr. {appt.doctor?.name
+                            .split(" ")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
+                      )
+                      .join(" ")}
                           </h3>
 
                           <p className="text-blue-600 text-sm font-semibold mt-0.5">
-                            {appt.doctor?.specialization}
+                            {appt.doctor?.specialization
+                            .split(" ")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
+                      )
+                      .join(" ")}
                           </p>
 
                           <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-gray-500">

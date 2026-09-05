@@ -41,14 +41,18 @@ export default function DoctorPrescription() {
                 key={p.id}
                 className="bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition duration-300 p-5"
               >
-                  <h2 className="text-3xl mb-4 pb-4 border-b font-bold text-black">
-                 Prescriptions Issued
+                  <h2 className="text-2xl font-bold text-black">
+                💊 Prescriptions Issued
               </h2>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800">
+                   <p className="text-gray-700">
+                      <span className="font-medium text-gray-900">
+                        Patient:
+                      </span>{" "}
                       {p.patient.name.split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
-                    </h2>
+                    </p>
+
 
                     <p className="mt-2 text-gray-700">
                       <span className="font-medium text-gray-900">

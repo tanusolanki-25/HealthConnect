@@ -43,7 +43,7 @@ export default function MyPrescriptions() {
 
         <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
           {/* Header */}
-          <div className="bg-white rounded p-6 shadow-sm border border-gray-100 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+           <div className="bg-white rounded p-6 shadow-sm border border-gray-100 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="p-2 bg-blue-50 text-blue-600 rounded-xl">
@@ -64,7 +64,7 @@ export default function MyPrescriptions() {
           </div>
 
           {/* Prescriptions Grid */}
-          <div className="flex-1 hide-scrollbar overflow-y-auto mt-2">
+          <div className="flex-1 hide-scrollbar overflow-y-auto">
           {loading ? (
             <div className="bg-white rounded p-12 text-center border border-gray-100 shadow-sm">
               <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
@@ -85,7 +85,7 @@ export default function MyPrescriptions() {
               {prescriptions.map((p) => (
                 <div
                   key={p.id}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200/80 p-6 flex flex-col justify-between"
+                  className="bg-white rounded shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200/80 p-6 flex flex-col justify-between"
                 >
                   <div>
                     {/* Header with Doctor */}
@@ -96,10 +96,22 @@ export default function MyPrescriptions() {
                         </div>
                         <div>
                           <h3 className="text-base font-bold text-gray-900">
-                            Dr. {p.doctor?.name}
+                            Dr. {p.doctor?.name
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ")}
                           </h3>
                           <p className="text-xs text-blue-600 font-medium">
-                            {p.doctor?.specialization}
+                            {p.doctor?.specialization
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ")}
                           </p>
                         </div>
                       </div>

@@ -45,12 +45,10 @@ export default function AccessRequests() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="flex flex-col md:flex-row gap-3 max-w-9xl mx-auto">
-        <SideBar />
+<div className="h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-3 max-w-9xl mx-auto">        <SideBar />
 
-        <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
-          {/* Header */}
+<div className="flex-1 md:ml-64 h-full flex flex-col p-2">          {/* Header */}
           <div className="bg-white rounded p-6 shadow-sm border border-gray-100 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
@@ -104,11 +102,19 @@ export default function AccessRequests() {
 
                       <div>
                         <h3 className="text-lg font-bold text-gray-900">
-                          Dr. {req.doctor?.name}
+                          Dr. {req.doctor?.name.split(" ")
+                       .map(
+                         (word) =>
+                          word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}
                         </h3>
 
                         <p className="text-sm text-blue-600 font-semibold mt-0.5">
-                          {req.doctor?.specialization}
+                          {req.doctor?.specialization.split(" ")
+                       .map(
+                         (word) =>
+                          word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}
                         </p>
 
                         <p className="text-xs text-gray-400 mt-1">

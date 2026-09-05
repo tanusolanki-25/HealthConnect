@@ -117,7 +117,7 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
                     </h1>
 
                     <p className="text-black mt-1">
-                      {data.specialization
+                     🩺 {data.specialization
                         .split(" ")
                         .map(
                           (word) =>
@@ -133,7 +133,16 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
                     )}
 
                     <p className="text-black mt-1">
-                      {data.experience} Years Experience
+                    💼 Experience: {data.experience} Years
+                    </p>
+                    <p className="text-black mt-1">                 
+                     🎓 Qualification: {data.qualification
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.toUpperCase()
+                        )
+                        .join(" ")}
                     </p>
 
                   </div>

@@ -27,11 +27,14 @@ const registerDoctor = asyncHandler(async(req, res)=>{
     throw new ApiError(409, 'Doctor profile is already exists for this user')
   }
 
-  const localFilePath = req.file?.path 
-  const cloudinaryResponse = await uploadOnCloudinary(localFilePath)
-
-  if(!cloudinaryResponse){
-    throw new ApiError(500, 'File upload failed, please try again')
+  // Image is optional — only upload if a file was provided
+  let fileUrl = null
+  if (req.file?.path) {
+    const cloudinaryResponse = await uploadOnCloudinary(req.file.path)
+    if (!cloudinaryResponse) {
+      throw new ApiError(500, 'File upload failed, please try again')
+    }
+    fileUrl = cloudinaryResponse.url
   }
 
   const doctor = await prisma.doctor.create({
@@ -43,7 +46,7 @@ const registerDoctor = asyncHandler(async(req, res)=>{
       qualification,
       experience: parseInt(experience),          
       hospitalId: hospitalId || null,
-      fileUrl: cloudinaryResponse.url,
+      fileUrl,
       phone,
       consultationFee: parseFloat(consultationFee), 
       address: address || "",
@@ -89,7 +92,17 @@ const updateDoctorAccount = asyncHandler(async(req, res)=>{
     throw new ApiError(403, 'Only doctor can update this account')
   }
 
-  const {name, specialization, qualification, experience, phone,consultationFee, licenseNo, address, hospitalId} = req.body
+  const {name, specialization, qualification, experience, phone,consultationFee, licenseNo, address, hospitalId} = req.body 
+
+  // If a new profile photo was uploaded, push it to Cloudinary
+  let fileUrl
+  if (req.file?.path) {
+    const cloudinaryResponse = await uploadOnCloudinary(req.file.path)
+    if (!cloudinaryResponse) {
+      throw new ApiError(500, 'File upload failed, please try again')
+    }
+    fileUrl = cloudinaryResponse.url
+  }
 
   const updated = await prisma.doctor.update({
     where:{
@@ -105,6 +118,7 @@ const updateDoctorAccount = asyncHandler(async(req, res)=>{
       phone,
       consultationFee: parseFloat(consultationFee),
       address: address || "",
+      ...(fileUrl && { fileUrl }),   // only overwrite if a new photo was sent
     }
   })
 
@@ -326,7 +340,7 @@ const getMyAppointments = asyncHandler(async (req, res) => {
  
   const appointments = await prisma.appointment.findMany({
     where: { doctorId: doctor.id },
-    include: { patient: { select: { name: true, contact: true } } },
+    include: { patient: { select: { name: true, phone: true, address: true, allergies: true, gender: true } } },
     orderBy: { scheduledAt: "asc" }
   })
  

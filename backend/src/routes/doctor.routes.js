@@ -11,7 +11,7 @@ router.use(verifyJWT)
 router.post("/profile", upload.single("file"), registerDoctor)
 router.route("/profile").get(getDoctorProfile)
 
-router.patch("/update-profile", updateDoctorAccount)
+router.patch("/update-profile", upload.single("file"), updateDoctorAccount)
  
 // ---- Access permission ----
 router.post("/access-request", requestAccess)

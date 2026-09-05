@@ -17,8 +17,9 @@ function DoctorForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [preview, setPreview] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); // ✅ track file in state
+  const [selectedFile, setSelectedFile] = useState(null); 
   const { markProfileCompleted, user } = useAuth();
+  const [fetching, setFetching] = useState(true);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -38,7 +39,7 @@ function DoctorForm() {
           setIsEditMode(true);
           setPreview(profile.fileUrl);
           reset({
-            fullName: profile.name || "",           // ✅ fixed casing
+            fullName: profile.name || "",           
             specialization: profile.specialization || "",
             qualification: profile.qualification || "",
             experience: profile.experience || "",
@@ -51,6 +52,8 @@ function DoctorForm() {
         }
       } catch (error) {
         setIsEditMode(false);
+      }finally {
+        setFetching(false);
       }
     };
 
@@ -60,7 +63,6 @@ function DoctorForm() {
   const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      // ✅ Build a real FormData so multer can parse the file + text fields
       const payload = new FormData();
       payload.append("name", formData.fullName);        // ✅ fixed casing
       payload.append("specialization", formData.specialization);
@@ -72,7 +74,7 @@ function DoctorForm() {
       payload.append("licenseNo", formData.licenseNo);
       payload.append("address", formData.address || "");
       if (selectedFile) {
-        payload.append("file", selectedFile);           // ✅ actual File object
+        payload.append("file", selectedFile);           
       }
 
       if (isEditMode) {
@@ -82,7 +84,7 @@ function DoctorForm() {
         toast.success("Profile updated successfully!");
       } else {
         await api.post("/doctor/profile", payload, {
-          headers: { "Content-Type": "multipart/form-data" }, // ✅ tells axios/multer it's form-data
+          headers: { "Content-Type": "multipart/form-data" }, 
         });
         toast.success("Profile created successfully!");
         markProfileCompleted();
@@ -96,6 +98,17 @@ function DoctorForm() {
     }
   };
 
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <p className="text-gray-600 text-sm font-medium">Loading profile details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 px-4 py-2 flex justify-center items-start hide-scrollbar">
       <div className="w-full max-w-3xl bg-white rounded shadow-xl border border-gray-200 overflow-hidden ">
@@ -105,7 +118,7 @@ function DoctorForm() {
           <div className="flex left-6"> 
             <Link
               to="/doctor/dashboard"
-              className="absolute inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
+              className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
             >
               <ArrowLeft size={14} />
               <span>Back to Dashboard</span>
