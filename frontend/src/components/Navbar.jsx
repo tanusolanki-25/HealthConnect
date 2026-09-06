@@ -70,14 +70,14 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
               </Link>
               <Link
                 to="/login"
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400"
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400 cursor-pointer"
               >
                 Login
               </Link>
 
               <Link
                 to="/register"
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400"
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-400 cursor-pointer"
               >
                 Sign Up
               </Link>
@@ -91,7 +91,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
               )}
               <button
                 onClick={handleLogout}
-                className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-400"
+                className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-3 py-2 cursor-pointer rounded hover:bg-blue-400"
               >
                 <LogOut size={20} />
                 Logout
@@ -124,7 +124,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg text-center"
+                className="bg-blue-600 cursor-pointer text-white px-3 py-2 rounded-lg text-center"
               >
                 Login
               </Link>
@@ -132,7 +132,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
               <Link
                 to="/register"
                 onClick={() => setIsOpen(false)}
-                className="bg-blue-600 text-white px-3 py-2 rounded-lg text-center"
+                className="bg-blue-600 cursor-pointer text-white px-3 py-2 rounded-lg text-center"
               >
                 Sign Up
               </Link>
@@ -159,7 +159,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                   handleLogout();
                   setIsOpen(false);
                 }}
-                className="bg-blue-600 items-center px-3 flex gap-2 py-2 text-white rounded"
+                className="bg-blue-600 cursor-pointer items-center px-3 flex gap-2 py-2 text-white rounded"
               >
                 <LogOut size={20} />
                 Logout

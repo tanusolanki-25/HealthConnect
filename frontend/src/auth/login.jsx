@@ -163,8 +163,9 @@ export default function Login() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label className="flex justify-between text-sm font-semibold text-gray-700 mb-1.5">
                 Password
+                <Link to="/forgot-password" className="text-blue-600 underline cursor-pointer text-sm">Forgot password</Link>
               </label>
               <div className="relative flex items-center rounded-xl border border-gray-300 px-3.5 py-3 transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 bg-gray-50/50 focus-within:bg-white">
                 <Lock className="w-5 h-5 text-gray-400 flex-shrink-0" />

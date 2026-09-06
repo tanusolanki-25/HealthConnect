@@ -54,7 +54,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-[calc(100vh-4rem)] hide-scrollbar overflow-hidden flex items-center justify-center">
         <p className="text-2xl font-semibold text-blue-600 animate-pulse">
           Loading...
         </p>
@@ -109,7 +109,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setShowAppointment(true)}
-                  className="flex items-center gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
+                  className="flex items-center cursor-pointer gap-2 bg-white border border-blue-200 hover:bg-blue-50 px-5 py-3 rounded-xl transition shadow-sm font-medium"
                 >
                   <Calendar size={18} />
                   Book Appointment
@@ -122,7 +122,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
 
                 <button
                   onClick={() => setShowUploadModal(true)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition shadow-md font-medium"
+                  className="flex cursor-pointer items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition shadow-md font-medium"
                 >
                   <Upload size={18} />
                   Upload Record
@@ -136,7 +136,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
             </div>
 
             <div className="bg-white rounded shadow-md p-4">
-              <div className="flex justify-between items-center">
+              <div className="flex border-b border-gray-200 justify-between items-center">
                 <h2 className="text-xl font-bold text-slate-800">
                   Personal Information
                 </h2>
@@ -232,7 +232,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                 upcomingAppointments.map((appt, i) => (
                   <div
                     key={i}
-                    className="flex justify-between items-center border-b last:border-0 py-4"
+                    className="flex justify-between items-center border-b last:border-0 py-4 border-gray-300"
                   >
                     <div>
                       <h3 className="font-semibold text-gray-800">
@@ -272,7 +272,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                   <EmptyText text="No prescriptions available." />
                 ) : (
                   data.prescriptions.slice(0, 3).map((p, i) => (
-                    <div key={i} className="border-b last:border-0 py-4">
+                    <div key={i} className="border-b border-gray-300 last:border-0 py-4">
                       <h3 className="font-semibold text-gray-800">
                         {p.medicines}
                       </h3>
@@ -301,7 +301,7 @@ export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
                   <EmptyText text="No records uploaded." />
                 ) : (
                   data.records.slice(0, 3).map((r, i) => (
-                    <div key={i} className="border-b last:border-0 py-4">
+                    <div key={i} className="border-b border-gray-300 last:border-0 py-4">
                       <h3 className="font-semibold text-gray-800">
                         {r.recordType
                           .split(" ")
@@ -358,8 +358,8 @@ function StatCard({ label, value, color }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white rounded shadow border border-gray-100 p-4">
-      <h2 className="text-xl font-bold text-gray-800 mb-2">{title}</h2>
+    <div className="bg-white rounded shadow p-4">
+      <h2 className="text-xl border-b border-gray-200 font-bold text-gray-800">{title}</h2>
 
       <div className="space-y-2 hide-scrollbar overflow-scroll h-30">
         {children}

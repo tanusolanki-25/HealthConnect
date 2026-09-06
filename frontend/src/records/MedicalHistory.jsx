@@ -103,7 +103,7 @@ export default function MedicalHistory() {
                 <button
                   key={source}
                   onClick={() => setFilterSource(source)}
-                  className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${
+                  className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs cursor-pointer font-semibold capitalize transition ${
                     filterSource === source
                       ? "bg-blue-600 text-white shadow-sm"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
@@ -222,7 +222,7 @@ export default function MedicalHistory() {
 
                         <button
                           onClick={() => handleDelete(rec.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl transition border border-rose-100"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl transition border cursor-pointer border-rose-100"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Delete</span>

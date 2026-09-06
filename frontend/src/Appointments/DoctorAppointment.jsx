@@ -44,12 +44,12 @@ export default function DoctorAppointment() {
                 <p className="text-gray-500 text-lg">No appointments yet.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {appointments.map((appt) => (
                    <div
                     key={appt.id}
                     className="bg-white rounded shadow-md p-4">
-              <div className="flex justify-between items-center mb-2 ">
+              <div className="flex justify-between items-center ">
                 <h2 className="text-xl font-bold text-slate-800">
                   Name:{" "}
                      {appt.patient.name

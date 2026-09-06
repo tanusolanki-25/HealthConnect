@@ -81,7 +81,7 @@ export default function MyPrescriptions() {
               </p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-2 md:grid-cols-3">
               {prescriptions.map((p) => (
                 <div
                   key={p.id}

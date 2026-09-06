@@ -30,8 +30,8 @@ function ForgotPassword() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-12">
-        <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 text-center">
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 flex items-center justify-center ">
+      <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 overflow-hidden">
           
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-4 border border-emerald-100">
             <CheckCircle2 size={30} />
@@ -64,11 +64,11 @@ function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100">
-        
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 overflow-hidden hide-scrollbar">
+   
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 ">
           <div className="inline-flex items-center justify-center gap-2 mb-4">
             <img src="/favicon.png" alt="HealthConnect Logo" className="w-10 h-10 object-contain" />
             <span className="text-2xl font-bold text-blue-600 tracking-tight">HealthConnect</span>

@@ -31,11 +31,11 @@ export default function HospitalDashboard() {
 
       {/* Statistics */}
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
+      <div className="grid md:grid-cols-5 gap-6 mt-8">
 
         {[
           {
-            title: "Affiliated Doctors",
+            title: "Total Affiliated Doctors",
             value: 6,
             icon: Users,
           },
@@ -46,6 +46,16 @@ export default function HospitalDashboard() {
           },
           {
             title: "Total Appointments",
+            value: 34,
+            icon: ClipboardList,
+          },
+          {
+            title: "Total Patients",
+            value: 34,
+            icon: ClipboardList,
+          },
+          {
+            title: "Total Available Beds",
             value: 34,
             icon: ClipboardList,
           },

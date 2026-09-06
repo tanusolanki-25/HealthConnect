@@ -5,9 +5,31 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { hasAccess } from "../utils/hasAccess.js";
 
+
 const registerHospital = asyncHandler(async (req, res) => {
   const userId = req.user.id
-  const { name, address, registrationNo } = req.body || {}
+  const {
+    name,
+    registrationNumber,
+    type,
+    establishedYear,
+    email,
+    phone,
+    emergencyPhone,
+    website,
+    address,
+    city,
+    state,
+    pincode,
+    country,
+    beds,
+    doctorsCount,
+    departmentsCount,
+    openingTime,
+    closingTime,
+    is24Hours,
+    description
+  } = req.body
  
   if (!name || !address) {
     throw new ApiError(400, "Name and address are required")
@@ -19,12 +41,131 @@ const registerHospital = asyncHandler(async (req, res) => {
  
   const existingProfile = await prisma.hospital.findUnique({ where: { userId } })
   if (existingProfile) throw new ApiError(409, "Hospital profile already exists for this user")
+
+  const logoLocalPath = req.files?.logo?.[0]?.path
+  const certificateLocalPath = req.files?.certificate?.[0]?.path
+ 
+  let logoUrl = null
+  let certificateUrl = null
+ 
+  if (logoLocalPath) {
+    const logoUpload = await uploadOnCloudinary(logoLocalPath)
+    if (!logoUpload) throw new ApiError(500, "Logo upload failed, please try again")
+    logoUrl = logoUpload.url
+  }
+ 
+  if (certificateLocalPath) {
+    const certUpload = await uploadOnCloudinary(certificateLocalPath)
+    if (!certUpload) throw new ApiError(500, "Certificate upload failed, please try again")
+    certificateUrl = certUpload.url
+  }
  
   const hospital = await prisma.hospital.create({
-    data: { userId, name, address, registrationNo }
+    data: {
+      userId,
+      name,
+      registrationNumber: registrationNumber || null,
+      type: type || null,
+      establishedYear: establishedYear ? Number(establishedYear) : null,
+      email: email || null,
+      phone: phone || null,
+      emergencyPhone: emergencyPhone || null,
+      website: website || null,
+      address,
+      city: city || null,
+      state: state || null,
+      pincode: pincode || null,
+      country: country || "India",
+      beds: beds ? Number(beds) : null,
+      doctorsCount: doctorsCount ? Number(doctorsCount) : null,
+      departmentsCount: departmentsCount ? Number(departmentsCount) : null,
+      openingTime: openingTime || null,
+      closingTime: closingTime || null,
+      is24Hours: !!is24Hours,
+      description: description || null,
+      logoUrl,
+      certificateUrl
+    }
   })
  
   return res.status(201).json(new ApiResponse(201, hospital, "Hospital registered successfully"))
+})
+ 
+const updateHospitalAccount = asyncHandler(async (req, res) => {
+  if (req.user.role !== "hospital") {
+    throw new ApiError(403, "Only hospital accounts can update this profile")
+  }
+ 
+  const {
+    name,
+    registrationNumber,
+    type,
+    establishedYear,
+    email,
+    phone,
+    emergencyPhone,
+    website,
+    address,
+    city,
+    state,
+    pincode,
+    country,
+    beds,
+    doctorsCount,
+    departmentsCount,
+    openingTime,
+    closingTime,
+    is24Hours,
+    description
+  } = req.body
+ 
+  const updateData  = await prisma.hospital.update({
+    where: { userId: req.user.id },
+    data: {
+      name,
+      registrationNumber,
+      type,
+      establishedYear: establishedYear ? Number(establishedYear) : undefined,
+      email,
+      phone,
+      emergencyPhone,
+      website,
+      address,
+      city,
+      state,
+      pincode,
+      country,
+      beds: beds ? Number(beds) : undefined,
+      doctorsCount: doctorsCount ? Number(doctorsCount) : undefined,
+      departmentsCount: departmentsCount ? Number(departmentsCount) : undefined,
+      openingTime,
+      closingTime,
+      is24Hours,
+      description
+    }
+  })
+ 
+  const logoLocalPath = req.files?.logo?.[0]?.path
+  const certificateLocalPath = req.files?.certificate?.[0]?.path
+ 
+  if (logoLocalPath) {
+    const logoUpload = await uploadOnCloudinary(logoLocalPath)
+    if (!logoUpload) throw new ApiError(500, "Logo upload failed, please try again")
+    updateData.logoUrl = logoUpload.url
+  }
+ 
+  if (certificateLocalPath) {
+    const certUpload = await uploadOnCloudinary(certificateLocalPath)
+    if (!certUpload) throw new ApiError(500, "Certificate upload failed, please try again")
+    updateData.certificateUrl = certUpload.url
+  }
+ 
+  const updated = await prisma.hospital.update({
+    where: { userId: req.user.id },
+    data: updateData
+  })
+
+  return res.status(200).json(new ApiResponse(200, updated, "Hospital profile updated successfully"))
 })
 
 const getMyProfile = asyncHandler(async (req, res) => {
@@ -49,21 +190,7 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, hospital, "Hospital profile fetched successfully"))
 })
- 
-const updateHospitalAccount = asyncHandler(async (req, res) => {
-  if (req.user.role !== "hospital") {
-    throw new ApiError(403, "Only hospital accounts can update this profile")
-  }
- 
-  const { name, address, registrationNo } = req.body || {}
- 
-  const updated = await prisma.hospital.update({
-    where: { userId: req.user.id },
-    data: { name, address, registrationNo }
-  })
- 
-  return res.status(200).json(new ApiResponse(200, updated, "Hospital profile updated successfully"))
-})
+
  
 const getAffiliatedDoctors = asyncHandler(async (req, res) => {
   if (req.user.role !== "hospital") {

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { DoctorSearch } from "./DoctorSearch";
 
 function DoctorForm() {
   const {
@@ -17,7 +18,7 @@ function DoctorForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [preview, setPreview] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); 
+  const [selectedFile, setSelectedFile] = useState(null);
   const { markProfileCompleted, user } = useAuth();
   const [fetching, setFetching] = useState(true);
 
@@ -39,7 +40,7 @@ function DoctorForm() {
           setIsEditMode(true);
           setPreview(profile.fileUrl);
           reset({
-            fullName: profile.name || "",           
+            fullName: profile.name || "",
             specialization: profile.specialization || "",
             qualification: profile.qualification || "",
             experience: profile.experience || "",
@@ -52,7 +53,7 @@ function DoctorForm() {
         }
       } catch (error) {
         setIsEditMode(false);
-      }finally {
+      } finally {
         setFetching(false);
       }
     };
@@ -64,7 +65,7 @@ function DoctorForm() {
     setLoading(true);
     try {
       const payload = new FormData();
-      payload.append("name", formData.fullName);        // ✅ fixed casing
+      payload.append("name", formData.fullName); // ✅ fixed casing
       payload.append("specialization", formData.specialization);
       payload.append("qualification", formData.qualification);
       payload.append("experience", formData.experience);
@@ -74,7 +75,7 @@ function DoctorForm() {
       payload.append("licenseNo", formData.licenseNo);
       payload.append("address", formData.address || "");
       if (selectedFile) {
-        payload.append("file", selectedFile);           
+        payload.append("file", selectedFile);
       }
 
       if (isEditMode) {
@@ -84,7 +85,7 @@ function DoctorForm() {
         toast.success("Profile updated successfully!");
       } else {
         await api.post("/doctor/profile", payload, {
-          headers: { "Content-Type": "multipart/form-data" }, 
+          headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Profile created successfully!");
         markProfileCompleted();
@@ -103,7 +104,9 @@ function DoctorForm() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-          <p className="text-gray-600 text-sm font-medium">Loading profile details...</p>
+          <p className="text-gray-600 text-sm font-medium">
+            Loading profile details...
+          </p>
         </div>
       </div>
     );
@@ -115,14 +118,14 @@ function DoctorForm() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 p-2 sm:p-3 text-center text-white">
           {isEditMode && (
-          <div className="flex left-6"> 
-            <Link
-              to="/doctor/dashboard"
-              className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
-            >
-              <ArrowLeft size={14} />
-              <span>Back to Dashboard</span>
-            </Link>
+            <div className="flex left-6">
+              <Link
+                to="/doctor/dashboard"
+                className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm transition"
+              >
+                <ArrowLeft size={14} />
+                <span>Back to Dashboard</span>
+              </Link>
             </div>
           )}
           <h1 className="text-3xl font-bold">
@@ -176,8 +179,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.fullName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.fullName.message}
+                </p>
+              )}
             </div>
 
             {/* Specialization */}
@@ -192,8 +197,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.specialization && (
-                  <p className="text-red-500 text-xs mt-1">{errors.specialization.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.specialization.message}
+                </p>
+              )}
             </div>
 
             {/* Qualification */}
@@ -208,8 +215,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.qualification && (
-                  <p className="text-red-500 text-xs mt-1">{errors.qualification.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.qualification.message}
+                </p>
+              )}
             </div>
 
             {/* Experience */}
@@ -226,8 +235,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.experience && (
-                  <p className="text-red-500 text-xs mt-1">{errors.experience.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.experience.message}
+                </p>
+              )}
             </div>
 
             {/* Phone */}
@@ -242,8 +253,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.phone && (
-                  <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.phone.message}
+                </p>
+              )}
             </div>
 
             {/* Hospital */}
@@ -255,23 +268,34 @@ function DoctorForm() {
                 {...register("hospital")}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <div>
+                <p className="text-sm text-gray-600 mb-1">
+                  Hospital (optional — leave blank if independent)
+                </p>
+                <DoctorSearch
+                  searchType="hospitals"
+                  onSelect={(hospitalId) => setValue("hospitalId", hospitalId)}
+                />
+              </div>
             </div>
-            
-          {/* License */}
-          <div>
-            <label className="block font-medium mb-2">
-              Medical License Number
-            </label>
-            <input
-              type="text"
-              placeholder="LIC123456"
-              {...register("licenseNo")}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.licenseNo && (
-                  <p className="text-red-500 text-xs mt-1">{errors.licenseNo.message}</p>
-                )}
-          </div>
+
+            {/* License */}
+            <div>
+              <label className="block font-medium mb-2">
+                Medical License Number
+              </label>
+              <input
+                type="text"
+                placeholder="LIC123456"
+                {...register("licenseNo")}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.licenseNo && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.licenseNo.message}
+                </p>
+              )}
+            </div>
 
             {/* Consultation Fee */}
             <div>
@@ -283,8 +307,10 @@ function DoctorForm() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.consultationFee && (
-                  <p className="text-red-500 text-xs mt-1">{errors.consultationFee.message}</p>
-                )}
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.consultationFee.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -313,7 +339,9 @@ function DoctorForm() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>{isEditMode ? "Updating Profile..." : "Saving Profile..."}</span>
+                  <span>
+                    {isEditMode ? "Updating Profile..." : "Saving Profile..."}
+                  </span>
                 </>
               ) : (
                 <>

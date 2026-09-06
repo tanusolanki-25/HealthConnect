@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import SideBar from "../dashboard/SideBar";
+import toast from "react-hot-toast";
 
 export default function DoctorPrescription() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -16,6 +17,7 @@ export default function DoctorPrescription() {
 
   const handleDelete = async(id) =>{
     await api.delete(`/doctor/prescriptions/${id}`)
+    toast.success("Prescription delete successfully")
     fetchPrescriptions()
   }
 
@@ -35,15 +37,15 @@ export default function DoctorPrescription() {
 
             </div>
         ) : (
-          <div className="space-y-5">
+          <div className="flex-1 hide-scrollbar overflow-y-auto">
+              <h2 className="text-2xl bg-white border border-gray-200 font-bold text-center shadow-sm hover:shadow-md transition duration-300 mb-2 p-4 rounded  text-black">
+                💊 Prescriptions Issued
+              </h2>
             {prescriptions.map((p) => (
               <div
                 key={p.id}
-                className="bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition duration-300 p-5"
+                className="bg-white border border-gray-200 rounded shadow-sm mb-2 hover:shadow-md transition duration-300 p-5"
               >
-                  <h2 className="text-2xl font-bold text-black">
-                💊 Prescriptions Issued
-              </h2>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div>
                    <p className="text-gray-700">

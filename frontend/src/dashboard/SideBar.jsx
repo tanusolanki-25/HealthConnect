@@ -105,7 +105,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
           <div className="relative">
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-blue-800/60"
+              className="flex cursor-pointer items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-blue-800/60"
             >
               <Settings size={20} />
               <span>Settings</span>
@@ -118,7 +118,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
             </button>
 
             {isSettingsOpen && (
-              <div className="absolute right-0 mt-2 w-52 rounded-lg z-50">
+              <div className="absolute cursor-pointer right-0 mt-2 w-52 rounded-lg z-50">
                 <Link
                   to={`/${user.role}/profile`}
                   className="flex items-center w-full rounded gap-3 px-4 py-2 hover:bg-blue-800/60"
@@ -144,7 +144,7 @@ export default function ({ sidebarOpen, setSidebarOpen }) {
           <div className="md:hidden p-3 border-t border-blue-800/60">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition"
+              className="w-full cursor-pointer flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition"
             >
               <LogOut size={18} />
               Logout

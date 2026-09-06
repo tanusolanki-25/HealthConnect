@@ -71,16 +71,36 @@ model Doctor {
   prescriptions  Prescription[]
 }
 
+
 model Hospital {
-  id             String          @id @default(uuid())
-  name           String
-  address        String
-  registrationNo String?
-  userId         String          @unique
-  appointments   Appointment[]
-  doctors        Doctor[]
-  user           User            @relation(fields: [userId], references: [id])
-  records        MedicalRecord[]
+  id                  String          @id @default(uuid())
+  userId              String          @unique
+  user                User            @relation(fields: [userId], references: [id])
+  name                String
+  registrationNumber  String?
+  type                String?         // e.g. "Government", "Private", "Multi-specialty"
+  establishedYear     Int?
+  email               String?
+  phone               String?
+  emergencyPhone      String?
+  website             String?
+  address             String
+  city                String?
+  state               String?
+  pincode             String?
+  country             String?         @default("India")
+  beds                Int?
+  doctorsCount        Int?
+  departmentsCount    Int?
+  openingTime         String?         // "09:00" jaisa simple string
+  closingTime         String?
+  logoUrl             String?
+  certificateUrl      String?
+  is24Hours           Boolean         @default(false)
+  description         String?
+  doctors             Doctor[]
+  records             MedicalRecord[]
+  appointments        Appointment[]
 }
 
 model AccessPermission {

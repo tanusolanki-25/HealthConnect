@@ -17,7 +17,7 @@ function ChangePassword({ sidebarOpen, setSidebarOpen }) {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      api.post("/auth/change-password", data)
+      api.patch("/auth/change-password", data)
       toast.success("Password changed successfully");
       reset();
     } catch (error) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Select from "react-select";
 import toast from "react-hot-toast";
+import { DoctorSearch } from "../auth/DoctorSearch";
 
 export default function BookAppointment({
   showAppointment,
@@ -152,7 +153,7 @@ export default function BookAppointment({
             {/* Body */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Doctor */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Select Doctor
                 </label>
@@ -168,7 +169,8 @@ export default function BookAppointment({
                     SingleValue: CustomSingleValue,
                   }}
                 />
-              </div>
+              </div> */}
+              <DoctorSearch />
 
               {/* Date */}
               <div>

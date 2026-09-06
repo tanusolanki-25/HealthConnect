@@ -118,7 +118,7 @@ const updateDoctorAccount = asyncHandler(async(req, res)=>{
       phone,
       consultationFee: parseFloat(consultationFee),
       address: address || "",
-      ...(fileUrl && { fileUrl }),   // only overwrite if a new photo was sent
+      ...(fileUrl && { fileUrl }),   
     }
   })
 
