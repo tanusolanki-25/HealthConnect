@@ -190,7 +190,6 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, hospital, "Hospital profile fetched successfully"))
 })
-
  
 const getAffiliatedDoctors = asyncHandler(async (req, res) => {
   if (req.user.role !== "hospital") {
@@ -202,12 +201,45 @@ const getAffiliatedDoctors = asyncHandler(async (req, res) => {
  
   const doctors = await prisma.doctor.findMany({
     where: { hospitalId: hospital.id },
-    select: { id: true, name: true, specialization: true, licenseNo: true }
+    select: { id: true, name: true, specialization: true, licenseNo: true, fileUrl: true, }
   })
  
   return res
     .status(200)
     .json(new ApiResponse(200, doctors, "Affiliated doctors fetched successfully"))
+})
+
+const getDoctorDetails = asyncHandler(async (req, res) => {
+  if (req.user.role !== "hospital") {
+    throw new ApiError(403, "Only hospital accounts can view doctor details")
+  }
+ 
+  const hospital = await prisma.hospital.findUnique({ where: { userId: req.user.id } })
+  if (!hospital) throw new ApiError(404, "Hospital profile not found")
+ 
+  const doctor = await prisma.doctor.findUnique({
+    where: { id: req.params.doctorId },
+    select: {
+      id: true,
+      name: true,
+      specialization: true,
+      licenseNo: true,
+      fileUrl: true,
+      hospitalId: true,
+      phone: true,
+      user: { select: { email: true, createdAt: true } },
+      _count: {
+        select: { appointments: true, prescriptions: true }
+      }
+    }
+})
+if (!doctor || doctor.hospitalId !== hospital.id) {
+    throw new ApiError(404, "Doctor is not affiliated with your hospital")
+  }
+ 
+  return res
+    .status(200)
+    .json(new ApiResponse(200, doctor, "Doctor details fetched successfully"))
 })
 
 const removeDoctorAffiliation = asyncHandler(async (req, res) => {
@@ -362,6 +394,7 @@ export {
   getHospitalAppointments,
   getHospitalRecords,
   uploadRecordForPatient,
-  viewPatientRecords
+  viewPatientRecords,
+  getDoctorDetails
 }
  

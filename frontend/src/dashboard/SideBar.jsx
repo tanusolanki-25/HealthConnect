@@ -35,6 +35,11 @@ const menuItems = {
     { name: "Prescriptions", icon: Pill, path: "/doctor/prescriptions" },
     { name: "Appointments", icon: Calendar, path: "/doctor/appointments" },
   ],
+  hospital: [
+    { name: "Dashboard", icon: Pill, path: "/hospital/dashboard" },
+    { name: "Doctors", icon: Calendar, path: "/hospital/doctors" },
+    { name: "Appointments", icon: Calendar, path: "/hospital/appointments" },
+   ]
 };
 
 export default function ({ sidebarOpen, setSidebarOpen }) {

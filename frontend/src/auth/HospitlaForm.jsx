@@ -143,7 +143,7 @@ function HospitlForm() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-[calc(100vh-4rem)] overflow-hidden flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
           <p className="text-gray-600 text-sm font-medium">Loading profile details...</p>

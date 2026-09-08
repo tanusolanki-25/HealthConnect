@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
-import { getAffiliatedDoctors, getHospitalAppointments, getHospitalRecords, getMyProfile, registerHospital, removeDoctorAffiliation, updateHospitalAccount } from "../controllers/hospital.controller.js"
+import { getAffiliatedDoctors, getDoctorDetails, getHospitalAppointments, getHospitalRecords, getMyProfile, registerHospital, removeDoctorAffiliation, updateHospitalAccount } from "../controllers/hospital.controller.js"
 import { getHospitalDashboard } from "../controllers/dashboard.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 
@@ -21,6 +21,7 @@ router.get("/profile", getMyProfile)
 
 // ---- Doctors ----
 router.get("/doctors", getAffiliatedDoctors)
+router.get("/doctors/:doctorId", getDoctorDetails)
 router.delete("/doctors/:doctorId", removeDoctorAffiliation)
 
 // ---- Appointments ----

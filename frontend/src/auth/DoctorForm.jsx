@@ -12,6 +12,7 @@ function DoctorForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -30,6 +31,8 @@ function DoctorForm() {
     }
   };
 
+  const [initialHospital, setInitialHospital] = useState(null);
+
   useEffect(() => {
     const fetchPatientProfile = async () => {
       try {
@@ -39,13 +42,16 @@ function DoctorForm() {
         if (profile) {
           setIsEditMode(true);
           setPreview(profile.fileUrl);
+          if (profile.hospital) {
+            setInitialHospital(profile.hospital);
+          }
           reset({
             fullName: profile.name || "",
             specialization: profile.specialization || "",
             qualification: profile.qualification || "",
             experience: profile.experience || "",
             phone: profile.phone || "",
-            hospital: profile.hospital || "",
+            hospitalId: profile.hospitalId || profile.hospital?.id || "",
             consultationFee: profile.consultationFee || "",
             licenseNo: profile.licenseNo || "",
             address: profile.address || "",
@@ -70,7 +76,7 @@ function DoctorForm() {
       payload.append("qualification", formData.qualification);
       payload.append("experience", formData.experience);
       payload.append("phone", formData.phone || "");
-      payload.append("hospital", formData.hospital || "");
+      payload.append("hospitalId", formData.hospitalId || "");
       payload.append("consultationFee", formData.consultationFee);
       payload.append("licenseNo", formData.licenseNo);
       payload.append("address", formData.address || "");
@@ -101,7 +107,7 @@ function DoctorForm() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-[calc(100vh-4rem)] overflow-hidden flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
           <p className="text-gray-600 text-sm font-medium">
@@ -140,8 +146,7 @@ function DoctorForm() {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="p-6 sm:p-5 space-y-2"
-        >
+          className="p-6 sm:p-5 space-y-2">
           {/* Profile Photo */}
           <div className="flex justify-center">
             <label className="relative cursor-pointer">
@@ -169,7 +174,7 @@ function DoctorForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Full Name */}
             <div>
-              <label className="block font-medium mb-2">Full Name</label>
+              <label className="block font-medium mb-2">Full Name<span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Full Name"
@@ -187,7 +192,7 @@ function DoctorForm() {
 
             {/* Specialization */}
             <div>
-              <label className="block font-medium mb-2">Specialization</label>
+              <label className="block font-medium mb-2">Specialization<span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Cardiologist"
@@ -205,7 +210,7 @@ function DoctorForm() {
 
             {/* Qualification */}
             <div>
-              <label className="block font-medium mb-2">Qualification</label>
+              <label className="block font-medium mb-2">Qualification<span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="MBBS, MD"
@@ -225,6 +230,7 @@ function DoctorForm() {
             <div>
               <label className="block font-medium mb-2">
                 Experience (Years)
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -243,7 +249,7 @@ function DoctorForm() {
 
             {/* Phone */}
             <div>
-              <label className="block font-medium mb-2">Phone</label>
+              <label className="block font-medium mb-2">Phone<span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="+91 9876543210"
@@ -261,33 +267,26 @@ function DoctorForm() {
 
             {/* Hospital */}
             <div>
-              <label className="block font-medium mb-2">Hospital</label>
-              <input
-                type="text"
-                placeholder="City Hospital"
-                {...register("hospital")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              <DoctorSearch
+                searchType="hospitals"
+                defaultValue={initialHospital}
+                onSelect={(hospital) => setValue("hospitalId", hospital ? hospital.value : "")}
               />
-              <div>
-                <p className="text-sm text-gray-600 mb-1">
-                  Hospital (optional — leave blank if independent)
-                </p>
-                <DoctorSearch
-                  searchType="hospitals"
-                  onSelect={(hospitalId) => setValue("hospitalId", hospitalId)}
-                />
-              </div>
+
+              <input type="hidden" {...register("hospitalId")} />
             </div>
 
             {/* License */}
             <div>
               <label className="block font-medium mb-2">
-                Medical License Number
+                Medical License Number<span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="LIC123456"
-                {...register("licenseNo")}
+                {...register("licenseNo", {
+                  required: "License Number is required",
+                })}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.licenseNo && (
@@ -299,11 +298,13 @@ function DoctorForm() {
 
             {/* Consultation Fee */}
             <div>
-              <label className="block font-medium mb-2">Consultation Fee</label>
+              <label className="block font-medium mb-2">Consultation Fee<span className="text-red-500">*</span></label>
               <input
                 type="number"
                 placeholder="500"
-                {...register("consultationFee")}
+                {...register("consultationFee", {
+                  required: "Consultation Fee is required",
+                })}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.consultationFee && (
@@ -316,13 +317,20 @@ function DoctorForm() {
 
           {/* Address */}
           <div>
-            <label className="block font-medium mb-2">Clinic Address</label>
+            <label className="block font-medium mb-2">Clinic Address<span className="text-red-500">*</span></label>
             <textarea
               rows={4}
               placeholder="Enter clinic address"
-              {...register("address")}
+              {...register("address", {
+                  required: "Address is required",
+                })}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
+             {errors.address && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.address.message}
+                </p>
+              )}
           </div>
 
           {/* Button */}

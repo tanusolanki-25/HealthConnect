@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Send, Check, X } from "lucide-react";
+import {
+  Send,
+  Check,
+  X,
+  Hospital,
+  Briefcase,
+  GraduationCap,
+  Phone,
+  Stethoscope,
+} from "lucide-react";
 import api from "../api/axios";
 import SideBar from "./SideBar";
 
@@ -53,7 +62,7 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-[calc(100vh-4rem)] overflow-hidden flex items-center justify-center">
         <p className="text-2xl font-semibold text-blue-600 animate-pulse">
           Loading...
         </p>
@@ -108,43 +117,61 @@ export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
                     <h1 className="text-3xl text-black font-bold">
                       Dr.{" "}
                       {data.name
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() + word.slice(1),
-                        )
-                        .join(" ")}
+                        ? data.name
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1),
+                            )
+                            .join(" ")
+                        : ""}
                     </h1>
-
-                    <p className="text-black mt-1">
-                     🩺 {data.specialization
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() + word.slice(1),
-                        )
-                        .join(" ")}
-                    </p>
-
-                    {data.hospital && (
-                      <p className="text-sm text-blue-200">
-                        {data.hospital.name}
-                      </p>
-                    )}
-
-                    <p className="text-black mt-1">
-                    💼 Experience: {data.experience} Years
-                    </p>
-                    <p className="text-black mt-1">                 
-                     🎓 Qualification: {data.qualification
-                        .split(" ")
-                        .map(
-                          (word) =>
-                            word.toUpperCase()
-                        )
-                        .join(" ")}
-                    </p>
-
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-2">
+                    <div className="flex items-center gap-2">
+                        <Stethoscope className="w-5 h-5 text-red-500" />
+                       <span> {data.specialization
+                          ? data.specialization
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1),
+                              )
+                              .join(" ")
+                          : ""}
+                      </span></div>
+                      {data.hospital && (
+                        <div className="flex items-center gap-2">
+                          <Hospital className="w-5 h-5 text-red-500" />
+                          <span>
+                            {data.hospital.name
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1),
+                              )
+                              .join(" ")}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="w-5 h-5 text-amber-600" />
+                        <span>Experience: {data.experience} Years</span>
+                      </div>
+                      {data.qualification && (
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="w-5 h-5 text-gray-700" />
+                          <span>
+                            Qualification:{" "}
+                            {data.qualification
+                              ? data.qualification
+                                  .split(" ")
+                                  .map((word) => word.toUpperCase())
+                                  .join(" ")
+                              : ""}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

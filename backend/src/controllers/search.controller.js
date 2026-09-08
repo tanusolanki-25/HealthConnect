@@ -12,12 +12,29 @@ const getAllDoctors = asyncHandler(async(req, res) => {
       consultationFee: true
     }
   })
-  
+
   return res
   .status(200)
   .json(
     new ApiResponse(200, doctors, ''))
 })
+
+const getAllHospitals = asyncHandler(async(req, res) => {
+  const hospitals = await prisma.hospital.findMany({
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      city: true,
+    }
+  })
+  
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200, hospitals, ''))
+})
+
 
 // controllers/search.controller.js
 const searchHospitals = asyncHandler(async (req, res) => {
@@ -31,5 +48,6 @@ const searchHospitals = asyncHandler(async (req, res) => {
 
 export{
   getAllDoctors,
-  searchHospitals
+  searchHospitals,
+  getAllHospitals
 }

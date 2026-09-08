@@ -61,7 +61,7 @@ model Doctor {
   hospitalId     String?
   fileUrl        String?
   consultationFee   Float
-  address           String?
+  address           String
   phone             String
   permissions    AccessPermission[]
   appointments   Appointment[]
@@ -78,7 +78,7 @@ model Hospital {
   user                User            @relation(fields: [userId], references: [id])
   name                String
   registrationNumber  String?
-  type                String?         // e.g. "Government", "Private", "Multi-specialty"
+  type                String?         
   establishedYear     Int?
   email               String?
   phone               String?

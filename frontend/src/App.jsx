@@ -10,7 +10,7 @@ import DoctorForm from "./auth/DoctorForm"
 import HospitalForm from "./auth/HospitlaForm"
 import PatientDashboard from "./dashboard/PatientDashboard"
 import DoctorDashboard from "./dashboard/DoctorDashboard"
-import HospitalDashboard from "./dashboard/HospitalDashboard"
+import HospitalDashboard from "./hospital/HospitalDashboard"
 import MyAppointments from "./Appointments/MyAppointment"
 import MedicalHistory from "./records/MedicalHistory"
 import MyPrescriptions from "./prescriptions/MyPrescriptions"
@@ -26,11 +26,15 @@ import ForgotPassword from "./auth/ForgotPassword"
 import RoleSelection from "./auth/RoleSelection"
 import ChangePassword from "./auth/ChangePassword"
 import { useState } from "react"
+import DoctorList from "./hospital/DoctorList"
+import DoctorDetails from "./hospital/Doctors/DoctorDetails"
+
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const path = window.location.pathname   
   const token = path.split("/")[2]
+  
   return (
   <BrowserRouter >
   <Toaster position="top-center" /> 
@@ -107,7 +111,16 @@ function App() {
          <ProtectedRoute allowedRole="patient"> 
           <MyPrescriptions />
          </ProtectedRoute>} />
-
+         <Route path="/hospital/doctors" 
+         element={
+         <ProtectedRoute allowedRole="hospital"> 
+          <DoctorList />
+         </ProtectedRoute>} />
+          <Route path="/hospital/doctors/:doctorId" 
+         element={
+         <ProtectedRoute allowedRole="hospital"> 
+          <DoctorDetails />
+         </ProtectedRoute>} />
          <Route path="/patient/change-password" 
          element={
          <ProtectedRoute allowedRole="patient"> 
@@ -116,6 +129,11 @@ function App() {
          <Route path="/doctor/change-password" 
          element={
          <ProtectedRoute allowedRole="doctor"> 
+          <ChangePassword />
+         </ProtectedRoute>} />
+         <Route path="/hospital/change-password" 
+         element={
+         <ProtectedRoute allowedRole="hospital"> 
           <ChangePassword />
          </ProtectedRoute>} />
          
