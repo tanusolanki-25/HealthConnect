@@ -1,34 +1,11 @@
 import { useEffect, useState } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
 import toast from "react-hot-toast";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../../dashboard/SideBar";
 import { ExternalLink, FileText, Loader2, Pill } from "lucide-react";
 import { Search, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// const doctors = [
-//   {
-//     id: 1,
-//     name: "Dr. Amit Sharma",
-//     department: "Cardiology",
-//     status: "Active",
-//     image: "https://i.pravatar.cc/150?img=11",
-//   },
-//   {
-//     id: 2,
-//     name: "Dr. Neha Verma",
-//     department: "Neurology",
-//     status: "Active",
-//     image: "https://i.pravatar.cc/150?img=32",
-//   },
-//   {
-//     id: 3,
-//     name: "Dr. Raj Mehta",
-//     department: "Orthopedic",
-//     status: "On Leave",
-//     image: "https://i.pravatar.cc/150?img=15",
-//   },
-// ];
 
 const DoctorList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,6 +35,14 @@ const DoctorList = () => {
     fetchDoctors();
     toast.success("Doctor records deleted successfully");
   };
+
+  const filteredRecords = doctors.filter((rec) => {
+    const query = searchQuery.toLowerCase();
+    const matchesSearch =
+      rec.name?.toLowerCase().includes(query) ||
+      rec.specialization?.toLowerCase().includes(query);
+    return matchesSearch;
+  });
 
   if (loading) {
     return (
@@ -118,7 +103,7 @@ const DoctorList = () => {
               </thead>
 
               <tbody>
-                {doctors.map((doctor) => (
+                {filteredRecords.map((doctor) => (
                   <tr
                     key={doctor.id}
                     className="border-b border-gray-300 hover:bg-slate-50 transition"

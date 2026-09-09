@@ -1,5 +1,4 @@
 import React from 'react'
-import doctorimg from "../assets/doctorimg.png"
 
 function Features() {
  return (
@@ -18,34 +17,14 @@ function Features() {
 
       {/* Testimonial */}
       <h2 className="mt-8 text-3xl md:text-5xl font-bold leading-relaxed">
-        "The most secure way for my patients to
+        "The most secure way for patients to
         <span className="text-cyan-200"> share their medical history.</span>"
       </h2>
 
       <p className="mt-6 text-lg text-blue-100 max-w-2xl mx-auto leading-8">
-        HealthConnect has transformed the way I access patient records.
-        Everything is secure, organized, and available exactly when I need it.
+        HealthConnect has transformed the way Doctor access patient records.
+        Everything is secure, organized, and available exactly when Doctor need it.
       </p>
-
-      {/* Doctor */}
-      <div className="mt-10 flex flex-col items-center">
-
-        <img
-          src={doctorimg}
-          alt="Dr. James Wilson"
-          className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-2xl"
-        />
-
-        <h3 className="mt-5 text-2xl font-bold">
-          Dr. James Wilson
-        </h3>
-
-        <p className="mt-1 text-blue-100 font-medium tracking-wide">
-          Cardiologist • St. Jude's Hospital
-        </p>
-
-      </div>
-
     </div>
   </section>
 )

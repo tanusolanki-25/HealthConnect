@@ -46,7 +46,7 @@ export default function Login() {
   }
 
   return (
-   <div className="bg-slate-50/80 flex items-center justify-center p-2">
+   <div className="bg-slate-50/80 flex items-center hide-scrollbar justify-center p-2">
       {/* Main Card Container */}
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-11 min-h-[630px] border border-gray-100">
         

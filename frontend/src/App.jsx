@@ -26,8 +26,9 @@ import ForgotPassword from "./auth/ForgotPassword"
 import RoleSelection from "./auth/RoleSelection"
 import ChangePassword from "./auth/ChangePassword"
 import { useState } from "react"
-import DoctorList from "./hospital/DoctorList"
+import DoctorList from "./hospital/Doctors/DoctorList"
 import DoctorDetails from "./hospital/Doctors/DoctorDetails"
+import HospitalAppointment from "./Appointments/HospitalAppointment"
 
 
 function App() {
@@ -115,6 +116,11 @@ function App() {
          element={
          <ProtectedRoute allowedRole="hospital"> 
           <DoctorList />
+         </ProtectedRoute>} />
+         <Route path="/hospital/appointments" 
+         element={
+         <ProtectedRoute allowedRole="hospital"> 
+          <HospitalAppointment />
          </ProtectedRoute>} />
           <Route path="/hospital/doctors/:doctorId" 
          element={

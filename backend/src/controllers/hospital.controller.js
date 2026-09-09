@@ -209,6 +209,25 @@ const getAffiliatedDoctors = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, doctors, "Affiliated doctors fetched successfully"))
 })
 
+const setDoctorStatus = asyncHandler(async (req, res) => {
+  if (req.user.role !== "doctor") {
+    throw new ApiError(403, "Only doctor accounts can update their status")
+  }
+ 
+  const { status } = req.body
+ 
+  if (!["available", "busy", "on_leave"].includes(status)) {
+    throw new ApiError(400, "status must be 'available', 'busy', or 'on_leave'")
+  }
+ 
+  const updated = await prisma.doctor.update({
+    where: { userId: req.user.id },
+    data: { status }
+  })
+ 
+  return res.status(200).json(new ApiResponse(200, updated, "Status updated successfully"))
+})
+
 const getDoctorDetails = asyncHandler(async (req, res) => {
   if (req.user.role !== "hospital") {
     throw new ApiError(403, "Only hospital accounts can view doctor details")
@@ -395,6 +414,7 @@ export {
   getHospitalRecords,
   uploadRecordForPatient,
   viewPatientRecords,
-  getDoctorDetails
+  getDoctorDetails,
+  setDoctorStatus
 }
  
