@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
 import SideBar from "../../dashboard/SideBar";
-import { ExternalLink, FileText, Loader2, Pill } from "lucide-react";
+import { ArrowRight, CalendarDays, ClipboardList, ExternalLink, FileText, Loader2, Pill, ShieldCheck, Users } from "lucide-react";
 import { Search, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
-const DoctorList = () => {
+const DoctorList = ({ sidebarOpen, setSidebarOpen }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const DoctorList = () => {
     setLoading(true);
     try {
       const res = await api.get("/hospital/doctors");
-      setDoctors(res.data.data);
+      setDoctors(res.data.data || []);
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Could not fetch doctor records",
@@ -30,10 +30,17 @@ const DoctorList = () => {
     }
   };
 
-  const handleDelete = async (doctorId) => {
-    await api.delete(`/hospital/doctors/${doctorId}`);
-    fetchDoctors();
-    toast.success("Doctor records deleted successfully");
+  const handleRemoveDoctor = async (doctorId, doctorName) => {
+    if (!window.confirm(`Are you sure you want to remove Dr. ${doctorName} from this hospital?`)) {
+      return;
+    }
+    try {
+      await api.delete(`/hospital/doctors/${doctorId}`);
+      toast.success("Doctor affiliation removed successfully");
+      fetchDashboard();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to remove doctor");
+    }
   };
 
   const filteredRecords = doctors.filter((rec) => {
@@ -44,9 +51,10 @@ const DoctorList = () => {
     return matchesSearch;
   });
 
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-[calc(100vh-4rem)] overflow-hidden flex items-center justify-center">
         <p className="text-2xl font-semibold text-blue-600 animate-pulse">
           Loading doctor records...
         </p>
@@ -57,8 +65,8 @@ const DoctorList = () => {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <div className="h-full">
-        <SideBar />
-        <div className="flex-1 md:ml-64 h-full flex flex-col p-2">
+        <SideBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="flex-1 md:ml-64 h-full flex flex-col p-2  ">
           {/* Header */}
           <div className="bg-white rounded p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between md:items-center gap-5 mb-2">
             <div>
@@ -70,12 +78,12 @@ const DoctorList = () => {
               </p>
             </div>
             <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-semibold self-start sm:self-auto border border-blue-100">
-              Total: 0
+              Total: {doctors.length}
             </div>
           </div>
 
           {/* Search + Filters */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-2">
             {/* Search bar */}
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -90,86 +98,103 @@ const DoctorList = () => {
           </div>
 
           {/* Table */}
-          <div className="mt-2 overflow-x-auto bg-white rounded p-6 shadow-sm border border-gray-100">
-            <table className="w-full">
-              <thead className="bg-slate-100">
-                <tr>
-                  <th className="text-left p-4">Photo</th>
-                  <th className="text-left p-4">Doctor Name</th>
-                  <th className="text-left p-4">Specialization</th>
-                  <th className="text-left p-4">Status</th>
-                  <th className="text-center p-4">Actions</th>
-                </tr>
-              </thead>
+           <div className="grid grid-cols-1 lg:grid-cols-1 overflow-y-auto hide-scrollbar h-full">
+            {/* Affiliated Doctors */}
+            <div className="bg-white border border-blue-100 rounded shadow-sm p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Users className="text-blue-600" size={20} />
+                    <h2 className="text-lg font-bold text-slate-800">
+                      Affiliated Doctors ({doctors.length})
+                    </h2>
+                  </div>
+                </div>
 
-              <tbody>
-                {filteredRecords.map((doctor) => (
-                  <tr
-                    key={doctor.id}
-                    className="border-b border-gray-300 hover:bg-slate-50 transition"
-                  >
-                    <td className="p-4">
-                      {doctor.fileUrl ? (
-                        <img
-                          src={doctor.fileUrl}
-                          alt={doctor.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full border-4 bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border-blue-100">
-                          <FileText className="w-6 h-6" />
-                        </div>
-                      )}
-                    </td>
-
-                    <td className="p-4 font-semibold text-slate-700">
-                      {doctor.name.split(" ")
-                                .map(
-                                  (w) => w.charAt(0).toUpperCase() + w.slice(1),
-                                )
-                                .join(" ")}
-                    </td>
-
-                    <td className="p-4 text-slate-600">{doctor.specialization.split(" ")
-                                .map(
-                                  (w) => w.charAt(0).toUpperCase() + w.slice(1),
-                                )
-                                .join(" ")}</td>
-
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          doctor.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
+                {doctors.length === 0 ? (
+                  <div className="text-center py-10">
+                    <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                      👨‍⚕️
+                    </div>
+                    <p className="text-slate-500 text-sm font-medium">
+                      No affiliated doctors yet.
+                    </p>
+                    <p className="text-slate-400 text-xs mt-1">
+                      Doctors can select this hospital when registering or updating their profile.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100 mt-2">
+                    {filteredRecords.slice(0, 5).map((doc) => (
+                      <div
+                        key={doc.id}
+                        className="py-5 flex items-center justify-between gap-3 hover:bg-slate-50/60 px-2 rounded-xl transition"
                       >
-                        {doctor.status}
-                      </span>
-                    </td>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden border border-blue-100">
+                            {doc.fileUrl ? (
+                              <img
+                                src={doc.fileUrl}
+                                alt={doc.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span>
+                                {doc.name
+                                  ?.split(" ")
+                                  .map((w) => w.charAt(0).toUpperCase())
+                                  .slice(0, 2)
+                                  .join("")}
+                              </span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="font-semibold text-slate-800 truncate">
+                              Dr.{" "}
+                              {doc.name
+                                ? doc.name
+                                    .split(" ")
+                                    .map(
+                                      (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                                    )
+                                    .join(" ")
+                                : "Doctor"}
+                            </h3>
+                            <p className=" text-blue-600 font-medium truncate">
+                              {doc.specialization.split(" ")
+                                    .map(
+                                      (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                                    )
+                                    .join(" ") || "General Physician"}
+                              {doc.qualification ? ` • ${doc.qualification}` : ""}
+                            </p>
+                          </div>
+                        </div>
 
-                    <td className="p-4">
-                      <div className="flex justify-center gap-3">
-                        <Link
-                          to={`/hospital/doctors/${doctor.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-xl transition"
-                        >
-                          View <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(doctor.id)}
-                          className="w-10 h-10 rounded-lg bg-red-100 hover:bg-red-200 flex items-center justify-center text-red-600"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Link
+                            to={`/hospital/doctors/${doc.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                            title="View Doctor Details"
+                          >
+                            <ExternalLink size={18} />
+                          </Link>
+                          <button
+                            onClick={() => handleRemoveDoctor(doc.id, doc.name)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                            title="Remove Affiliation"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

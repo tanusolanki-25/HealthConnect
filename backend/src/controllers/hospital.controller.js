@@ -3,7 +3,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { hasAccess } from "../utils/hasAccess.js";
 
 
 const registerHospital = asyncHandler(async (req, res) => {
@@ -201,7 +200,7 @@ const getAffiliatedDoctors = asyncHandler(async (req, res) => {
  
   const doctors = await prisma.doctor.findMany({
     where: { hospitalId: hospital.id },
-    select: { id: true, name: true, specialization: true, licenseNo: true, fileUrl: true, }
+    select: { id: true, name: true, specialization: true, licenseNo: true, fileUrl: true, qualification: true,}
   })
  
   return res
@@ -296,12 +295,32 @@ const getHospitalAppointments = asyncHandler(async (req, res) => {
  
   const appointments = await prisma.appointment.findMany({
     where: {
-      hospitalId: hospital.id,
+      OR: [
+        { hospitalId: hospital.id },
+        { doctor: { hospitalId: hospital.id } }
+      ],
       ...(status ? { status } : {})
     },
     include: {
-      patient: { select: { name: true, contact: true } },
-      doctor: { select: { name: true, specialization: true } }
+      patient: {
+        select: {
+          id: true,
+          name: true,
+          phone: true,
+          gender: true,
+          allergies: true,
+          address: true
+        }
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          specialization: true,
+          phone: true,
+          qualification: true
+        }
+      }
     },
     orderBy: { scheduledAt: "asc" }
   })
@@ -310,98 +329,36 @@ const getHospitalAppointments = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, appointments, "Hospital appointments fetched successfully"))
 })
- 
-const getHospitalRecords = asyncHandler(async (req, res) => {
+
+
+const updateHospitalAppointmentStatus = asyncHandler(async (req, res) => {
   if (req.user.role !== "hospital") {
-    throw new ApiError(403, "Only hospital accounts can view hospital records")
+    throw new ApiError(403, "Only hospital accounts can update appointment status")
   }
- 
+
+  const { status } = req.body
+  if (!["booked", "completed", "cancelled"].includes(status)) {
+    throw new ApiError(400, "Invalid status. Must be booked, completed, or cancelled")
+  }
+
   const hospital = await prisma.hospital.findUnique({ where: { userId: req.user.id } })
   if (!hospital) throw new ApiError(404, "Hospital profile not found")
- 
-  const records = await prisma.medicalRecord.findMany({
-    where: { hospitalId: hospital.id },
-    include: {
-      patient: { select: { name: true } },
-      doctor: { select: { name: true } }
-    },
-    orderBy: { uploadDate: "desc" }
-  })
- 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, records, "Hospital records fetched successfully"))
-})
 
-const uploadRecordForPatient = asyncHandler(async (req, res) => {
-  if (req.user.role !== "doctor") {
-    throw new ApiError(403, "Only doctor accounts can use this endpoint")
-  }
- 
-  const { patientId, recordType } = req.body
-  const localFilePath = req.file?.path
- 
-  if (!patientId || !recordType) {
-    throw new ApiError(400, "patientId and recordType are required")
-  }
- 
-  if (!localFilePath) {
-    throw new ApiError(400, "File is required")
-  }
- 
-  const doctor = await prisma.doctor.findUnique({ where: { userId: req.user.id } })
-  if (!doctor) {
-    throw new ApiError(404, "Doctor profile not found")
-  }
- 
-  const allowed = await hasAccess(doctor.id, patientId)
-  if (!allowed) {
-    throw new ApiError(403, "Access denied. Request permission from the patient first.")
-  }
- 
-  const cloudinaryResponse = await uploadOnCloudinary(localFilePath)
-  if (!cloudinaryResponse) {
-    throw new ApiError(500, "File upload failed, please try again")
-  }
- 
-  const record = await prisma.medicalRecord.create({
-    data: {
-      patientId,
-      doctorId: doctor.id,
-      hospitalId: doctor.hospitalId,
-      recordType,
-      fileUrl: cloudinaryResponse.url
-    }
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: req.params.id },
+    include: { doctor: true }
   })
- 
-  return res
-    .status(201)
-    .json(new ApiResponse(201, record, "Medical record uploaded successfully"))
-})
- 
-const viewPatientRecords = asyncHandler(async (req, res) => {
-  if (req.user.role !== "doctor") {
-    throw new ApiError(403, "Only doctor accounts can use this endpoint")
+
+  if (!appointment || (appointment.hospitalId !== hospital.id && appointment.doctor?.hospitalId !== hospital.id)) {
+    throw new ApiError(404, "Appointment not found for this hospital")
   }
- 
-  const { patientId } = req.params
- 
-  const doctor = await prisma.doctor.findUnique({ where: { userId: req.user.id } })
-  if (!doctor) throw new ApiError(404, "Doctor profile not found")
- 
-  const allowed = await hasAccess(doctor.id, patientId)
-  if (!allowed) {
-    throw new ApiError(403, "Access denied. Request permission from the patient first.")
-  }
- 
-  const records = await prisma.medicalRecord.findMany({
-    where: { patientId },
-    orderBy: { uploadDate: "desc" }
+
+  const updated = await prisma.appointment.update({
+    where: { id: req.params.id },
+    data: { status }
   })
- 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, records, "Patient records fetched successfully"))
+
+  return res.status(200).json(new ApiResponse(200, updated, "Appointment status updated"))
 })
 
 export {
@@ -411,9 +368,7 @@ export {
   getAffiliatedDoctors,
   removeDoctorAffiliation,
   getHospitalAppointments,
-  getHospitalRecords,
-  uploadRecordForPatient,
-  viewPatientRecords,
+  updateHospitalAppointmentStatus,
   getDoctorDetails,
   setDoctorStatus
 }

@@ -108,7 +108,7 @@ export default function VerifyEmail() {
               type="button"
               onClick={handleResendOtp}
               disabled={resending}
-              className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline disabled:text-gray-400"
+              className="inline-flex cursor-pointer items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline disabled:text-gray-400"
             >
               <RefreshCw size={12} className={resending ? "animate-spin" : ""} />
               {resending ? "Resending..." : "Resend OTP"}
@@ -119,7 +119,7 @@ export default function VerifyEmail() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-white shadow-md transition-all duration-200 ${
+            className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 cursor-pointer rounded-xl font-semibold text-white shadow-md transition-all duration-200 ${
               loading
                 ? "bg-blue-400 cursor-not-allowed shadow-none"
                 : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-blue-500/25"

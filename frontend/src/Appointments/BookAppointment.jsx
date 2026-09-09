@@ -1,124 +1,48 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../api/axios";
-import Select from "react-select";
 import toast from "react-hot-toast";
-import { DoctorSearch } from "../auth/DoctorSearch";
+import { DoctorSearch } from "../hospital/DoctorSearch";
 
 export default function BookAppointment({
   showAppointment,
   setShowAppointment,
 }) {
-  const [doctors, setDoctors] = useState([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    api.get("/search/doctors").then((res) => {
-      setDoctors(res.data.data);
-    });
-  }, []);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedDoctorId) {
+        toast.error("Please select a doctor");
+        return;
+    }
+
+    if (!scheduledAt) {
+        toast.error("Please select date & time");
+        return;
+    }
 
     try {
-      setLoading(true);
-      await api.post("/patient/appointments", {
-        doctorId: selectedDoctorId.value,
-        scheduledAt,
-      });
+        setLoading(true);
+        await api.post("/patient/appointments", {
+            doctorId: selectedDoctorId,
+            scheduledAt,
+        });
 
-      toast.success("Appointment booked successfully!");
+        toast.success("Appointment booked successfully!");
+        setSelectedDoctorId("");
+        setScheduledAt("");
+        setShowAppointment(false);
 
-      setSelectedDoctorId("");
-      setScheduledAt("");
     } catch (err) {
-      console.log(err);
-      toast.error("Booking failed");
-      setSelectedDoctorId("");
-      setScheduledAt("");
+        console.log(err);
+        toast.error("Booking failed");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
-  const doctorOptions = doctors.map((doc) => ({
-    value: doc.id,
-    label: doc.name,
-    specialization: doc.specialization,
-    experience: doc.experience,
-    consultationFee: doc.consultationFee,
-  }));
-
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      minHeight: "45px",
-      height: "45px",
-      borderRadius: "10px",
-    }),
-
-    valueContainer: (provided) => ({
-      ...provided,
-      height: "45px",
-      display: "flex",
-      alignItems: "center",
-      padding: "0 12px",
-    }),
-
-    input: (provided) => ({
-      ...provided,
-      margin: 0,
-      padding: 0,
-    }),
-
-    indicatorsContainer: (provided) => ({
-      ...provided,
-      height: "40px",
-    }),
-
-    singleValue: (provided) => ({
-      ...provided,
-      margin: 0,
-    }),
-  };
-
-  const CustomOption = ({ innerRef, innerProps, data }) => (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      className="flex items-center gap-3 p-3 hover:bg-blue-50 cursor-pointer"
-    >
-      <div>
-        <p className="font-semibold">
-          {data.label
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
-        </p>
-
-        <p className="text-sm text-gray-500">
-          {data.specialization
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
-        </p>
-        <div className="flex gap-9 ">
-          <p className="text-xs text-blue-600">
-            {data.experience} Years Experience
-          </p>
-          <p className="text-xs flex  text-blue-600 pl-58">
-            Fees : ₹{data.consultationFee}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const CustomSingleValue = ({ data }) => (
-    <span className="font-medium text-gray-800">{data.label}</span>
-  );
 
   const handleClose = () => {
     setScheduledAt("");
@@ -153,24 +77,10 @@ export default function BookAppointment({
             {/* Body */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Doctor */}
-              {/* <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Select Doctor
-                </label>
-                <Select
-                  isSearchable={false}
-                  styles={customStyles}
-                  options={doctorOptions}
-                  value={selectedDoctorId}
-                  onChange={(option) => setSelectedDoctorId(option)}
-                  placeholder="Select Doctor"
-                  components={{
-                    Option: CustomOption,
-                    SingleValue: CustomSingleValue,
-                  }}
-                />
-              </div> */}
-              <DoctorSearch />
+              <DoctorSearch
+                searchType="doctors"
+                onSelect={(doctor) => setSelectedDoctorId(doctor.value)}
+              />
 
               {/* Date */}
               <div>

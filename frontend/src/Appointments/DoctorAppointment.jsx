@@ -72,22 +72,21 @@ export default function DoctorAppointment() {
                      </span>
               </div>
 
-              <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                <div className="flex gap-2 items-center">
-                  <p className="text-sm text-gray-500">Patient ID :</p>
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 bg-slate-50 p-2.5 rounded-lg text-sm">
+                      <div className="flex gap-2 items-center min-w-0">
+                        <span className="text-gray-500 shrink-0">Patient ID:</span>
+                        <span className="font-mono font-medium text-gray-800 truncate">
+                          {appt.patientId}
+                        </span>
+                      </div>
 
-                  <p className="font-semibold text-gray-800 break-all">
-                    {appt.patientId}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleCopyId(appt.patientId)}
-                  className="text-blue-600 hover:text-blue-800 underline px-4 py-2 font-medium cursor-pointer transition"
-                >
-                  Copy ID
-                </button>
-              </div>
+                      <button
+                        onClick={() => handleCopyId(appt.patientId)}
+                        className="text-blue-600 hover:text-blue-800 underline text-xs font-semibold cursor-pointer self-start sm:self-auto"
+                      >
+                        Copy ID
+                      </button>
+                    </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex gap-2 items-center">
@@ -105,7 +104,7 @@ export default function DoctorAppointment() {
                   <p className="font-semibold">
                            {appt.patient.allergies
                              ? appt.patient.allergies
-                             : "N/A"}</p>
+                             : "None"}</p>
                 </div>
 
                 <div className="flex gap-2 items-center">
@@ -131,62 +130,6 @@ export default function DoctorAppointment() {
                  </div>
                  
               </div>
-              //     <div
-              //       key={appt.id}
-              //       className="border border-gray-200 rounded p-4 shadow-sm hover:shadow-md transition duration-300 flex-col md:flex-row md:items-center md:justify-between grid grid-cols-1 md:grid-cols-3 gap-2"
-              //     >
-              //       {/* Left Side */}
-              //       <div className="space-y-2">
-              //         <h2 className="text-xl font-semibold text-gray-800">
-              //           Name:{" "}
-              //           {appt.patient.name
-              //             .split(" ")
-              //             .map(
-              //               (word) =>
-              //                 word.charAt(0).toUpperCase() + word.slice(1),
-              //             )
-              //             .join(" ")}
-              //         </h2>
-              //         <div className="">
-              //            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-              //   <div className="flex gap-2 items-center">
-              //     <p className="text-sm text-gray-500">Patient ID :</p>
-
-              //     <p className="font-semibold text-gray-800 break-all">
-              //       {appt.patientId}
-              //     </p>
-              //   </div>
-
-              //   <button
-              //     onClick={handleCopyId}
-              //     className="text-blue-600 hover:text-blue-800 underline px-5 py-2 cursor-pointer transition"
-              //   >
-              //     Copy ID
-              //   </button>
-              // </div>
-              //           <p className="text-gray-500 flex items-center gap-2">
-              //             Gender:{" "}
-              //             {appt.patient.gender ? appt.patient.gender : "N/A"}
-              //           </p>
-              //           <p className="text-gray-500 flex items-center gap-2">
-              //             Phone:{" "}
-              //             {appt.patient.phone ? appt.patient.phone : "N/A"}
-              //           </p>
-              //           <p className="text-gray-500 flex items-center gap-2">
-              //             Allergies:{" "}
-              //             {appt.patient.allergies
-              //               ? appt.patient.allergies
-              //               : "N/A"}
-              //           </p>
-              //           <p className="text-gray-500 flex items-center gap-2">
-              //             Address:{" "}
-              //             {appt.patient.address ? appt.patient.address : "N/A"}
-              //           </p>
-              //           <p className="text-gray-500 flex items-center gap-2">
-              //             📅 {new Date(appt.scheduledAt).toLocaleString()}
-              //           </p>
-              //         </div>
-              //       </div>
 
               //       {/* Right Side */}
               //       <div className="flex flex-col items-end justify-between h-24 mt-4 md:mt-0">

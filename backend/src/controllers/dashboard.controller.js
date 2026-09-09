@@ -73,13 +73,15 @@ const getHospitalDashboard = asyncHandler(async (req, res) => {
   const hospital = await prisma.hospital.findUnique({
     where: { userId: req.user.id },
     include: {
-      doctors: { select: { id: true, name: true, specialization: true } },
-      appointments: {
-        include: {
-          patient: { select: { name: true } },
-          doctor: { select: { name: true } }
-        },
-        orderBy: { scheduledAt: "asc" }
+      doctors: {
+        select: {
+          id: true,
+          name: true,
+          specialization: true,
+          qualification: true,
+          phone: true,
+          fileUrl: true
+        }
       },
       records: {
         include: {
@@ -95,9 +97,23 @@ const getHospitalDashboard = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Hospital profile not found")
   }
 
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      OR: [
+        { hospitalId: hospital.id },
+        { doctor: { hospitalId: hospital.id } }
+      ]
+    },
+    include: {
+      patient: { select: { id: true, name: true, phone: true } },
+      doctor: { select: { id: true, name: true, specialization: true, fileUrl: true } }
+    },
+    orderBy: { scheduledAt: "asc" }
+  })
+
   return res
     .status(200)
-    .json(new ApiResponse(200, hospital, "Hospital dashboard fetched successfully"))
+    .json(new ApiResponse(200, { ...hospital, appointments }, "Hospital dashboard fetched successfully"))
 })
 
 

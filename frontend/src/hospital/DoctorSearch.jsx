@@ -3,11 +3,9 @@ import api from "../api/axios";
 import Select from "react-select";
 
 export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = null }) {
-  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [selectedHospitalId, setSelectedHospitalId] = useState(null);
-  const [scheduledAt, setScheduledAt] = useState(""); 
 
   useEffect(() => {
     handleSearch();
@@ -47,6 +45,21 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
   }, [defaultValue, results]);
 
   const customStyles = {
+        menu: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
+  
+    menuList: (provided) => ({
+    ...provided,
+    maxHeight: "150px", 
+    overflowY: "auto",
+
+    // Hide scrollbar
+    scrollbarWidth: "none", 
+    msOverflowStyle: "none", 
+  }),
+
     control: (provided) => ({
       ...provided,
       minHeight: "45px",
@@ -80,6 +93,21 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
   };
 
   const customStylesforHospitals = {
+      menu: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
+
+    menuList: (provided) => ({
+    ...provided,
+    maxHeight: "250px", 
+    overflowY: "auto",
+
+    // Hide scrollbar
+    scrollbarWidth: "none", 
+    msOverflowStyle: "none", 
+  }),
+
     control: (provided) => ({
       ...provided,
       minHeight: "40px",
@@ -120,7 +148,7 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
     >
       <div>
         <p className="font-semibold">
-          {data.label
+         Dr. {data.label
             ? data.label
                 .split(" ")
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -136,7 +164,7 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
               .join(" ")}
           </p>
         )}
-        <div className="flex gap-9 ">
+        <div className="flex gap-30 ">
           <p className="text-xs text-blue-600">
             {data.experience} Years Experience
           </p>
@@ -152,7 +180,7 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
     <div
       ref={innerRef}
       {...innerProps}
-      className="flex items-center gap-3 p-2 hover:bg-blue-50 cursor-pointer"
+      className="flex items-center overflow-hidden gap-3 p-2 hover:bg-blue-50 cursor-pointer"
     >
       <div>
         <p className="font-semibold">
@@ -186,12 +214,6 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
   const CustomSingleValue = ({ data }) => (
     <span className="font-medium text-gray-800">{data.label}</span>
   );
-
-  const handleClose = () => {
-    setScheduledAt("");
-    setSelectedDoctorId(null);
-    setShowAppointment(false);
-  };
 
   return (
     <div>
@@ -228,9 +250,9 @@ export function DoctorSearch({ onSelect, searchType = "doctors", defaultValue = 
             styles={customStyles}
             options={doctorOptions}
             value={selectedDoctorId}
-            onChange={(option) => {
-              setSelectedDoctorId(option);
-              onSelect(option);
+            onChange={(doctor) => {
+              setSelectedDoctorId(doctor);
+              onSelect(doctor);
             }}
             placeholder="Select Doctor"
             components={{

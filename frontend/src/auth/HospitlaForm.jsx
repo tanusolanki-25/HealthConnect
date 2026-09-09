@@ -247,7 +247,7 @@ function HospitlForm() {
                     <option value="">Select type</option>
                     <option value="Government">Government</option>
                     <option value="Private">Private</option>
-                    <option value="Trust">Trust</option>
+                    <option value="Trust">Multi Specialist</option>
                     <option value="Clinic">Clinic</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 pointer-events-none" />

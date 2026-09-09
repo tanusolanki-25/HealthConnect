@@ -65,7 +65,6 @@ const registerUser = asyncHandler(async (req, res) => {
   })
 
   const otp = await generateOTP()
-  console.log(otp)
   const html = await getOtpHtml(otp)
 
   const otpHash = await hashedPassword(otp)

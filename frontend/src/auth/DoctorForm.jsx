@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
-import { DoctorSearch } from "./DoctorSearch";
+import { DoctorSearch } from "../hospital/DoctorSearch";
 
 function DoctorForm() {
   const {
@@ -22,6 +22,7 @@ function DoctorForm() {
   const [selectedFile, setSelectedFile] = useState(null);
   const { markProfileCompleted, user } = useAuth();
   const [fetching, setFetching] = useState(true);
+  const [initialHospital, setInitialHospital] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -31,7 +32,6 @@ function DoctorForm() {
     }
   };
 
-  const [initialHospital, setInitialHospital] = useState(null);
 
   useEffect(() => {
     const fetchPatientProfile = async () => {

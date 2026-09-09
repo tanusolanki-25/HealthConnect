@@ -113,14 +113,14 @@ function App() {
           <MyPrescriptions />
          </ProtectedRoute>} />
          <Route path="/hospital/doctors" 
-         element={
-         <ProtectedRoute allowedRole="hospital"> 
-          <DoctorList />
-         </ProtectedRoute>} />
+          element={
+          <ProtectedRoute allowedRole="hospital"> 
+           <DoctorList sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+          </ProtectedRoute>} />
          <Route path="/hospital/appointments" 
          element={
          <ProtectedRoute allowedRole="hospital"> 
-          <HospitalAppointment />
+          <HospitalAppointment sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
          </ProtectedRoute>} />
           <Route path="/hospital/doctors/:doctorId" 
          element={
