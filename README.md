@@ -42,7 +42,7 @@ Records stay **patient-centric**, not hospital-wise. No doctor or hospital can v
 
 ## 🚀 Live Demo
 
-- App: [`<add your Vercel URL here>`](https://health-connect-git-main-tanu-solankis-projects.vercel.app/)
+- App: [`<add your Vercel URL here>`](https://health-connect-zeta-seven.vercel.app/)
 
 > Note: the backend is on a free tier and may take 30–60 seconds to respond on the first request after inactivity.
 
