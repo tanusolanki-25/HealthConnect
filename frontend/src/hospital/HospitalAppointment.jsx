@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 
 export default function HospitalAppointment({ sidebarOpen, setSidebarOpen }) {
   const [appointments, setAppointments] = useState([]);

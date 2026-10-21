@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
-import Sidebar from "../dashboard/SideBar";
+import Sidebar from "../components/SideBar";
 import { FileText, Search, RefreshCw, ExternalLink, Trash2, Calendar, FileCheck } from "lucide-react";
 
 export default function MedicalHistory() {

@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import toast from "react-hot-toast";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 
 export default function HospitalDashboard({ sidebarOpen, setSidebarOpen }) {
   const [data, setData] = useState(null);

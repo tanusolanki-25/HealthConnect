@@ -308,7 +308,6 @@ const deleteMyPrescriptions = asyncHandler(async(req, res)=>{
   return res.status(200).json(new ApiResponse(200, {}, "Prescriptions deleted successfully"))
 })
 
-
 const bookAppointment = asyncHandler(async (req, res) => {
   if (req.user.role !== "patient") {
     throw new ApiError(403, "Only patient accounts can book appointments")
@@ -325,6 +324,21 @@ const bookAppointment = asyncHandler(async (req, res) => {
 
   const doctor = await prisma.doctor.findUnique({ where: { id: doctorId } })
   if (!doctor) throw new ApiError(400, "Selected doctor does not exist")
+
+  const existingAppointment = await prisma.appointment.findFirst({
+  where: {
+    doctorId,
+    patientId: patient.id,
+    status: {
+      in: ["booked"],
+    },
+  },
+});
+
+if (existingAppointment) {
+  throw new ApiError(400, "You already have an active appointment with this doctor. Please complete or cancel it before booking another appointment.",
+)
+}
 
   const appointment = await prisma.appointment.create({
     data: {

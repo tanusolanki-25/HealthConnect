@@ -8,17 +8,17 @@ import Login from "./auth/login"
 import PatientForm from "./auth/PatientForm"
 import DoctorForm from "./auth/DoctorForm"
 import HospitalForm from "./auth/HospitlaForm"
-import PatientDashboard from "./dashboard/PatientDashboard"
-import DoctorDashboard from "./dashboard/DoctorDashboard"
+import PatientDashboard from "./patient/PatientDashboard"
+import DoctorDashboard from "./doctor/DoctorDashboard"
 import HospitalDashboard from "./hospital/HospitalDashboard"
-import MyAppointments from "./Appointments/MyAppointment"
-import MedicalHistory from "./records/MedicalHistory"
-import MyPrescriptions from "./prescriptions/MyPrescriptions"
-import AccessRequests from "./requests/AccessRequests"
-import ViewRecords from "./records/ViewRecords"
-import SentAccessRequests from "./requests/SentAccessRequests"
-import DoctorPrescription from "./prescriptions/DoctorPrescription"
-import DoctorAppointment from "./Appointments/DoctorAppointment"
+import MyAppointments from "./patient/MyAppointment"
+import MedicalHistory from "./patient/MedicalHistory"
+import MyPrescriptions from "./patient/MyPrescriptions"
+import AccessRequests from "./patient/AccessRequests"
+import ViewRecords from "./doctor/ViewRecords"
+import SentAccessRequests from "./doctor/SentAccessRequests"
+import DoctorPrescription from "./doctor/DoctorPrescription"
+import DoctorAppointment from "./doctor/DoctorAppointment"
 import { Toaster } from "react-hot-toast"
 import VerifyEmail from "./auth/Verify-Email"
 import ResetPassword from "./auth/ResetPassword"
@@ -28,7 +28,7 @@ import ChangePassword from "./auth/ChangePassword"
 import { useState } from "react"
 import DoctorList from "./hospital/Doctors/DoctorList"
 import DoctorDetails from "./hospital/Doctors/DoctorDetails"
-import HospitalAppointment from "./Appointments/HospitalAppointment"
+import HospitalAppointment from "./hospital/HospitalAppointment"
 
 
 function App() {
@@ -40,16 +40,24 @@ function App() {
   <BrowserRouter >
   <Toaster position="top-center" /> 
     <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-    <main className="pt-16 min-h-screen bg-slate-50/80">
+    <main className="pt-16">
       <Routes>
         <Route path="/" element={<Home />}/>
-        <Route path="/set-role" element={<RoleSelection />}/>
         <Route path="/about" element={<About />}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/verify-email" element={<VerifyEmail />}/>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={
+          <ProtectedRoute allowedRole="">
+          <ResetPassword />
+          </ProtectedRoute>} />
+        {/* <Route path="/set-role" element={<RoleSelection />}/> */}
+        <Route path="/set-role" element={
+          <ProtectedRoute allowedRole="">
+          <RoleSelection />
+          </ProtectedRoute>} />
         <Route path="/patient/profile" element={
           <ProtectedRoute allowedRole="patient">
           <PatientForm />

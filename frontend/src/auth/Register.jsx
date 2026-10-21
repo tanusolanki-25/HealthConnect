@@ -37,9 +37,9 @@ function Register() {
   };
 
   return (
-    <div className=" bg-slate-50/80 flex items-center justify-center p-5">
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50/80 flex items-center justify-center">
       {/* Main Card Container */}
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-11 min-h-[600px] border border-gray-100">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-11 border border-gray-100">
         
         {/* Left Side: Hero Image & Branding */}
         <div className="lg:col-span-5 relative hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-blue-700 via-blue-600 to-teal-600 text-white overflow-hidden">

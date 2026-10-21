@@ -4,27 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { LogOut, Menu, X } from "lucide-react";
 
-// const NAV_LINKS = {
-//   patient: [
-//     { label: "Dashboard", to: "/patient/dashboard" },
-//     { label: "Appointments", to: "/patient/my-appointments" },
-//     { label: "Prescriptions", to: "/patient/prescriptions" },
-//     { label: "Access Requests", to: "/patient/access-requests" },
-//     { label: "Medical Records", to: "/patient/records" },
-//   ],
-//   doctor: [
-//     { label: "Dashboard", to: "/doctor/dashboard" },
-//     { label: "Appointments", to: "/doctor/appointments" },
-//     { label: "Prescriptions", to: "/doctor/prescriptions" },
-//     { label: "Access Requests", to: "/doctor/access-request/sent" }
-//   ],
-//   hospital: [
-//     { label: "Dashboard", to: "/hospital/dashboard" },
-//     { label: "Doctors", to: "/hospital/doctors" },
-//     { label: "Appointments", to: "/hospital/appointments" }
-//   ]
-// }
-
 const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();

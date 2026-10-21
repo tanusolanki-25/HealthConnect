@@ -74,11 +74,11 @@ export default function RoleSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-12">
-      <div className="max-w-xl w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100">
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-slate-50 flex items-center justify-center hide-scrollbar">
+      <div className="max-w-xl w-full bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100 overflow-hidden">
         
         {/* Header Section */}
-        <div className="text-center mb-8">
+        <div className="text-center">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold tracking-wide uppercase mb-3 border border-blue-100">
             <ShieldCheck size={14} /> Account Setup
           </div>

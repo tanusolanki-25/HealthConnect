@@ -105,7 +105,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const verifyEmail = asyncHandler(async(req, res)=>{
    const {otp, email} = req.body
-   const otpHash = await hashedPassword(otp)
+  //  const otpHash = await hashedPassword(otp)
 
    const otpDoc = await prisma.otp.findUnique({
     where:{
@@ -114,8 +114,8 @@ const verifyEmail = asyncHandler(async(req, res)=>{
    })
 
    if (!otpDoc) {
-  throw new ApiError(400, "OTP not found");
-}
+   throw new ApiError(400, "OTP not found");
+  }
 
    if (otpDoc.expiresAt < new Date()) {
     await prisma.otp.delete({

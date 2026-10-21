@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import Sidebar from "../dashboard/SideBar";
+import Sidebar from "../components/SideBar";
 import toast from "react-hot-toast";
 import { ShieldCheck, CheckCircle2, XCircle, Clock, Loader2, Stethoscope } from "lucide-react";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 
 export default function AccessRequests() {
   const [requests, setRequests] = useState([]);

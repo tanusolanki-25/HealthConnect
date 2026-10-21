@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 import toast from "react-hot-toast";
 
 export default function DoctorPrescription() {

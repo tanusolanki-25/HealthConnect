@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Calendar, Upload } from "lucide-react";
 import api from "../api/axios";
-import UploadRecord from "../records/UploadRecords";
-import BookAppointment from "../Appointments/BookAppointment";
-import SideBar from "./SideBar";
+import UploadRecord from "./UploadRecords";
+import BookAppointment from "./BookAppointment";
+import SideBar from "../components/SideBar";
 
 export default function PatientDashboard({ sidebarOpen, setSidebarOpen }) {
   const [data, setData] = useState(null);

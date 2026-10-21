@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { Pill, Calendar, Stethoscope, Loader2, Trash2 } from "lucide-react";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 
 export default function MyPrescriptions() {
   const [prescriptions, setPrescriptions] = useState([]);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
-import SideBar from "../../dashboard/SideBar";
+import SideBar from "../../components/SideBar";
 import { ArrowRight, CalendarDays, ClipboardList, ExternalLink, FileText, Loader2, Pill, ShieldCheck, Users } from "lucide-react";
 import { Search, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";

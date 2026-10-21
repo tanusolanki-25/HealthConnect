@@ -11,7 +11,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import api from "../api/axios";
-import SideBar from "./SideBar";
+import SideBar from "../components/SideBar";
 
 export default function DoctorDashboard({ sidebarOpen, setSidebarOpen }) {
   const [data, setData] = useState(null);

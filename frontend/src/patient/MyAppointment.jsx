@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import Sidebar from "../dashboard/SideBar";
+import Sidebar from "../components/SideBar";
 import toast from "react-hot-toast";
 import {
   Calendar,
@@ -46,6 +46,8 @@ export default function MyAppointments() {
       toast.error(
         error.response?.data?.message || "Could not delete appointment",
       );
+    }finally{
+      fetchAppointments()
     }
   };
 

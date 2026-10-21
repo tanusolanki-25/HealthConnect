@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../dashboard/SideBar";
+import Sidebar from "../components/SideBar";
 import { ArrowRight, KeyRound, Lock, } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";

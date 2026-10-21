@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import SideBar from "../dashboard/SideBar";
+import SideBar from "../components/SideBar";
 import toast from "react-hot-toast";
 
 export default function DoctorAppointment() {
@@ -37,13 +37,24 @@ export default function DoctorAppointment() {
           </h2>
           <div className="flex-1 bg-white hide-scrollbar overflow-y-auto">
             {appointments.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                  📅
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded p-6 shadow-sm border border-gray-100 animate-pulse flex justify-between items-center"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                    <div className="space-y-2">
+                      <div className="h-5 bg-gray-200 rounded w-48"></div>
+                      <div className="h-4 bg-gray-100 rounded w-32"></div>
+                    </div>
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded-xl w-24"></div>
                 </div>
-                <p className="text-gray-500 text-lg">No appointments yet.</p>
-              </div>
-            ) : (
+              ))}
+            </div>
+          ) : (
               <div className="space-y-3">
                 {appointments.map((appt) => (
                    <div

@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/axios";
-import PrescriptionForm from "../prescriptions/PrescriptionForm";
-import SideBar from "../dashboard/SideBar";
+import PrescriptionForm from "./PrescriptionForm";
+import SideBar from "../components/SideBar";
 
 export default function SentAccessRequests() {
   const [requests, setRequests] = useState([]);

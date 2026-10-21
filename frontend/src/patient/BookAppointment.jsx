@@ -35,9 +35,8 @@ export default function BookAppointment({
         setScheduledAt("");
         setShowAppointment(false);
 
-    } catch (err) {
-        console.log(err);
-        toast.error("Booking failed");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Booking Failed");
     } finally {
         setLoading(false);
     }
